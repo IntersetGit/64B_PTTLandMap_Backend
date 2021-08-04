@@ -16,7 +16,7 @@ require('./cron')
 const indexRouter = require('./routes/index');
 const providerRouter = require('./routes/provider');
 const uploadRouter = require('./routes/upload');
-const nametitleRouter = require('')
+const nametitlesRouter = require('./routes/master');
 
 const app = express();
 
@@ -38,6 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/provider', providerRouter);
 app.use('/upload', uploadRouter);
+app.use('/nametitles',nametitlesRouter);
 
 swagger.serveSwagger(app, "/api", options, {
   routePath: "./routes/",
