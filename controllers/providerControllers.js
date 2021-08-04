@@ -1,8 +1,5 @@
-const models = require("../models/index"); //connect db get data model
 const util = require("../util/index"); //connect db  query string
-const query = require("../querys/index");
 const messages = require('../messages/index');
-const md5 = require('md5');
 const config = require('../config');
 const jwt = require('jsonwebtoken');
 const result = require('../middleware/result');
