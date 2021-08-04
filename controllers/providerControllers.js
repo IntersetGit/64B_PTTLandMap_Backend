@@ -17,7 +17,7 @@ exports.login = async (req, res, next) => {
         const token = await jwt.sign(model, config.JWT_SECRET, { expiresIn: "3h" });
         //decode วันหมดอายุ
         const expires_in = jwt.decode(token);
-
+        
         result(res, {
             access_token: token,
             expires_in: expires_in.exp
