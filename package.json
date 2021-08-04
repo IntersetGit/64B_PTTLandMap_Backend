@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
-    "up-models": "sequelize-auto -o './models' -d db_name -h 127.0.0.1 -u root -p 3306 -x  -e mysql"
+    "up-models": "sequelize-auto -o './models' -d pttlandmap_db -h 103.253.72.178 -u hrSystemAdmin -p 5432 -x 4Dm!n2020@Interset -e postgres"
   },
   "dependencies": {
     "axios": "^0.21.1",
