@@ -4,20 +4,22 @@ module.exports = function(sequelize, DataTypes) {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
     },
     group_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      primaryKey: true
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    order_by: {
+      type: DataTypes.SMALLINT,
+      allowNull: true,
+      comment: "เรียงลำดับ"
     },
     isuse: {
       type: DataTypes.SMALLINT,
-      allowNull: true
-    },
-    sort: {
-      type: DataTypes.SMALLINT,
-      allowNull: true
+      allowNull: false,
+      comment: "สถานะข้อมูล 0 = ไม่ใช้ 1 = ใช้"
     }
   }, {
     sequelize,
@@ -29,7 +31,7 @@ module.exports = function(sequelize, DataTypes) {
         name: "mas_layer_groups_pkey",
         unique: true,
         fields: [
-          { name: "group_name" },
+          { name: "id" },
         ]
       },
     ]

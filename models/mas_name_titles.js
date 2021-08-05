@@ -5,21 +5,21 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      comment: "รหัสหลักตารางคำนำหน้าชื่อ",
+      comment: "รหัสคำนำหน้าชื่อ",
       primaryKey: true
     },
     code_id: {
       type: DataTypes.STRING(5),
       allowNull: true,
-      comment: "โค้ดกำกับคำนำหน้าชื่อ"
+      comment: "โค้ดกำกับคำนำหน้า"
     },
     name_title: {
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
       allowNull: true,
       comment: "คำนำหน้าชื่อเก็บเป็น json เพื่อรองรับหลายภาษา"
     },
     initials: {
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
       allowNull: true,
       comment: "ชื่อย่อคำนำหน้าชื่อเก็บเป็น json เพื่อรองรับการใช้หลายภาษา"
     },
@@ -31,8 +31,7 @@ module.exports = function(sequelize, DataTypes) {
     isuse: {
       type: DataTypes.SMALLINT,
       allowNull: false,
-      defaultValue: 0,
-      comment: "สถานะการเรียกใช้งาน"
+      comment: "สถานะข้อมูล 0 = ไม่ใช้ 1 = ใช้ 2 = ลบ"
     }
   }, {
     sequelize,
@@ -41,7 +40,7 @@ module.exports = function(sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: "mas_name_title_pkey",
+        name: "mas_name_titles_pkey",
         unique: true,
         fields: [
           { name: "id" },

@@ -9,8 +9,11 @@ exports.login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
+        
+
         const model = {
             username: username,
+            password: password
         }
 
         //สร้าง token

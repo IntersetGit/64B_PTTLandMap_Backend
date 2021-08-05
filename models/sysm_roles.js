@@ -4,13 +4,14 @@ module.exports = function(sequelize, DataTypes) {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
-      comment: "รหัสตารางสิทธิ์ผู้ใช้งาน",
+      defaultValue: DataTypes.UUIDV4,
+      comment: "รหัสกำหนดสิทธิ์ผู้ใช้งานระบบ",
       primaryKey: true
     },
     roles_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "ชื่อสิทธิ์"
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "ชื่อสิทธิ์ผู้ใช้งานระบบ"
     },
     parent_id: {
       type: DataTypes.UUID,
@@ -19,7 +20,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     isuse: {
       type: DataTypes.SMALLINT,
-      allowNull: false,
+      allowNull: true,
       comment: "สถานะข้อมูล 0 = ไม่ใช้ 1 = ใช้ 2 = ลบ"
     }
   }, {
