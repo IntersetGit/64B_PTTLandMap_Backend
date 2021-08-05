@@ -17,6 +17,7 @@ const indexRouter = require('./routes/index');
 const providerRouter = require('./routes/provider');
 const uploadRouter = require('./routes/upload');
 const nametitlesRouter = require('./routes/master');
+const demoRouter = require('./routes/demo');
 
 const app = express();
 
@@ -38,7 +39,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/provider', providerRouter);
 app.use('/upload', uploadRouter);
-app.use('/nametitles',nametitlesRouter);
+app.use('/nametitles', nametitlesRouter);
+app.use('/demo', demoRouter);
 
 swagger.serveSwagger(app, "/api", options, {
   routePath: "./routes/",
