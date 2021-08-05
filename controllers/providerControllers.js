@@ -1,4 +1,3 @@
-const util = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const config = require('../config');
 const jwt = require('jsonwebtoken');

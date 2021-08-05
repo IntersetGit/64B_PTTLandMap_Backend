@@ -1,6 +1,5 @@
-const models = require("../models/index");
-const sequelize = require("../config/dbConfig");
-const messages = require("../messages/index");
+const util = require("../util/index"); //connect db  query string
+const messages = require('../messages/index');
 const result = require("../middleware/result");
 const { GetAllTitleNameService } = require("../service/mas_name_titles");
 
