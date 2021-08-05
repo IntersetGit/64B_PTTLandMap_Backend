@@ -22,39 +22,77 @@ const connect = {
 
 exports.ldap = async ({ username, password }) => {
     const _res = await ConnectLdap({ username, password })
-    console.log('_res :>> ', _res);
+    // console.log('_res :>> ', _res);
     return _res
 }
 
+/** 
+// --------- General
+givenName คือ First name
+initials คือ Initials
+sn คือ Last name
+displayName คือ Display Name //ไม่จำเป็น
+description คือ Description
+physicalDeliveryOfficeName คือ Office
+telephoneNumber คือ Telephone number
+mail คือ E-mail
+wWWHomePage คือ Web page
+
+// --------- Address
+streetAddress คือ Street
+postOfficeBox คือ P.O. Box //ไม่จำเป็น
+l คือ City //ไม่จำเป็น
+st คือ State/province //ไม่จำเป็น
+postalCode คือ Zip/Postal Code //ไม่จำเป็น
+co คือ Country.region //ไม่จำเป็น
+
+// --------- Orgarization
+title คือ Job Title
+department คือ Department
+company คือ Company
+*/
+
 
 const ConnectLdap = async ({ username, password }) => {
-    const { host, url, search } = connect[config.NODE_ENV]
+    const myPromise = new Promise((resolve, reject) => {
+        const { host, url, search } = connect[config.NODE_ENV]
 
-    // LDAP Connection Settings
-    const userPrincipalName = `${username}@${host}`; // Username
+        // LDAP Connection Settings
+        const userPrincipalName = `${username}@${host}`; // Username
 
-    // Create client and bind to AD
-    const client = ldap.createClient({ url });
+        // Create client and bind to AD
+        const client = ldap.createClient({ url });
 
-    client.bind(userPrincipalName, password, err => { });
+        client.bind(userPrincipalName, password, err => { });
 
-    const __res = await client.search(search, {
-        scope: "sub",
-        filter: `(userPrincipalName=${userPrincipalName})`
-    }, async (err, res) => {
+        client.search(search, {
+            scope: "sub",
+            filter: `(userPrincipalName=${userPrincipalName})`
+        }, (err, res) => {
 
-        await res.on('searchEntry', (entry) => {
-            console.log(entry.object.name);
-            return entry.object
+            res.on('searchEntry', (entry) => {
+                console.log(entry.object.name);
+                resolve(entry.object);
+                return entry.object
+            });
+
+            res.on('end', result => {
+                // console.log("result ======================>" , result);
+                const _err = { message: "ไม่พบชื่อผู้ใช้" }
+                reject(_err)
+                return _err
+            });
+
+            res.on('error', err => {
+                // console.error('error: ' + err.message);
+                const _err = { message: "รหัสผ่านไม่ถูกต้อง" }
+                reject(_err)
+                return _err
+            });
+
+           
+
         });
-
-        await res.on('error', err => {
-            console.error('error: ' + err.message);
-            return err
-        });
-
     });
-
-    return __res;
-
+    return await myPromise
 }
