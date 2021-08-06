@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const masterControllers = require('../controllers/masterControllers');
 
-
-router.get('/getnametitle',masterControllers.testt);
+/** เรียกข้อมูล คำนำหน้าชื่อ */
+router.get('/getNameTitle',masterControllers.getNameTitle);
 
 
 module.exports = router;
