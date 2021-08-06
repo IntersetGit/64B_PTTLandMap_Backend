@@ -18,10 +18,20 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "รหัสแม่ใน role_id"
     },
+    note: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: "บันทึก"
+    },
     isuse: {
       type: DataTypes.SMALLINT,
       allowNull: true,
       comment: "สถานะข้อมูล 0 = ไม่ใช้ 1 = ใช้ 2 = ลบ"
+    },
+    order_by: {
+      type: DataTypes.SMALLINT,
+      allowNull: true,
+      comment: "ใช้สำหรับจัดเรียงข้อมูล"
     }
   }, {
     sequelize,

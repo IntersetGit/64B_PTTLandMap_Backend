@@ -37,7 +37,7 @@ module.exports = {
         allowNull: true,
         comment: "ชื่อย่อผู้ใช้",
       },
-      emaill: {
+      e_mail: {
         type: Sequelize.STRING,
         allowNull: true,
         comment: "อีเมลผู้ใช้งาน",
