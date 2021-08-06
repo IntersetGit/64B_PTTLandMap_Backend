@@ -20,6 +20,11 @@ module.exports = {
         allowNull: true,
         comment: "รหัสแม่ใน role_id",
       },
+      note: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+        comment: "บันทึก",
+      },
       isuse: {
         type: Sequelize.SMALLINT(1),
         allowNull: true,
