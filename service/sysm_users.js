@@ -56,7 +56,7 @@ exports.createSysmUsersService = async (model, transaction) => {
 /* แก้ไข ตารางผู้ใช้งานระบบ */
 exports.updateSysmUsersService = async (model, transaction) => {
     const _model = {
-        updated_date: new Date(),
+        update_date: new Date(),
     }
     if (model.roles_id) _model.roles_id = model.roles_id
     if (model.user_name) _model.user_name = model.user_name

@@ -1,7 +1,8 @@
 const router = require('express').Router();
-const providerControllers = require("../controllers/providerControllers");
+const { loginControllers, refreshTokenControllers } = require("../controllers/providerControllers");
 
 /* GET users listing. */
-router.post('/login', providerControllers.login);
+router.post('/login', loginControllers);
+router.get('/refreshToken', refreshTokenControllers);
 
 module.exports = router;
