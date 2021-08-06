@@ -52,15 +52,19 @@ const connect = {
 */
 
 exports.ldap = async ({ user_name, password }, transaction) => {
-    const _res = await ConnectLdap({ username: user_name, password })
+    const user = await filterUsernameSysmUsersService(user_name)
+
+
+    const _res = await ConnectLdap({ username: user_name, password }, user)
     // console.log('_res :>> ', _res);
     if (!_res) {
         const error = new Error("ไม่พบชื่อผู้ใช้");
         error.statusCode = 404;
         throw error;
     }
-
-    const user = await filterUsernameSysmUsersService(user_name)
+    //fd1afdfd-04fd-48fd-fdfd-fd27065dfdfd = k.karun
+    //63216afd-fd56-47fd-fd1f-fdfd544ffdfd = pondkarun2
+    let y = formatGUID(_res.objectGUID)
     if (!user) {
         const id = uuidv4.v4()
         await createSysmUsersService({
@@ -121,8 +125,9 @@ exports.ldap = async ({ user_name, password }, transaction) => {
     return await filterUsernameSysmUsersService(user_name)
 }
 
-const ConnectLdap = async ({ username, password }) => {
+const ConnectLdap = async ({ username, password }, user) => {
     const myPromise = new Promise((resolve, reject) => {
+
         const { host, url, search } = connect[config.NODE_ENV]
 
         // LDAP Connection Settings
@@ -131,7 +136,9 @@ const ConnectLdap = async ({ username, password }) => {
         // Create client and bind to AD
         const client = ldap.createClient({ url });
 
-        client.bind(userPrincipalName, password, err => { });
+        client.bind(userPrincipalName, password, err => {
+            console.log('err :>> ', err);
+        });
 
         client.search(search, {
             scope: "sub",
@@ -143,24 +150,63 @@ const ConnectLdap = async ({ username, password }) => {
                 resolve(entry.object);
                 return entry.object
             });
-
-            res.on('end', result => {
-                // console.log("result ======================>" , result);
-                const _err = { message: "ไม่พบชื่อผู้ใช้" }
+            res.on('searchReference', (referral) => {
+                console.log('referral: ' + referral.uris.join());
+            });
+            res.on('error', (err) => {
+                console.error('error: ' + err.message);
+                const _err = { message: "ชื่อผู้ใช้ หรือ รหัสผ่านไม่ถูกต้อง" }
                 reject(_err)
-                return _err
+            });
+            res.on('end', (result) => {
+                console.log('status: ' + result.status);
+                reject(result)
             });
 
-            res.on('error', err => {
-                // console.error('error: ' + err.message);
-                const _err = { message: "รหัสผ่านไม่ถูกต้อง" }
-                reject(_err)
-                return _err
-            });
+            // res.on('end', (result) => {
+            //     // console.log("result ======================>" , result);
+            //     if (user) {
+            //         updateSysmUsersService({ id: user.id, isuse: 0 })
+            //     }
+            //     const _err = { message: "ไม่พบชื่อผู้ใช้" }
+            //     reject(_err)
+            //     return _err
+            // });
 
-
+            // res.on('error', err => {
+            //     console.error('error: ' + err.message);
+            //     const _err = { message: "รหัสผ่านไม่ถูกต้อง" }
+            //     reject(_err)
+            //     return _err
+            // });
 
         });
+
+
+
     });
     return await myPromise
+}
+
+const formatGUID = (objectGUID) => {
+
+    var data = new Buffer(objectGUID, 'binary');
+
+    // GUID_FORMAT_D
+    var template = '{3}{2}{1}{0}-{5}{4}-{7}{6}-{8}{9}-{10}{11}{12}{13}{14}{15}';
+
+    // check each byte
+    for (var i = 0; i < data.length; i++) {
+
+        // get the current character from that byte
+        var dataStr = data[i].toString(16);
+        dataStr = data[i] >= 16 ? dataStr : '0' + dataStr;
+
+        // insert that character into the template
+        template = template.replace(new RegExp('\\{' + i + '\\}', 'g'), dataStr);
+
+    }
+
+    return template;
+
 }
