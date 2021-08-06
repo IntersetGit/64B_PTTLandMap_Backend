@@ -1,6 +1,6 @@
 const config = require("../config");
 const ldap = require('ldapjs');
-const { filterUsernameSysmUsersService, createSysmUsersService, updateSysmUsersService } = require('./sysm_users');
+const { filterUsernameSysmUsersService, createSysmUsersService, updateSysmUsersService, findCodeLdapSysmUsersService } = require('./sysm_users');
 const { encryptPassword } = require("../util");
 const { createDatProfileUsersService, updateDatProfileUsersService } = require("./dat_profile_users");
 const uuidv4 = require("uuid");
@@ -63,7 +63,8 @@ exports.ldap = async ({ user_name, password }, transaction) => {
     //63216afd-fd56-47fd-fd1f-fdfd544ffdfd = pondkarun2
     const code_ldap = formatGUID(_res.objectGUID)
     const user = await filterUsernameSysmUsersService(user_name)
-    if (!user) {
+    const _user = await findCodeLdapSysmUsersService(code_ldap)
+    if (!user && !_user) {
         const id = uuidv4.v4()
         await createSysmUsersService({
             id,
@@ -94,17 +95,18 @@ exports.ldap = async ({ user_name, password }, transaction) => {
             created_by: id,
         }, transaction)
     } else {
+        const _data = user ? user : _user ? _user : null
         await updateSysmUsersService({
-            id: user.id,
+            id: _data.id,
             user_name,
             password: await encryptPassword(password),
             e_mail: _res.mail,
-            update_by: user.id,
+            update_by: _data.id,
         }, transaction)
 
         await updateDatProfileUsersService({
-            id: user.id,
-            user_id: user.id,
+            id: _data.id,
+            user_id: _data.id,
             first_name: _res.givenName,
             last_name: _res.sn,
             initials: _res.initials,
@@ -117,7 +119,7 @@ exports.ldap = async ({ user_name, password }, transaction) => {
             phone: _res.telephoneNumber,
             address: _res.streetAddress,
             description: _res.description,
-            update_by: user.id,
+            update_by: _data.id,
         }, transaction)
     }
 

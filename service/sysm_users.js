@@ -71,3 +71,8 @@ exports.updateSysmUsersService = async (model, transaction) => {
     await models.sysm_users.update(_model, { where: { id: model.id }, transaction });
     return model.id;
 }
+
+/* แก้ไข ตารางผู้ใช้งานระบบ */
+exports.findCodeLdapSysmUsersService = async (code_ldap) => {
+    return await models.sysm_users.findOne({ where: { code_ldap } });
+}
