@@ -29,7 +29,12 @@ module.exports = {
         type: Sequelize.SMALLINT(1),
         allowNull: true,
         comment: "สถานะข้อมูล 0 = ไม่ใช้ 1 = ใช้ 2 = ลบ",
-      }
+      },
+      order_by: {
+        type: Sequelize.SMALLINT(1),
+        allowNull: true,
+        comment: "ใช้สำหรับจัดเรียงข้อมูล",
+      },
     }, {
       schema: "system",
       comment: "ตารางสิทธิ์ผู้ใช้งาน",
