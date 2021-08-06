@@ -52,10 +52,7 @@ const connect = {
 */
 
 exports.ldap = async ({ user_name, password }, transaction) => {
-    const user = await filterUsernameSysmUsersService(user_name)
-
-
-    const _res = await ConnectLdap({ username: user_name, password }, user)
+    const _res = await ConnectLdap({ username: user_name, password })
     // console.log('_res :>> ', _res);
     if (!_res) {
         const error = new Error("ไม่พบชื่อผู้ใช้");
@@ -64,7 +61,8 @@ exports.ldap = async ({ user_name, password }, transaction) => {
     }
     //fd1afdfd-04fd-48fd-fdfd-fd27065dfdfd = k.karun
     //63216afd-fd56-47fd-fd1f-fdfd544ffdfd = pondkarun2
-    let y = formatGUID(_res.objectGUID)
+    const code_ldap = formatGUID(_res.objectGUID)
+    const user = await filterUsernameSysmUsersService(user_name)
     if (!user) {
         const id = uuidv4.v4()
         await createSysmUsersService({
@@ -75,6 +73,7 @@ exports.ldap = async ({ user_name, password }, transaction) => {
             e_mail: _res.mail,
             note: _res.displayName,
             created_by: id,
+            code_ldap
         }, transaction)
 
         await createDatProfileUsersService({
@@ -97,6 +96,7 @@ exports.ldap = async ({ user_name, password }, transaction) => {
     } else {
         await updateSysmUsersService({
             id: user.id,
+            user_name,
             password: await encryptPassword(password),
             e_mail: _res.mail,
             update_by: user.id,
@@ -125,7 +125,7 @@ exports.ldap = async ({ user_name, password }, transaction) => {
     return await filterUsernameSysmUsersService(user_name)
 }
 
-const ConnectLdap = async ({ username, password }, user) => {
+const ConnectLdap = async ({ username, password }) => {
     const myPromise = new Promise((resolve, reject) => {
 
         const { host, url, search } = connect[config.NODE_ENV]

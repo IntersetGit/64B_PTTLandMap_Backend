@@ -52,6 +52,11 @@ module.exports = {
         allowNull: false,
         comment: "สถานะผู้ใช้งาน 0 = ไม่ได้ใช้งาน 1 = ใช้งานอยู่ 2 = เลิกใช้งาน",
       },
+      code_ldap:{
+        type: Sequelize.STRING,
+        allowNull: true,
+        comment: "ไอดี ldap",
+      },
       last_login:{
         type: Sequelize.DATE,
         allowNull: true,
