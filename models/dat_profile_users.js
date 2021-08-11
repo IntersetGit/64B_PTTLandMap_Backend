@@ -17,6 +17,15 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
+    name_title_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      comment: "รหัสคำนำหน้า",
+      references: {
+        model: 'mas_name_titles',
+        key: 'id'
+      }
+    },
     first_name: {
       type: DataTypes.STRING(255),
       allowNull: true,

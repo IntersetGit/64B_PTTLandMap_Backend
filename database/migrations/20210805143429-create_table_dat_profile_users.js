@@ -22,6 +22,18 @@ module.exports = {
           key: "id",
         },
       },
+      name_title_id: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        comment: "รหัสคำนำหน้า",
+        references: {
+          model: {
+            tableName: "mas_name_titles",
+            schema: "master_lookup",
+          },
+          key: "id",
+        },
+      },
       first_name: {
         type: Sequelize.STRING,
         allowNull: true,

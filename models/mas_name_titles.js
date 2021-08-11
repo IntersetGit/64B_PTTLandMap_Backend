@@ -14,12 +14,12 @@ module.exports = function(sequelize, DataTypes) {
       comment: "โค้ดกำกับคำนำหน้า"
     },
     name_title: {
-      type: DataTypes.JSONB,
+      type: DataTypes.STRING(255),
       allowNull: true,
       comment: "คำนำหน้าชื่อเก็บเป็น json เพื่อรองรับหลายภาษา"
     },
     initials: {
-      type: DataTypes.JSONB,
+      type: DataTypes.STRING(255),
       allowNull: true,
       comment: "ชื่อย่อคำนำหน้าชื่อเก็บเป็น json เพื่อรองรับการใช้หลายภาษา"
     },
