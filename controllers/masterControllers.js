@@ -2,12 +2,24 @@ const util = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
 const { GetAllTitleNameService } = require("../service/mas_name_titles");
+const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 
 exports.getNameTitle = async (req, res, next) => {
   try {
     result(res, await GetAllTitleNameService());
-    
+
   } catch (error) {
     next(error);
   }
-};
+}
+
+exports.viewGetNameTitle = async (req, res, next) => {
+  try {
+    const { id } = req.query
+
+    result(res, await viewGetNameTitleService(id))
+
+  } catch (error) {
+    next(error);
+  }
+}
