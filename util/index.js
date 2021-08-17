@@ -117,14 +117,16 @@ exports.getDateString = ({ date = new Date(), local = "th", tpye = "initial", fo
 /* เข้ารหัส */
 exports.EncryptCryptoJS = (code) => {
     const secretKey = config.SECRET_KEY_CODE
-    return CryptoJS.AES.encrypt(JSON.stringify(code), secretKey).toString();
+    const encJson = CryptoJS.AES.encrypt(JSON.stringify(code), secretKey).toString()
+    const encData = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(encJson))
+    return encData
 }
 
 /* ถอดรหัส */
 exports.DecryptCryptoJS = (code) => {
     const secretKey = config.SECRET_KEY_CODE
-    const bytes1 = CryptoJS.AES.decrypt(code, secretKey);
-    const originalText = bytes1.toString(CryptoJS.enc.Utf8);
-    return JSON.parse(originalText)
+    const decData = CryptoJS.enc.Base64.parse(code).toString(CryptoJS.enc.Utf8)
+    const bytes = CryptoJS.AES.decrypt(decData, secretKey).toString(CryptoJS.enc.Utf8)
+    return JSON.parse(bytes)
 }
 
