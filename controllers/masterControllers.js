@@ -23,3 +23,30 @@ exports.viewGetNameTitle = async (req, res, next) => {
     next(error);
   }
 }
+
+
+
+
+exports.createDataLayers = async (req,res,next)=>{
+  try {
+    result(res,"create")
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.updateDataLayers = async (req,res,next)=>{
+  try {
+    result(res,"update")
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.deleteDataLayers = async (req,res,next)=>{
+  try {
+    result(res,"delete")
+  } catch (error) {
+    next(error)
+  }
+}
