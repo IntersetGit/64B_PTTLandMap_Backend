@@ -7,4 +7,6 @@ router.get('/getNameTitle',masterControllers.getNameTitle);
 router.get('/viewGetNameTitle',masterControllers.viewGetNameTitle);
 
 
+
+
 module.exports = router;
