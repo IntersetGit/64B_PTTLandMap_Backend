@@ -1,4 +1,40 @@
 const models = require("../models/")
+
+
+//-------------- เพิ่ม ลบ แก้ไข mas_layer_group-------//
+exports.createMasLayersService = async (data) => {
+  const id = uuid.v4()
+  const createMasLayers = await models.mas_layer_groups.create({
+    id,
+    group_name:data.group_name,
+    order_by:order_by,
+    url:data.url,
+    isuse:1,
+  })
+  return createMasLayers
+};
+
+exports.updateMasLayersService = async (data) => {
+  const id = uuid.v4()
+  const updateMasLayers = await models.mas_layer_groups.update({
+    id,
+    group_name:data.group_name,
+    order_by:data.order_by,
+    isuse:1,
+  },{
+    where :{id:data.id}
+  })
+  return updateMasLayers
+};
+
+exports.deleteMasLayersService = async (data) => {
+  const deleteMasLayers = await models.mas_layer_groups.destroy({where:{id:data.id}})
+    return deleteMasLayers;
+};
+
+//---------------------------------------------------------------------------------//
+
+
 //----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-----//
 exports.createDatLayersService = async (data) => {
   const createDatLayers = await models.dat_layers.create({
