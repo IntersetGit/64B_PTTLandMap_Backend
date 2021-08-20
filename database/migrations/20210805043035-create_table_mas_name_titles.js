@@ -16,12 +16,12 @@ module.exports = {
         comment: "โค้ดกำกับคำนำหน้า",
       },
       name_title: {
-        type: Sequelize.JSONB,
+        type: Sequelize.STRING,
         allowNull: true,
         comment: "คำนำหน้าชื่อเก็บเป็น json เพื่อรองรับหลายภาษา",
       },
       initials: {
-        type: Sequelize.JSONB,
+        type: Sequelize.STRING,
         allowNull: true,
         comment: "ชื่อย่อคำนำหน้าชื่อเก็บเป็น json เพื่อรองรับการใช้หลายภาษา",
       },
