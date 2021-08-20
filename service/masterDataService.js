@@ -4,7 +4,6 @@ const uuid = require('uuid')
 //-------------- เพิ่ม ลบ แก้ไข mas_layer_group-------//
 exports.createMasLayersService = async (data) => {
   const createMasLayers = await models.mas_layer_groups.create({
-    id,
     group_name:data.group_name,
     order_by:order_by,
     url:data.url,
@@ -22,7 +21,6 @@ exports.deleteMasLayersService = async (data) => {
 
 exports.updateMasLayersService = async (data) => {
   const updateMasLayers = await models.mas_layer_groups.update({
-    id,
     group_name:data.group_name,
     order_by:data.order_by,
     isuse:1,

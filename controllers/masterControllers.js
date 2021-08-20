@@ -2,8 +2,7 @@ const util = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
 const { GetAllTitleNameService } = require("../service/mas_name_titles");
-const { createDatLayersService,updateDatLayersService,deleteDatLayersService } =require("../service/masterDataService")
-const { createMasLayersService,updateMasLayersService,deleteMasLayersService } =require("../service/masterDataService")
+const { createDatLayersService,updateDatLayersService,deleteDatLayersService,createMasLayersService,updateMasLayersService,deleteMasLayersService } =require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 
 exports.getNameTitle = async (req, res, next) => {
