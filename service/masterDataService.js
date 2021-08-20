@@ -14,6 +14,13 @@ exports.createMasLayersService = async (data) => {
   return createMasLayers
 };
 
+
+exports.deleteMasLayersService = async (data) => {
+  const deleteMasLayers = await models.mas_layer_groups.destroy({where:{id:data.id}})
+    return deleteMasLayers;
+};
+
+
 exports.updateMasLayersService = async (data) => {
   const id = uuid.v4()
   const updateMasLayers = await models.mas_layer_groups.update({
@@ -25,11 +32,6 @@ exports.updateMasLayersService = async (data) => {
     where :{id:data.id}
   })
   return updateMasLayers
-};
-
-exports.deleteMasLayersService = async (data) => {
-  const deleteMasLayers = await models.mas_layer_groups.destroy({where:{id:data.id}})
-    return deleteMasLayers;
 };
 
 //---------------------------------------------------------------------------------//
