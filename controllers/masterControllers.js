@@ -26,7 +26,7 @@ exports.viewGetNameTitle = async (req, res, next) => {
 
 
 
-
+//----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-----//
 exports.createDataLayers = async (req,res,next)=>{
   try {
     const data = req.body
@@ -58,3 +58,4 @@ exports.deleteDataLayers = async (req,res,next)=>{
     next(error)
   }
 }
+//-------------------------------------------//
