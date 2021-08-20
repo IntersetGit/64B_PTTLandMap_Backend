@@ -24,7 +24,41 @@ module.exports = {
         type: Sequelize.SMALLINT(1),
         allowNull: false,
         comment: "สถานะข้อมูล 0 = ไม่ใช้ 1 = ใช้",
-      }
+      },
+      created_by: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        comment: "สร้างข้อมูลโดย",
+        references: {
+          model: {
+            tableName: "sysm_users",
+            schema: "system",
+          },
+          key: "id",
+        },
+      },
+      created_date: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        comment: "สร้างข้อมูลวันที่",
+      },
+      update_by: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        comment: "แก้ไขข้อมูลโดย",
+        references: {
+          model: {
+            tableName: "sysm_users",
+            schema: "system",
+          },
+          key: "id",
+        },
+      },
+      update_date: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        comment: "แก้ไขข้อมูลวันที่",
+      },
     }, {
       schema: "master_lookup",
       comment: "",
