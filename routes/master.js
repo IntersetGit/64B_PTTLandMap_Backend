@@ -5,6 +5,12 @@ const masterControllers = require('../controllers/masterControllers');
 router.get('/getNameTitle',masterControllers.getNameTitle);
 router.get('/viewGetNameTitle',masterControllers.viewGetNameTitle);
 
+/** เพิ่่ม ลบ แก้ไข mas_layers_group (หัวข้อย่อย)  **/
+router.post('/masLayers',masterControllers.createMasLayers);
+router.put('/masLayers',masterControllers.updateMasLayers);
+router.delete('/masLayers',masterControllers.deleteMasLayers);
+ 
+
 /** เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)  **/
 router.post('/datLayers',masterControllers.createDataLayers);
 router.put('/datLayers',masterControllers.updateDataLayers);

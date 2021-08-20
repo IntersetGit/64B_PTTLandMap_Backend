@@ -24,6 +24,30 @@ exports.viewGetNameTitle = async (req, res, next) => {
   }
 }
 
+exports.createMasLayers = async (req,res,next)=>{
+  try {
+    result(res,"create")
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.updateMasLayers = async (req,res,next)=>{
+  try {
+    result(res,"update")
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.deleteMasLayers = async (req,res,next)=>{
+  try {
+    result(res,"update")
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 
 
