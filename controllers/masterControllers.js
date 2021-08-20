@@ -29,6 +29,9 @@ exports.viewGetNameTitle = async (req, res, next) => {
 
 exports.createDataLayers = async (req,res,next)=>{
   try {
+    const data = req.body
+    if(data.roles_id!='0678bba5-a371-417f-9734-aec46b9579ad') result(res,"คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+
     result(res,"create")
   } catch (error) {
     next(error)
@@ -37,6 +40,9 @@ exports.createDataLayers = async (req,res,next)=>{
 
 exports.updateDataLayers = async (req,res,next)=>{
   try {
+    const data = req.body
+    if(data.roles_id!='0678bba5-a371-417f-9734-aec46b9579ad') result(res,"คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+
     result(res,"update")
   } catch (error) {
     next(error)
@@ -45,6 +51,8 @@ exports.updateDataLayers = async (req,res,next)=>{
 
 exports.deleteDataLayers = async (req,res,next)=>{
   try {
+    const data = req.body
+    if(data.roles_id!='0678bba5-a371-417f-9734-aec46b9579ad') result(res,"คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
     result(res,"delete")
   } catch (error) {
     next(error)
