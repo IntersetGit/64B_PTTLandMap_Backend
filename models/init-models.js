@@ -26,8 +26,6 @@ function initModels(sequelize) {
   mas_name_titles.hasMany(dat_profile_users, { as: "dat_profile_users", foreignKey: "name_title_id"});
   dat_layers.belongsTo(sysm_users, { as: "created_by_sysm_user", foreignKey: "created_by"});
   sysm_users.hasMany(dat_layers, { as: "dat_layers", foreignKey: "created_by"});
-  dat_layers.belongsTo(sysm_users, { as: "update_by_sysm_user", foreignKey: "update_by"});
-  sysm_users.hasMany(dat_layers, { as: "update_by_dat_layers", foreignKey: "update_by"});
   dat_profile_users.belongsTo(sysm_users, { as: "created_by_sysm_user", foreignKey: "created_by"});
   sysm_users.hasMany(dat_profile_users, { as: "dat_profile_users", foreignKey: "created_by"});
   dat_profile_users.belongsTo(sysm_users, { as: "update_by_sysm_user", foreignKey: "update_by"});

@@ -57,11 +57,7 @@ module.exports = function(sequelize, DataTypes) {
     update_by: {
       type: DataTypes.UUID,
       allowNull: true,
-      comment: "แก้ไขข้อมูลโดย",
-      references: {
-        model: 'sysm_users',
-        key: 'id'
-      }
+      comment: "แก้ไขข้อมูลโดย"
     },
     update_date: {
       type: DataTypes.DATE,

@@ -13,7 +13,6 @@ router.delete('/masLayers',masterControllers.deleteMasLayers);
 //---------------------------------------------------------//
  
 //----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-------//
-
 router.post('/datLayers',masterControllers.createDataLayers);
 router.put('/datLayers',masterControllers.updateDataLayers);
 router.delete('/datLayers',masterControllers.deleteDataLayers);

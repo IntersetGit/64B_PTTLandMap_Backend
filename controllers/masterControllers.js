@@ -28,7 +28,7 @@ exports.viewGetNameTitle = async (req, res, next) => {
 exports.createMasLayers = async (req,res,next)=>{
   try {
     const data = req.body
-    if(data.roles_id!='0678bba5-a371-417f-9734-aec46b9579ad') result(res,"คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
     result(res,await createMasLayersService(data))
   } catch (error) {
     next(error)
@@ -38,9 +38,8 @@ exports.createMasLayers = async (req,res,next)=>{
 exports.updateMasLayers = async (req,res,next)=>{
   try {
     const data = req.body
-    if(data.roles_id!='0678bba5-a371-417f-9734-aec46b9579ad' && data.roles_id!='cec6617f-b593-4ebc-9604-3059dfee0ac4')
-     result(res,"คุณไม่ใช่ Administrator และ Editor ไม่สามารถแก้ไขข้อมูลได้")
-    result(res,await deleteMasLayersService(data))
+    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2')throw new Error("คุณไม่ใช่ Administrator ไม่สามารถแก้ข้อมูลได้")
+    result(res,await updateMasLayersService(data))
   } catch (error) {
     next(error)
   }
@@ -49,8 +48,8 @@ exports.updateMasLayers = async (req,res,next)=>{
 exports.deleteMasLayers = async (req,res,next)=>{
   try {
     const data = req.body
-    if(data.roles_id!='0678bba5-a371-417f-9734-aec46b9579ad') result(res,"คุณไม่ใช่ Administrator ไม่สามารถลบข้อมูลได้")
-    result(res,await updateMasLayersService(data))
+    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถลบข้อมูลได้")
+    result(res,await deleteMasLayersService(data))
   } catch (error) {
     next(error)
   }
@@ -58,12 +57,12 @@ exports.deleteMasLayers = async (req,res,next)=>{
 //------------------------------------------------------------//
 
 
-
 //----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-----//
+
 exports.createDataLayers = async (req,res,next)=>{
   try {
     const data = req.body
-    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') result(res,"คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
     result(res,await createDatLayersService(data))
   } catch (error) {
     next(error)
@@ -73,7 +72,7 @@ exports.createDataLayers = async (req,res,next)=>{
 exports.updateDataLayers = async (req,res,next)=>{
   try {
     const data = req.body
-    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') result(res,"คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถแก้ไขข้อมูลได้")
     result(res,await updateDatLayersService(data))
   } catch (error) {
     next(error)
@@ -83,7 +82,7 @@ exports.updateDataLayers = async (req,res,next)=>{
 exports.deleteDataLayers = async (req,res,next)=>{
   try {
     const data = req.body
-    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') result(res,"คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+    if(data.roles_id!='8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถลบข้อมูลได้")
     result(res,await deleteDatLayersService(data))
   } catch (error) {
     next(error)
