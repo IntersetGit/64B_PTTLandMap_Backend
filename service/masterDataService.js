@@ -1,5 +1,9 @@
 const models = require("../models/")
 
+
+exports.getAllTitleNameService = async() => {
+  return models.mas_name_titles.findAll()
+}
 //-------------- เพิ่ม ลบ แก้ไข mas_layer_group-------//
 exports.createMasLayersService = async (data) => {
   const createMasLayers = await models.mas_layer_groups.create({

@@ -1,8 +1,8 @@
 const config = require("../config");
 const ldap = require('ldapjs');
-const { filterUsernameSysmUsersService, createSysmUsersService, updateSysmUsersService, findCodeLdapSysmUsersService } = require('./sysm_users');
+const { filterUsernameSysmUsersService, createSysmUsersService, updateSysmUsersService, findCodeLdapSysmUsersService } = require('./sysmUsersService');
 const { encryptPassword } = require("../util");
-const { createDatProfileUsersService, updateDatProfileUsersService } = require("./dat_profile_users");
+const { createDatProfileUsersService, updateDatProfileUsersService } = require("./datProfileUsersService");
 const uuidv4 = require("uuid");
 
 const connect = {

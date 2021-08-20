@@ -3,8 +3,8 @@ const messages = require('../messages/index');
 const config = require('../config');
 const jwt = require('jsonwebtoken');
 const result = require('../middleware/result');
-const { ldap } = require("../service/ldap");
-const { updateSysmUsersService } = require("../service/sysm_users");
+const { ldap } = require("../service/ldapService");
+const { updateSysmUsersService } = require("../service/sysmUsersService");
 const { EncryptCryptoJS, DecryptCryptoJS } = require('../util');
 
 const refreshTokens = []
