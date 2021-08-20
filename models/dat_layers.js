@@ -30,6 +30,16 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
+    wms_url: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "url 3 มิติ"
+    },
+    type_server: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: "เก็บเป็นชื่อ เช่น ArcGisServer, GeoServer"
+    },
     created_by: {
       type: DataTypes.UUID,
       allowNull: false,

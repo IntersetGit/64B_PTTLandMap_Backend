@@ -16,6 +16,10 @@ function initModels(sequelize) {
   var sysm_roles = _sysm_roles(sequelize, DataTypes);
   var sysm_users = _sysm_users(sequelize, DataTypes);
 
+  mas_layer_groups.belongsTo(sysm_users, { as: "created_by_sysm_user", foreignKey: "created_by"});
+  sysm_users.hasMany(mas_layer_groups, { as: "mas_layer_groups", foreignKey: "created_by"});
+  mas_layer_groups.belongsTo(sysm_users, { as: "update_by_sysm_user", foreignKey: "update_by"});
+  sysm_users.hasMany(mas_layer_groups, { as: "update_by_mas_layer_groups", foreignKey: "update_by"});
   dat_layers.belongsTo(mas_layer_groups, { as: "group_layer", foreignKey: "group_layer_id"});
   mas_layer_groups.hasMany(dat_layers, { as: "dat_layers", foreignKey: "group_layer_id"});
   dat_profile_users.belongsTo(mas_name_titles, { as: "name_title", foreignKey: "name_title_id"});

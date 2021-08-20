@@ -20,6 +20,34 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.SMALLINT,
       allowNull: false,
       comment: "สถานะข้อมูล 0 = ไม่ใช้ 1 = ใช้"
+    },
+    created_by: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      comment: "สร้างข้อมูลโดย",
+      references: {
+        model: 'sysm_users',
+        key: 'id'
+      }
+    },
+    created_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "สร้างข้อมูลวันที่"
+    },
+    update_by: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      comment: "แก้ไขข้อมูลโดย",
+      references: {
+        model: 'sysm_users',
+        key: 'id'
+      }
+    },
+    update_date: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "แก้ไขข้อมูลวันที่"
     }
   }, {
     sequelize,
