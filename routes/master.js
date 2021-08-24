@@ -6,7 +6,7 @@ router.get('/getNameTitle',masterControllers.getNameTitle);
 router.get('/viewGetNameTitle',masterControllers.viewGetNameTitle);
 //-------------------------------------------//
 
-//-----เพิ่่ม ลบ แก้ไข mas_layers_group (หัวข้อย่อย)-------/
+//-----เพิ่่ม ลบ แก้ไข mas_layers_group (หัวข้อหลัก)-------/
 router.post('/masLayers',masterControllers.createMasLayers);
 router.put('/masLayers',masterControllers.updateMasLayers);
 router.delete('/masLayers',masterControllers.deleteMasLayers);
