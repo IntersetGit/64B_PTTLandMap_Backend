@@ -5,19 +5,19 @@ exports.getAllTitleNameService = async() => {
   return models.mas_name_titles.findAll()
 }
 //-------------- เพิ่ม ลบ แก้ไข mas_layer_group-------//
-exports.createMasLayersService = async (data) => {
+exports.createMasLayersService = async (data, users) => {
   const createMasLayers = await models.mas_layer_groups.create({
     group_name:data.group_name,
     order_by:data.order_by,
     isuse:data.isuse ?? 1,
-    created_by:data.user_id,
+    created_by:users.user_id,
     created_date:new Date()
   })
   
   return createMasLayers
 };
 
-exports.updateMasLayersService = async (data) => {
+exports.updateMasLayersService = async (data, users) => {
   const _data = {
     update_by: data.update_by,
     updata_data:new Date()
@@ -39,7 +39,7 @@ exports.deleteMasLayersService = async (data) => {
 
 
 //----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-----//
-exports.createDatLayersService = async (data) => {
+exports.createDatLayersService = async (data, users) => {
   const createDatLayers = await models.dat_layers.create({
     group_layer_id:data.group_layer_id,
     layer_name:data.layer_name,
@@ -47,15 +47,15 @@ exports.createDatLayersService = async (data) => {
     url:data.url,
     wms_url:data.wms_url,
     type_server:data.type_server,
-    created_by:data.user_id,
+    created_by:users.user_id,
     created_date:new Date(),
   })
   return createDatLayers
 };
 
-exports.updateDatLayersService = async (data) => {
+exports.updateDatLayersService = async (data, users) => {
   const _data = {
-    update_by:data.user_id,
+    update_by:users.user_id,
     update_date:new Date()
   }
 
