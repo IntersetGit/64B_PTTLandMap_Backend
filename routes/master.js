@@ -8,12 +8,14 @@ router.get('/viewGetNameTitle', masterControllers.viewGetNameTitle);
 //-------------------------------------------//
 
 //-----เพิ่่ม ลบ แก้ไข mas_layers_group (หัวข้อหลัก)-------/
+router.get('/masLayers',[authenticateToken],masterControllers.getMasLayers)
 router.post('/masLayers', [authenticateToken], masterControllers.createMasLayers);
 router.put('/masLayers', [authenticateToken], masterControllers.updateMasLayers);
 router.delete('/masLayers', [authenticateToken], masterControllers.deleteMasLayers);
 //---------------------------------------------------------//
 
 //----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-------//
+router.get('/datLayers',[authenticateToken],masterControllers.getDataLayers)
 router.post('/datLayers', [authenticateToken], masterControllers.createDataLayers);
 router.put('/datLayers', [authenticateToken], masterControllers.updateDataLayers);
 router.delete('/datLayers', [authenticateToken], masterControllers.deleteDataLayers);
