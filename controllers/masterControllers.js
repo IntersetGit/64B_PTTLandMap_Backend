@@ -1,7 +1,7 @@
 const util = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 
 exports.getNameTitle = async (req, res, next) => {
@@ -68,12 +68,12 @@ exports.deleteMasLayers = async (req, res, next) => {
 //------------------------------------------------------------//
 
 
-//----แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-----//
+//----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ---------//
 exports.getDataLayers = async (req,res,next)=>{
   try {
     const id= req.body.id
-    id? result(res,"getid"):result(res,"get")
-    result(res,"get")
+    id? result(res,await getByIdDatLayersService(id)):result(res,await getDatLayersService())
+    result(res,id)
   } catch (error) {
     next(error)
   }
@@ -110,4 +110,4 @@ exports.deleteDataLayers = async (req, res, next) => {
     next(error)
   }
 }
-//-------------------------------------------//
+//---------------------------------------------------------//
