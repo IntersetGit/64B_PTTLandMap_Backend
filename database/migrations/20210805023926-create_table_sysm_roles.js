@@ -26,12 +26,12 @@ module.exports = {
         comment: "บันทึก",
       },
       isuse: {
-        type: Sequelize.SMALLINT(1),
+        type: Sequelize.SMALLINT,
         allowNull: true,
         comment: "สถานะข้อมูล 0 = ไม่ใช้ 1 = ใช้ 2 = ลบ",
       },
       order_by: {
-        type: Sequelize.SMALLINT(1),
+        type: Sequelize.SMALLINT,
         allowNull: true,
         comment: "ใช้สำหรับจัดเรียงข้อมูล",
       },
