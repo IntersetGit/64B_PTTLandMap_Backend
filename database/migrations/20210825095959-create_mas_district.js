@@ -20,7 +20,7 @@ module.exports = {
        allowNull: true,
        comment: "Code อำเภอ",
      },
-     name_th: {
+      name_th: {
      type: Sequelize.TEXT ,
      allowNull: true,
      comment: "ชื่อภาษาไทย",
