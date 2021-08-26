@@ -50,6 +50,15 @@ exports.deleteMasLayersService = async (data) => {
 
 
 //----------------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ------------------------//
+exports.getDatLayersNameService = async (layername)=>{
+  const getDatLayersName = await models.dat_layers.findOne(
+    {
+    where:{layer_name:layername}
+  })
+  return getDatLayersName
+}
+
+
 exports.getDatLayersService = async ()=>{
   const getDatLayers = await models.dat_layers.findAll()
   return getDatLayers
