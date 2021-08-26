@@ -47,6 +47,11 @@ module.exports = {
         allowNull: true,
         comment: "เก็บเป็นชื่อ เช่น ArcGisServer, GeoServer",
       },
+      isuse: {
+        type: Sequelize.SMALLINT,
+        allowNull: true,
+        comment: "สถานะใช้งานข้อมูล",
+      },
       created_by: {
         type: Sequelize.UUID,
         allowNull: false,
