@@ -5,6 +5,18 @@ const { sequelizeString, sequelizeStringFindOne } = require("../util/index")
 exports.getAllTitleNameService = async() => {
   return models.mas_name_titles.findAll()
 }
+//----------------------- แสดง จังหวัด อำเภอ ตำบล ----------------------//
+exports.getMasProviceService = async ()=>{
+  return await models.mas_province.findAll()
+}
+exports.getMasDistrictService = async ()=>{
+  return await models.mas_district.findAll()
+}
+exports.getMasSubdistrictService = async ()=>{
+  return await models.mas_subdistrict.findAll()
+}
+//--------------------------------------------------------------------//
+
 //---------------- แสดง เพิ่ม ลบ แก้ไข mas_layer_group ------------------//
 exports.getMasLayersService = async ()=>{
   const masLayersGroup = await models.mas_layer_groups.findAll()

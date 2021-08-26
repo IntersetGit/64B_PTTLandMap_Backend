@@ -1,8 +1,9 @@
 const util = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService,getDatLayersNameService } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService,getMasProviceService,getMasSubdistrictService,getMasDistrictService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
+const models = require("../models/index")
 
 exports.getNameTitle = async (req, res, next) => {
   try {
@@ -21,8 +22,30 @@ exports.viewGetNameTitle = async (req, res, next) => {
   }
 }
 
+//------------------- แสดง จังหวัด อำเภอ ตำบล -------------------------//
+exports.getProvince = async(req,res,next)=>{
+  result(res,await getMasProviceService())
+}
+exports.getDistrict = async (req,res,next)=>{
+  result(res,await getMasDistrictService())
+}
+exports.getSubDistrict = async (req,res,next)=>{
+  result(res,await getMasSubdistrictService())
+}
+//------------------------------------------------------------------//
 
 //---------------- แสดง เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
+exports.getMasLayersName = async (req,res,next)=>{
+  try {
+    const {groupname} = req.query
+    result(res,await models.mas_layer_groups.findOne(
+      {
+      where:{group_name:groupname}
+      }))
+  } catch (error) {
+    next(error)
+  }
+}
 
 exports.getMasLayers = async (req,res,next)=>{
   try {
@@ -78,8 +101,11 @@ exports.deleteMasLayers = async (req, res, next) => {
 //----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ---------//
 exports.getDataLayersName = async (req,res,next)=>{
   try {
-    const layername = req.query
-    result(res,await getDatLayersNameService(layername))
+    const {layername} = req.query
+    result(res,await models.dat_layers.findOne(
+      {
+      where:{layer_name:layername}
+      }))
   } catch (error) {
     next(error)
   }
