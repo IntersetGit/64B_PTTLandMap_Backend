@@ -16,6 +16,7 @@ router.delete('/masLayers', [authenticateToken], masterControllers.deleteMasLaye
 //---------------------------------------------------------//
 
 //----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-------//
+router.get('/datLayersname',[authenticateToken],masterControllers.getDataLayersName)
 router.get('/datLayers/:id',[authenticateToken],masterControllers.getByIdDataLayers)
 router.get('/datLayers',[authenticateToken],masterControllers.getDataLayers)
 router.post('/datLayers', [authenticateToken], masterControllers.createDataLayers);

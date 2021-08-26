@@ -1,7 +1,7 @@
 const util = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService,getDatLayersNameService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 
 exports.getNameTitle = async (req, res, next) => {
@@ -76,6 +76,16 @@ exports.deleteMasLayers = async (req, res, next) => {
 
 
 //----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ---------//
+exports.getDataLayersName = async (req,res,next)=>{
+  try {
+    const layername = req.query
+    result(res,await getDatLayersNameService(layername))
+  } catch (error) {
+    next(error)
+  }
+}
+
+
 exports.getDataLayers = async (req,res,next)=>{
   try {
     const { search } = req.query
