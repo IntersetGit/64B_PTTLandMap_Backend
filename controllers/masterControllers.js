@@ -23,11 +23,18 @@ exports.viewGetNameTitle = async (req, res, next) => {
 
 
 //---------------- แสดง เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
+
 exports.getMasLayers = async (req,res,next)=>{
   try {
-    const id= req.body.id
-    id? result(res,await getByIdMasLayersService(id)) : result(res, await getMasLayersService())
+    result(res, await getMasLayersService())
+  } catch (error) {
+    next(error)
+  }
+}
 
+exports.getByIdMasLayers = async (req,res,next)=>{
+  try {
+    result(res, await getMasLayersService(req.params.id))
   } catch (error) {
     next(error)
   }
@@ -71,9 +78,15 @@ exports.deleteMasLayers = async (req, res, next) => {
 //----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ---------//
 exports.getDataLayers = async (req,res,next)=>{
   try {
-    const id= req.body.id
-    id? result(res,await getByIdDatLayersService(id)):result(res,await getDatLayersService())
-    result(res,id)
+    result(res,await getDatLayersService())
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.getByIdDataLayers = async (req,res,next)=>{
+  try {
+    result(res,await getByIdDatLayersService(req.params.id))
   } catch (error) {
     next(error)
   }

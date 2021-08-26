@@ -57,7 +57,7 @@ exports.getDatLayersService = async ()=>{
 
 exports.getByIdDatLayersService = async (id)=>{
   const getDatLayers = await models.dat_layers.findOne({
-    where:{id}
+    where:{id:id}
   })
   return getDatLayers
 }
