@@ -78,8 +78,11 @@ exports.deleteMasLayers = async (req, res, next) => {
 //----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ---------//
 exports.getDataLayersName = async (req,res,next)=>{
   try {
-    const layername = req.query
-    result(res,await getDatLayersNameService(layername))
+    const {layername} = req.query
+    result(res,await models.dat_layers.findOne(
+      {
+      where:{layer_name:layername}
+      }))
   } catch (error) {
     next(error)
   }
