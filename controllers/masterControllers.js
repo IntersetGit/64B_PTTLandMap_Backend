@@ -1,7 +1,7 @@
 const util = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService,getDatLayersNameService } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService,getDatLayersNameService,getPro,getMasProviceService,getMasSubdistrictService,getMasDistrictService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 
 exports.getNameTitle = async (req, res, next) => {
@@ -21,6 +21,17 @@ exports.viewGetNameTitle = async (req, res, next) => {
   }
 }
 
+//------------------- แสดง จังหวัด อำเภอ ตำบล -------------------------//
+exports.getProvince = async(req,res,next)=>{
+  result(res,await getMasProviceService())
+}
+exports.getDistrict = async (req,res,next)=>{
+  result(res,await getMasDistrictService())
+}
+exports.getSubDistrict = async (req,res,next)=>{
+  result(res,await getMasSubdistrictService())
+}
+//------------------------------------------------------------------//
 
 //---------------- แสดง เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
 
