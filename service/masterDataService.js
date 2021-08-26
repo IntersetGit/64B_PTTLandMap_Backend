@@ -1,4 +1,5 @@
 const models = require("../models/")
+const { sequelizeString, sequelizeStringFindOne } = require("../util/index")
 
 
 exports.getAllTitleNameService = async() => {
@@ -50,9 +51,17 @@ exports.deleteMasLayersService = async (data) => {
 
 
 //----------------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ------------------------//
-exports.getDatLayersService = async ()=>{
-  const getDatLayers = await models.dat_layers.findAll()
-  return getDatLayers
+exports.getDatLayersService = async (search)=>{
+  
+  let sql = `
+  SELECT * FROM ptt_data.dat_layers WHERE id is not null `
+
+  if (search) sql += ` AND layer_name ILIKE '%${search}%'`
+
+  return await sequelizeString(sql)
+
+  // const getDatLayers = await models.dat_layers.findAll()
+  // return getDatLayers
 }
 
 exports.getByIdDatLayersService = async (id)=>{
@@ -70,7 +79,7 @@ exports.createDatLayersService = async (data, users) => {
     url:data.url,
     wms_url:data.wms_url,
     type_server:data.type_server,
-    created_by:users.user_id,
+    created_by:users.sysm_id,
     created_date:new Date(),
   })
   return createDatLayers
