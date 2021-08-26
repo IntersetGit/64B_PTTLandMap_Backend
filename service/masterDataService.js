@@ -4,7 +4,18 @@ const models = require("../models/")
 exports.getAllTitleNameService = async() => {
   return models.mas_name_titles.findAll()
 }
-//-------------- เพิ่ม ลบ แก้ไข mas_layer_group-------//
+//---------------- แสดง เพิ่ม ลบ แก้ไข mas_layer_group ------------------//
+exports.getMasLayersService = async ()=>{
+  const masLayersGroup = await models.mas_layer_groups.findAll()
+  return masLayersGroup
+}
+
+exports.getByIdMasLayersService = async (id)=>{
+  const masLayersGroup = await models.mas_layer_groups.findOne({
+    where:{id}
+  })
+  return masLayersGroup
+}
 exports.createMasLayersService = async (data, users) => {
   const createMasLayers = await models.mas_layer_groups.create({
     group_name:data.group_name,
@@ -38,7 +49,19 @@ exports.deleteMasLayersService = async (data) => {
 //---------------------------------------------------------------------------------//
 
 
-//----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-----//
+//----------------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ------------------------//
+exports.getDatLayersService = async ()=>{
+  const getDatLayers = await models.dat_layers.findAll()
+  return getDatLayers
+}
+
+exports.getByIdDatLayersService = async (id)=>{
+  const getDatLayers = await models.dat_layers.findOne({
+    where:{id}
+  })
+  return getDatLayers
+}
+
 exports.createDatLayersService = async (data, users) => {
   const createDatLayers = await models.dat_layers.create({
     group_layer_id:data.group_layer_id,
@@ -73,4 +96,4 @@ exports.deleteDatLayersService = async (data) => {
   const deleteDataLayers = await models.dat_layers.destroy({where:{id:data.id}})
     return deleteDataLayers;
 };
-//-------------------------------------------//
+//----------------------------------------------------------------------------------//

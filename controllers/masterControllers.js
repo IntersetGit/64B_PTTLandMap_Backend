@@ -1,7 +1,7 @@
 const util = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 
 exports.getNameTitle = async (req, res, next) => {
@@ -22,13 +22,12 @@ exports.viewGetNameTitle = async (req, res, next) => {
 }
 
 
-//---------------- เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
+//---------------- แสดง เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
 exports.getMasLayers = async (req,res,next)=>{
   try {
-    const data= req.body
-    const user = req.user
+    const id= req.body.id
+    id? result(res,await getByIdMasLayersService(id)) : result(res, await getMasLayersService())
 
-    result(res,"get")
   } catch (error) {
     next(error)
   }
@@ -69,12 +68,12 @@ exports.deleteMasLayers = async (req, res, next) => {
 //------------------------------------------------------------//
 
 
-//----เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-----//
+//----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ---------//
 exports.getDataLayers = async (req,res,next)=>{
   try {
-    const data= req.body
-    const user = req.user
-    result(res,"get")
+    const id= req.body.id
+    id? result(res,await getByIdDatLayersService(id)):result(res,await getDatLayersService())
+    result(res,id)
   } catch (error) {
     next(error)
   }
@@ -111,4 +110,4 @@ exports.deleteDataLayers = async (req, res, next) => {
     next(error)
   }
 }
-//-------------------------------------------//
+//---------------------------------------------------------//
