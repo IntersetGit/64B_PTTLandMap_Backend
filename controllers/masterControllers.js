@@ -91,7 +91,8 @@ exports.getDataLayersName = async (req,res,next)=>{
 
 exports.getDataLayers = async (req,res,next)=>{
   try {
-    result(res,await getDatLayersService())
+    const { search } = req.query
+    result(res,await getDatLayersService(search))
   } catch (error) {
     next(error)
   }
@@ -107,9 +108,8 @@ exports.getByIdDataLayers = async (req,res,next)=>{
 exports.createDataLayers = async (req, res, next) => {
   try {
     const data = req.body
-    const users = req.user
-    if (users.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
-    result(res, await createDatLayersService(data, users))
+    if (req.user.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+    result(res, await createDatLayersService(data, req.user))
   } catch (error) {
     next(error)
   }
