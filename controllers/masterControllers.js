@@ -34,6 +34,17 @@ exports.getSubDistrict = async (req,res,next)=>{
 //------------------------------------------------------------------//
 
 //---------------- แสดง เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
+exports.getMasLayersName = async (req,res,next)=>{
+  try {
+    const {groupname} = req.query
+    result(res,await models.mas_layer_groups.findOne(
+      {
+      where:{group_name:groupname}
+      }))
+  } catch (error) {
+    next(error)
+  }
+}
 
 exports.getMasLayers = async (req,res,next)=>{
   try {

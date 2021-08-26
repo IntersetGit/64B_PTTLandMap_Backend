@@ -14,6 +14,7 @@ router.get('/masSubDistrict',masterControllers.getSubDistrict)
 //--------------------------------------------------//
 
 //-----เพิ่่ม ลบ แก้ไข mas_layers_group (หัวข้อหลัก)-------//
+router.get('/masLayersname',[authenticateToken],masterControllers.getMasLayersName)
 router.get('/masLayers/:id',[authenticateToken],masterControllers.getByIdMasLayers)
 router.get('/masLayers',[authenticateToken],masterControllers.getMasLayers)
 router.post('/masLayers', [authenticateToken], masterControllers.createMasLayers);
