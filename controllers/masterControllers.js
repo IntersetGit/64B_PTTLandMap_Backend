@@ -3,6 +3,7 @@ const messages = require('../messages/index');
 const result = require("../middleware/result");
 const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService,getMasProviceService,getMasSubdistrictService,getMasDistrictService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
+const models = require("../models/index")
 
 exports.getNameTitle = async (req, res, next) => {
   try {
