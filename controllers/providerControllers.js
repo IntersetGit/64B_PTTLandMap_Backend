@@ -4,8 +4,8 @@ const config = require('../config');
 const jwt = require('jsonwebtoken');
 const result = require('../middleware/result');
 const { ldap } = require("../service/ldapService");
-const { updateSysmUsersService } = require("../service/sysmUsersService");
-const { EncryptCryptoJS, DecryptCryptoJS } = require('../util');
+const { updateSysmUsersService, filterUsernameSysmUsersService } = require("../service/sysmUsersService");
+const { EncryptCryptoJS, DecryptCryptoJS, checkPassword } = require('../util');
 
 const refreshTokens = []
 
@@ -21,7 +21,13 @@ exports.loginControllers = async (req, res, next) => {
             password = _decrypt.password
         }
 
-        const _res = await ldap({ user_name: username, password }, transaction)
+        const _res = (username.toUpperCase() !== ("superadmin").toUpperCase()) ? await ldap({ user_name: username, password }, transaction) : await filterUsernameSysmUsersService(username)
+        const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
+        if (!passwordecrypt) {
+            const error = new Error("ไม่พบชื่อผู้ใช้");
+            error.statusCode = 500;
+            throw error;
+        }
 
         const model = {
             sysm_id: _res.id,

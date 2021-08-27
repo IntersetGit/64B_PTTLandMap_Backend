@@ -4,13 +4,14 @@ const uuidv4 = require("uuid");
 
 /* ค้นหา Username ตารางผู้ใช้งานระบบ ทั้งหมด */
 exports.filterUsernameSysmUsersService = async (user_name) => {
-    const sql = ` SELECT 
+    let sql = ` SELECT 
     a.id AS id,
     a.roles_id,
     a.code_ldap,
     c.roles_name,
     c.note AS roles_note,
     a.user_name,
+    a.password,
     a.e_mail AS email,
     a.note,
     b.first_name,
@@ -29,6 +30,7 @@ exports.filterUsernameSysmUsersService = async (user_name) => {
     INNER JOIN system.sysm_roles AS c ON a.roles_id = c.id
     
     WHERE  UPPER(user_name)  = UPPER($1) `
+        
     return await sequelizeStringFindOne(sql, [user_name])
 }
 
