@@ -24,7 +24,7 @@ exports.loginControllers = async (req, res, next) => {
         const _res = (username.toUpperCase() !== ("superadmin").toUpperCase()) ? await ldap({ user_name: username, password }, transaction) : await filterUsernameSysmUsersService(username)
         const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
         if (!passwordecrypt) {
-            const error = new Error("ไม่พบชื่อผู้ใช้");
+            const error = new Error("รหัสผ่านไม่ถูกต้อง !");
             error.statusCode = 500;
             throw error;
         }
