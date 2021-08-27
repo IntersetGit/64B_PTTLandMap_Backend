@@ -13,7 +13,13 @@ const refreshTokens = []
 exports.loginControllers = async (req, res, next) => {
     const transaction = await sequelize.transaction();
     try {
-        const { username, password } = req.body;
+        let { username, password, token } = req.body;
+
+        if (token) {
+            const _decrypt = DecryptCryptoJS(token)
+            username = _decrypt.username
+            password = _decrypt.password
+        }
 
         const _res = await ldap({ user_name: username, password }, transaction)
 
@@ -40,10 +46,10 @@ exports.loginControllers = async (req, res, next) => {
         }
 
         //สร้าง token
-        const token = await generateAccessToken(model)
+        const _token = await generateAccessToken(model)
         const refreshToken = await jwt.sign({ token: EncryptCryptoJS(model) }, config.JWT_SECRET_REFRESH);
         //decode วันหมดอายุ
-        const expires_in = jwt.decode(token);
+        const expires_in = jwt.decode(_token);
 
         refreshTokens.push(refreshToken)
         await updateSysmUsersService({
@@ -52,7 +58,7 @@ exports.loginControllers = async (req, res, next) => {
             update_by: _res.id,
         })
         result(res, {
-            access_token: token,
+            access_token: _token,
             refresh_token: refreshToken,
             expires_in: expires_in.exp
         })
