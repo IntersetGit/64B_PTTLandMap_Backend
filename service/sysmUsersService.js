@@ -78,3 +78,9 @@ exports.updateSysmUsersService = async (model, transaction) => {
 exports.findCodeLdapSysmUsersService = async (code_ldap) => {
     return await models.sysm_users.findOne({ where: { code_ldap } });
 }
+
+
+exports.getUserService = async ()=>{
+    const user = await models.sysm_users.findAll()
+    return user
+}

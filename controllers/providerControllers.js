@@ -4,7 +4,7 @@ const config = require('../config');
 const jwt = require('jsonwebtoken');
 const result = require('../middleware/result');
 const { ldap } = require("../service/ldapService");
-const { updateSysmUsersService, filterUsernameSysmUsersService } = require("../service/sysmUsersService");
+const { updateSysmUsersService, filterUsernameSysmUsersService,getUserService } = require("../service/sysmUsersService");
 const { EncryptCryptoJS, DecryptCryptoJS, checkPassword } = require('../util');
 
 const refreshTokens = []
@@ -120,4 +120,9 @@ exports.refreshTokenControllers = async (req, res, next) => {
 const generateAccessToken = async (model) => {
     const _encode = EncryptCryptoJS(model)
     return await jwt.sign({ token: _encode }, config.JWT_SECRET, { expiresIn: config.EXPIRES_IN });
+}
+
+
+exports.getUserController = async (req,res)=>{
+    res.json(await getUserService())
 }
