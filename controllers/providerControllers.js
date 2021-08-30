@@ -126,8 +126,11 @@ const generateAccessToken = async (model) => {
 exports.getUserController = async (req,res)=>{
     const sql =` 
     select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast from system.sysm_users Suser
-    inner join ptt_data.dat_profile_users
-    Puser on Suser.id=Puser.user_id
+    inner join ptt_data.dat_profile_users Puser on Suser.id=Puser.user_id
     inner join system.sysm_roles roles on roles.id=Suser.roles_id`
     res.json(await sequelizeString(sql))
+    
 }
+ 
+
+

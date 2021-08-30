@@ -4,6 +4,7 @@ const { loginControllers, refreshTokenControllers,getUserController } = require(
 /* GET users listing. */
 router.post('/login', loginControllers);
 router.get('/refreshToken', refreshTokenControllers);
-router.get('/getUser',getUserController)
+router.get('/getUser',getUserController);
+
 
 module.exports = router;

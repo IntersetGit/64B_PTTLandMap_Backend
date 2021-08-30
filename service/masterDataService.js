@@ -91,6 +91,7 @@ exports.createDatLayersService = async (data, users) => {
     url:data.url,
     wms_url:data.wms_url,
     type_server:data.type_server,
+    isuse: 1 ,
     created_by:users.sysm_id,
     created_date:new Date(),
   })
@@ -99,6 +100,7 @@ exports.createDatLayersService = async (data, users) => {
 
 exports.updateDatLayersService = async (data, users) => {
   const _data = {
+    isuse: 1 , 
     update_by:users.user_id,
     update_date:new Date()
   }

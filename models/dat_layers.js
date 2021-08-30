@@ -24,11 +24,13 @@ module.exports = function(sequelize, DataTypes) {
     },
     wms: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      comment: "wms"
     },
     url: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      comment: "ชื่อ url"
     },
     wms_url: {
       type: DataTypes.STRING(255),
@@ -39,6 +41,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true,
       comment: "เก็บเป็นชื่อ เช่น ArcGisServer, GeoServer"
+    },
+    isuse: {
+      type: DataTypes.SMALLINT,
+      allowNull: true,
+      comment: "สถานะใช้งาน "
     },
     created_by: {
       type: DataTypes.UUID,

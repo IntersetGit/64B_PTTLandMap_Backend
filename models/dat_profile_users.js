@@ -63,7 +63,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     office: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: true,
+      comment: "ชื่อสถานที่ทำงาน"
     },
     web_page: {
       type: DataTypes.STRING(255),
