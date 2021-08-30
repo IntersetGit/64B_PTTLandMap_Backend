@@ -146,15 +146,14 @@ exports.getSearchUserController = async (req,res)=>{
             or Puser.first_name  ILIKE '%${search}%' 
             or Puser.last_name ILIKE '%${search}%' 
             or roles.roles_name ILIKE '%${search}%'`
-        }
-         
+        } 
         res.send(await sequelizeString(sql))
         
     }
 
 
 
-    
+
   
 
 
