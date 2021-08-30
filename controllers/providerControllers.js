@@ -151,6 +151,10 @@ exports.getSearchUserController = async (req,res)=>{
         res.send(await sequelizeString(sql))
         
     }
+
+
+
+    
   
 
 
