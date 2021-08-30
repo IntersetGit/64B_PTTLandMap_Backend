@@ -1,9 +1,10 @@
-const util = require("../util/index"); //connect db  query string
+const {sequelizeString} = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
 const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService,getMasProviceService,getMasSubdistrictService,getMasDistrictService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
-const models = require("../models/index")
+const models = require("../models/index");
+const { sequelize } = require("../models/index");
 
 exports.getNameTitle = async (req, res, next) => {
   try {
@@ -37,11 +38,11 @@ exports.getSubDistrict = async (req,res,next)=>{
 //---------------- แสดง เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
 exports.getMasLayersName = async (req,res,next)=>{
   try {
-    const {groupname} = req.query
-    result(res,await models.mas_layer_groups.findOne(
-      {
-      where:{group_name:groupname}
-      }))
+    const {search} = await req.query
+    const sql = `
+	    select * from master_lookup.mas_layer_groups where isuse =1 and group_name ILIKE'%${search}%'
+    `
+    result(res,await sequelizeString(sql))
   } catch (error) {
     next(error)
   }
