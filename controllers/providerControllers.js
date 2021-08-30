@@ -131,6 +131,26 @@ exports.getUserController = async (req,res)=>{
     res.json(await sequelizeString(sql))
     
 }
- 
+
+//---------- ค้นหาผู้ใช้งาน -------------------------ลูกหมี// 
+exports.getSearchUserController = async (req,res)=>{
+    const { search } = req.body;
+        let sql =`
+        select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast from system.sysm_users Suser
+        inner join ptt_data.dat_profile_users Puser on Suser.id=Puser.user_id
+        inner join system.sysm_roles roles on roles.id=Suser.roles_id`
+        
+        if (search) {
+            sql += ` WHERE Suser.user_name ILIKE '%${search}%'
+            or Suser.e_mail ILIKE '%${search}%' 
+            or Puser.first_name  ILIKE '%${search}%' 
+            or Puser.last_name ILIKE '%${search}%' 
+            or roles.roles_name ILIKE '%${search}%'`
+        }
+         
+        res.send(await sequelizeString(sql))
+        
+    }
+  
 
 
