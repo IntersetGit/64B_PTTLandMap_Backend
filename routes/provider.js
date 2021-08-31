@@ -4,7 +4,6 @@ const { loginControllers, refreshTokenControllers,getUserController,getSearchUse
 /* GET users listing. */
 router.post('/login', loginControllers);
 router.get('/refreshToken', refreshTokenControllers);
-router.get('/getUser',getUserController);
-router.get('/getSearchUser',getSearchUserController)
+router.post('/getSearchUser',getSearchUserController)
 
 module.exports = router;
