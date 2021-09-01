@@ -1,9 +1,10 @@
-const util = require("../util/index"); //connect db  query string
+const {sequelizeString} = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getByIdMasLayersService,getMasLayersService,getByIdDatLayersService,getDatLayersService,getMasProviceService,getMasSubdistrictService,getMasDistrictService } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getMasLayersService,getDatLayersService,getMasProviceService,getMasSubdistrictService,getMasDistrictService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
-const models = require("../models/index")
+const models = require("../models/index");
+const { sequelize } = require("../models/index");
 
 exports.getNameTitle = async (req, res, next) => {
   try {
@@ -37,31 +38,21 @@ exports.getSubDistrict = async (req,res,next)=>{
 //---------------- แสดง เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
 exports.getMasLayersName = async (req,res,next)=>{
   try {
-    const {groupname} = req.query
-    result(res,await models.mas_layer_groups.findOne(
-      {
-      where:{group_name:groupname}
-      }))
-  } catch (error) {
-    next(error)
-  }
-}
-
-exports.getMasLayers = async (req,res,next)=>{
-  try {
+    const {search} = await req.body
+    if(search){
+      const sql = `
+	    select * from master_lookup.mas_layer_groups where isuse =1 and group_name ILIKE'%${search}%'
+      `
+      return result(res,await sequelizeString(sql))
+    }
     result(res, await getMasLayersService())
   } catch (error) {
     next(error)
   }
 }
 
-exports.getByIdMasLayers = async (req,res,next)=>{
-  try {
-    result(res, await getMasLayersService(req.params.id))
-  } catch (error) {
-    next(error)
-  }
-}
+
+
 
 exports.createMasLayers = async (req, res, next) => {
   try {
@@ -121,13 +112,7 @@ exports.getDataLayers = async (req,res,next)=>{
   }
 }
 
-exports.getByIdDataLayers = async (req,res,next)=>{
-  try {
-    result(res,await getByIdDatLayersService(req.params.id))
-  } catch (error) {
-    next(error)
-  }
-}
+
 exports.createDataLayers = async (req, res, next) => {
   try {
     const data = req.body

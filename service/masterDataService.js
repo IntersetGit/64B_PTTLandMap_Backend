@@ -23,12 +23,7 @@ exports.getMasLayersService = async ()=>{
   return masLayersGroup
 }
 
-exports.getByIdMasLayersService = async (id)=>{
-  const masLayersGroup = await models.mas_layer_groups.findOne({
-    where:{id}
-  })
-  return masLayersGroup
-}
+
 exports.createMasLayersService = async (data, users) => {
   const createMasLayers = await models.mas_layer_groups.create({
     group_name:data.group_name,
@@ -76,12 +71,7 @@ exports.getDatLayersService = async (search)=>{
   // return getDatLayers
 }
 
-exports.getByIdDatLayersService = async (id)=>{
-  const getDatLayers = await models.dat_layers.findOne({
-    where:{id:id}
-  })
-  return getDatLayers
-}
+
 
 exports.createDatLayersService = async (data, users) => {
   const createDatLayers = await models.dat_layers.create({
@@ -91,6 +81,7 @@ exports.createDatLayersService = async (data, users) => {
     url:data.url,
     wms_url:data.wms_url,
     type_server:data.type_server,
+    isuse: 1 ,
     created_by:users.sysm_id,
     created_date:new Date(),
   })
@@ -99,6 +90,7 @@ exports.createDatLayersService = async (data, users) => {
 
 exports.updateDatLayersService = async (data, users) => {
   const _data = {
+    isuse: 1 , 
     update_by:users.user_id,
     update_date:new Date()
   }
