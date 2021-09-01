@@ -13,11 +13,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "ชื่อสิทธิ์ผู้ใช้งานระบบ"
     },
-    parent_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      comment: "รหัสแม่ใน role_id"
-    },
     note: {
       type: DataTypes.TEXT,
       allowNull: true,

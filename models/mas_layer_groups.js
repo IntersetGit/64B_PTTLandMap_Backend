@@ -5,11 +5,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
+      comment: "รหัสกลุ่มชั้นข้อมูล",
       primaryKey: true
     },
     group_name: {
       type: DataTypes.STRING(50),
-      allowNull: true
+      allowNull: true,
+      comment: "ชื่อกลุ่มชั้นข้อมูล"
     },
     order_by: {
       type: DataTypes.SMALLINT,
@@ -48,6 +50,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "แก้ไขข้อมูลวันที่"
+    },
+    set_color: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      comment: "ตัวกำหนดสีของกลุ่มชั้นข้อมูล"
     }
   }, {
     sequelize,
