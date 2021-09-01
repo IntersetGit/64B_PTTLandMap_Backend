@@ -3,8 +3,8 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www",
+    "start": "node ./bin/64B",
+    "dev": "nodemon ./bin/64B",
     "up-models": "sequelize-auto -o './models' -d pttlandmap_db -h 10.224.166.39 -u postgres -p 5432 -x Interset@1234 -e postgres"
   },
   "dependencies": {
