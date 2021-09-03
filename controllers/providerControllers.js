@@ -76,7 +76,6 @@ exports.loginControllers = async (req, res, next) => {
 };
 
 exports.refreshTokenControllers = async (req, res, next) => {
-    const transaction = await sequelize.transaction();
     try {
         const authHeader = req.headers['authorization']
         if (!authHeader) res.sendStatus(401)
@@ -112,7 +111,6 @@ exports.refreshTokenControllers = async (req, res, next) => {
             result(res, token)
         })
     } catch (error) {
-        if (transaction) await transaction.rollback();
         next(error);
     }
 };
