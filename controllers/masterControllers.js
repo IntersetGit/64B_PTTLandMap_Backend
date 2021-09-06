@@ -70,7 +70,7 @@ exports.updateMasLayers = async (req, res, next) => {
     const data = req.body
     const users = req.user
     if (users.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถแก้ข้อมูลได้")
-    result(res, await updateMasLayersService(data, users))
+    result(res, await updateMasLayersService(data,users))
   } catch (error) {
     next(error)
   }

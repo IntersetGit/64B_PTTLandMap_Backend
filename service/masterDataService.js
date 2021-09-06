@@ -25,9 +25,12 @@ exports.getMasLayersService = async ()=>{
 
 
 exports.createMasLayersService = async (data, users) => {
+  const result = await sequelizeString(` SELECT MAX(order_by) +1 count FROM master_lookup.mas_layer_groups `)
+  
+
   const createMasLayers = await models.mas_layer_groups.create({
     group_name:data.group_name,
-    order_by:data.order_by,
+    order_by:result[0],
     isuse:data.isuse ?? 1,
     created_by:users.user_id,
     created_date:new Date()
@@ -81,7 +84,7 @@ exports.createDatLayersService = async (data, users) => {
     url:data.url,
     wms_url:data.wms_url,
     type_server:data.type_server,
-    isuse: 1 ,
+    isuse:data.isuse ?? 1 ,
     created_by:users.sysm_id,
     created_date:new Date(),
   })
