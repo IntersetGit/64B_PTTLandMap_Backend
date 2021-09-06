@@ -30,7 +30,7 @@ exports.createMasLayersService = async (data, users) => {
 
   const createMasLayers = await models.mas_layer_groups.create({
     group_name:data.group_name,
-    order_by:result[0],
+    order_by:result[0].count,
     isuse:data.isuse ?? 1,
     created_by:users.user_id,
     created_date:new Date()
