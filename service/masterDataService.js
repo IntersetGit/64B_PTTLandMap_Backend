@@ -30,6 +30,7 @@ exports.createMasLayersService = async (data, users) => {
     group_name:data.group_name,
     order_by:result[0].count,
     isuse:data.isuse ?? 1,
+    created_by:users.users.user_id,
     created_by:users.sysm_id,
     created_date:new Date()
   })
