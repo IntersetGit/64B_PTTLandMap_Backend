@@ -140,6 +140,7 @@ const ConnectLdap = async ({ username, password }) => {
 
         client.bind(userPrincipalName, password, err => {
             console.log('err :>> ', err);
+            reject(err);
         });
 
         client.search(search, {
