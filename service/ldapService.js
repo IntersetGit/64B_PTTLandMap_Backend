@@ -140,7 +140,7 @@ const ConnectLdap = async ({ username, password }) => {
 
         client.bind(userPrincipalName, password, err => {
             console.log('err :>> ', err);
-            reject(err);
+            // reject(err);
         });
 
         client.search(search, {
@@ -163,7 +163,9 @@ const ConnectLdap = async ({ username, password }) => {
             });
             res.on('end', (result) => {
                 console.log('status: ' + result.status);
-                reject(result)
+                // reject(result)
+                const _err = { message: "ชื่อผู้ใช้ หรือ รหัสผ่านไม่ถูกต้อง" }
+                reject(_err)
             });
 
             // res.on('end', (result) => {
