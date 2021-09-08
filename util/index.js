@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt_decode = require("jwt-decode");
 const CryptoJS = require("crypto-js");
 const config = require('../config');
+const _path = require('path')
+const fs = require('fs')
 
 exports.sequelizeString = async (sql, bind) => {
     const res = await sequelize.query(sql, { bind: bind });

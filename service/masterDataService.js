@@ -5,6 +5,14 @@ const { sequelizeString, sequelizeStringFindOne } = require("../util/index")
 exports.getAllTitleNameService = async() => {
   return models.mas_name_titles.findAll()
 }
+
+exports.getAllMasterLayers = async (search) => {
+  let sql = ` select * from master_lookup.mas_layer_groups where isuse =1 `
+
+  if(search) sql += ` and group_name ILIKE '%${search}%' `
+
+  return sequelizeString(sql)
+}
 //----------------------- แสดง จังหวัด อำเภอ ตำบล ----------------------//
 exports.getMasProviceService = async ()=>{
   return await models.mas_province.findAll()
