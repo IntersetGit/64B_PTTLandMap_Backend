@@ -52,30 +52,6 @@ exports.addShapeService = async (model) => {
     return id
 }
 
-exports.getDataLayerService = async () => {
-    let sql = `
-    SELECT id
-    , group_layer_id
-    , objectid
-    , project_na
-    , parid
-    , kp
-    , partype
-    , mas_prov_id AS prov_id
-    , (SELECT prov.prov_name_th FROM master_lookup.mas_province prov WHERE prov.id = mas_prov_id) AS prov_name
-    , mas_dist_id AS dist_id
-    , (SELECT dis.name_th FROM master_lookup.mas_district dis WHERE dis.id = mas_dist_id) AS dist_name
-    , mas_subdist_id AS sub_id
-    , (SELECT sub.name_th FROM master_lookup.mas_subdistrict sub WHERE sub.id = mas_subdist_id) AS sub_name
-    , area_geometry
-    , parcel_own
-    , parcel_o_1
-    , parcel_o_2
-
-
-    FROM ptt_data.dat_land_plots 
-    WHERE isuse = 1
-    `
-
-    return await sequelizeString(sql)
-}
+exports.getAllShape = async() => {
+    return models.dat_land_plots.findAll()
+  }
