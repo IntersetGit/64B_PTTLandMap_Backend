@@ -1,7 +1,8 @@
 const shapefile = require("shapefile");
 const result = require("../middleware/result");
 const shp = require('shpjs');
-const { addShapeService } = require("../service/dat_land_plots");
+const { addShapeService,getAllShape } = require("../service/dat_land_plots");
+
 
 exports.shapeAdd = async (req, res, next) => {
     try {
@@ -66,3 +67,12 @@ exports.shapeAdd = async (req, res, next) => {
         next(error);
     }
 }
+
+
+exports.getAllShape = async (req, res, next) => {
+    try {
+      result(res, await getAllShape());
+    } catch (error) {
+      next(error);
+    }
+  }

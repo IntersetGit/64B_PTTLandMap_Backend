@@ -50,3 +50,7 @@ exports.addShapeService = async (model) => {
     await models.dat_land_plots.create(_model)
     return id
 }
+
+exports.getAllShape = async() => {
+    return models.dat_land_plots.findAll()
+  }
