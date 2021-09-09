@@ -4,6 +4,6 @@ const { authenticateToken } = require('../middleware/authenticateToken');
 const router = require('express').Router();
 
 router.post('/add', [authenticateToken], shapeAdd)
-router.get('/get',getAllShape)
+router.get('/get',[authenticateToken],getAllShape)
 
 module.exports = router;
