@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./bin/64B",
     "dev": "nodemon ./bin/64B",
-    "up-models": "sequelize-auto -o './models' -d pttlandmap_db -h 10.224.166.39 -u postgres -p 5432 -x Interset@1234 -e postgres"
+    "up-models": "sequelize-auto -o './models' -d pttlandmap_db -h 10.224.166.39 -u postgres -p 5432 -x Interset@1234 -e postgres",
+    "up-models_": "sequelize-auto -o './models' -d pttlandmap_db -h 103.253.72.178 -u hrSystemAdmin -p 5432 -x 4Dm!n2020@Interset -e postgres"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -44,6 +45,7 @@
     "sequelize-auto": "^0.7.7",
     "shapefile": "^0.6.6",
     "shp-write": "^0.3.2",
+    "shpjs": "^4.0.2",
     "socket.io": "^3.1.0",
     "swagger-generator-express": "^2.1.1",
     "tedious": "^9.2.3",

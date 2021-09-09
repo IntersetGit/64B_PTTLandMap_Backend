@@ -7,7 +7,7 @@ router.post("/demoLdap", [authenticateToken], demoLdap);
 
 router.get("/demoGoJson", (req, res) => {
   shapefile
-    .open("public/testShapfile/shape/buildings.shp")
+    .open("public/testShapfile/shape/landuse")
     .then((source) =>
       source.read().then(function log(result) {
         if (result.done) return;

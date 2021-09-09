@@ -5,42 +5,59 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      comment: "รหัสหลักแปลงที่ดิน",
       primaryKey: true
     },
-    osm_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      comment: "รหัส osm"
-    },
-    area_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      comment: "ชื่อพื้นที่แปลงที่ดิน"
-    },
-    area_polygon: {
-      type: DataTypes.JSON,
-      allowNull: true,
-      comment: "เก็บแปลงที่ดินเป็น polygon"
-    },
-    area_size: {
-      type: DataTypes.DOUBLE,
-      allowNull: true,
-      comment: "ขนาดพื้นที่แปลงที่ดิน"
-    },
-    mas_layer_group_id: {
+    group_layer_id: {
       type: DataTypes.UUID,
       allowNull: true,
-      comment: "รหัสกลุ่มชั้นข้อมูล",
       references: {
         model: 'mas_layer_groups',
         key: 'id'
       }
     },
+    objectid: {
+      type: DataTypes.DECIMAL,
+      allowNull: true
+    },
+    project_na: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    parid: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    kp: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    partype: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    parlabel1: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    parlabel2: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    parlabel3: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    parlabel4: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    parlabel5: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
     mas_prov_id: {
       type: DataTypes.UUID,
       allowNull: true,
-      comment: "รหัสตารางจังหวัด",
       references: {
         model: 'mas_province',
         key: 'id'
@@ -49,7 +66,6 @@ module.exports = function(sequelize, DataTypes) {
     mas_dist_id: {
       type: DataTypes.UUID,
       allowNull: true,
-      comment: "รหัสตารางอำเภอ",
       references: {
         model: 'mas_district',
         key: 'id'
@@ -58,49 +74,103 @@ module.exports = function(sequelize, DataTypes) {
     mas_subdist_id: {
       type: DataTypes.UUID,
       allowNull: true,
-      comment: "รหัสตารางตำบล",
       references: {
         model: 'mas_subdistrict',
         key: 'id'
       }
     },
+    area_geometry: {
+      type: DataTypes.JSON,
+      allowNull: true
+    },
+    area_rai: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
+    },
+    area_ngan: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
+    },
+    area_wa: {
+      type: DataTypes.DECIMAL,
+      allowNull: true
+    },
+    parcel_own: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    parcel_o_1: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    parcel_o_2: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    row_rai: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
+    },
+    row_ngan: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
+    },
+    row_wa: {
+      type: DataTypes.DECIMAL,
+      allowNull: true
+    },
+    row_distan: {
+      type: DataTypes.DECIMAL,
+      allowNull: true
+    },
+    status: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    remark: {
+      type: DataTypes.STRING(254),
+      allowNull: true
+    },
+    shape_leng: {
+      type: DataTypes.DECIMAL,
+      allowNull: true
+    },
+    shape_area: {
+      type: DataTypes.DECIMAL,
+      allowNull: true
+    },
     path_image: {
       type: DataTypes.JSON,
-      allowNull: true,
-      comment: "เก็บข้มูลภาพเป็น json"
+      allowNull: true
     },
     isuse: {
       type: DataTypes.SMALLINT,
       allowNull: false,
-      comment: "สถานะใช้งาน 0 = ยังไม่ใช้งาน 1 = ใช้งาน 2 รอลบ"
+      comment: "สถานะใช้งานข้อมูล"
+    },
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'sysm_users',
+        key: 'id'
+      }
     },
     created_by: {
       type: DataTypes.UUID,
-      allowNull: false,
-      comment: "สร้างข้อมูลโดย",
-      references: {
-        model: 'sysm_users',
-        key: 'id'
-      }
+      allowNull: false
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: false,
-      comment: "สร้างข้อมูลวันที่"
+      allowNull: false
     },
     updated_by: {
       type: DataTypes.UUID,
-      allowNull: true,
-      comment: "ปรับปรุงข้อมูลโดย",
-      references: {
-        model: 'sysm_users',
-        key: 'id'
-      }
+      allowNull: true
     },
     updated_date: {
       type: DataTypes.DATE,
-      allowNull: true,
-      comment: "ปรับปรุงข้อมูลวันที่"
+      allowNull: true
     }
   }, {
     sequelize,
@@ -109,46 +179,40 @@ module.exports = function(sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: "dat_ land_plots_pkey",
+        name: "dat_land_plots_pkey",
         unique: true,
         fields: [
           { name: "id" },
         ]
       },
       {
-        name: "fki_fk_dlp_created_by",
+        name: "fki_fk_dlp_group_layer_id",
         fields: [
-          { name: "created_by" },
+          { name: "group_layer_id" },
         ]
       },
       {
-        name: "fki_fk_dlp_dist_id",
+        name: "fki_fk_dlp_mas_dist_id",
         fields: [
           { name: "mas_dist_id" },
         ]
       },
       {
-        name: "fki_fk_dlp_layer_group_id",
-        fields: [
-          { name: "mas_layer_group_id" },
-        ]
-      },
-      {
-        name: "fki_fk_dlp_prov_id",
+        name: "fki_fk_dlp_mas_prov_id",
         fields: [
           { name: "mas_prov_id" },
         ]
       },
       {
-        name: "fki_fk_dlp_sundist_id",
+        name: "fki_fk_dlp_mas_subdist_id",
         fields: [
           { name: "mas_subdist_id" },
         ]
       },
       {
-        name: "fki_fk_dlp_updated_by",
+        name: "fki_fk_dlp_user_id",
         fields: [
-          { name: "updated_by" },
+          { name: "user_id" },
         ]
       },
     ]

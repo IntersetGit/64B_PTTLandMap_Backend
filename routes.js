@@ -5,5 +5,6 @@ router.use('/demo', require('./routes/demo'));
 router.use('/upload',require('./routes/upload'));
 router.use('/provider', require('./routes/provider'));
 router.use('/masterdata', require('./routes/master'));
+router.use('/shp', require('./routes/shpRouter'));
 
 module.exports = router;
