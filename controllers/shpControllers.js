@@ -1,7 +1,7 @@
 const shapefile = require("shapefile");
 const result = require("../middleware/result");
 const shp = require('shpjs');
-const { addShapeService,getAllShape } = require("../service/dat_land_plots");
+const { addShapeService, getAllShape, getDataLayerService } = require("../service/dat_land_plots");
 
 
 exports.shapeAdd = async (req, res, next) => {
@@ -10,7 +10,7 @@ exports.shapeAdd = async (req, res, next) => {
         const { color } = req.body
         const { sysm_id } = req.user
 
-        if(!file){
+        if (!file) {
             const err = new Error('ต้องการไฟล์เพื่ออัพโหลด')
             err.statusCode = 404
             throw err
@@ -22,13 +22,13 @@ exports.shapeAdd = async (req, res, next) => {
         // if(!){
 
         // }
-        for (const i in  geojson.features) {
-            if (Object.hasOwnProperty.call( geojson.features, i)) {
-                const e =  geojson.features[i];
+        for (const i in geojson.features) {
+            if (Object.hasOwnProperty.call(geojson.features, i)) {
+                const e = geojson.features[i];
                 console.log(`object`, e.geometry)
                 console.log(`object`, e.properties)
 
-                await addShapeService({
+                const _res =  await addShapeService({
                     objectid: e.properties.OBJECTID,
                     project_na: e.properties.PROJECT_NA,
                     parid: e.properties.PARID,
@@ -62,7 +62,7 @@ exports.shapeAdd = async (req, res, next) => {
                 })
             }
         }
-        result(res, geojson, 201);
+        result(res, _res, 201);
     } catch (error) {
         next(error);
     }
@@ -70,14 +70,13 @@ exports.shapeAdd = async (req, res, next) => {
 
 exports.getAllDataLayer = async (req, res, next) => {
     try {
-
         // const {} = req.qurey
         const get_all_shp = await getDataLayerService()
 
         result(res, {
             land_plot: get_all_shp
         })
-        
+
     } catch (error) {
         next(error);
     }
@@ -86,8 +85,8 @@ exports.getAllDataLayer = async (req, res, next) => {
 //--------- แสดงข้อมูล shp -----------//
 exports.getAllShape = async (req, res, next) => {
     try {
-      result(res, await getAllShape());
+        result(res, await getAllShape());
     } catch (error) {
-      next(error);
+        next(error);
     }
-  }
+}

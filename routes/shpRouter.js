@@ -1,9 +1,13 @@
-const { shapeAdd,getAllShape } = require('../controllers/shpControllers');
+const { shapeAdd, getAllShape, getAllDataLayer } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
 
-router.post('/add', [authenticateToken], shapeAdd)
-router.get('/get',[authenticateToken],getAllShape)
+/* เพิ่ม shp */
+router.post('/add', [authenticateToken], shapeAdd);
+/* เรียกชั้นข้อมูล */
+router.get('/getDataLayer', [authenticateToken], getAllDataLayer);
+
+router.get('/get', [authenticateToken], getAllShape);
 
 module.exports = router;
