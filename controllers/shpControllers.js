@@ -68,7 +68,7 @@ exports.shapeAdd = async (req, res, next) => {
     }
 }
 
-
+//--------- แสดงข้อมูล shp -----------//
 exports.getAllShape = async (req, res, next) => {
     try {
       result(res, await getAllShape());
