@@ -4,8 +4,9 @@ const config = require('../config');
 const jwt = require('jsonwebtoken');
 const result = require('../middleware/result');
 const { ldap } = require("../service/ldapService");
-const { updateSysmUsersService, filterUsernameSysmUsersService,getUserService } = require("../service/sysmUsersService");
-const { EncryptCryptoJS, DecryptCryptoJS, checkPassword,sequelizeString } = require('../util');
+const { updateSysmUsersService, filterUsernameSysmUsersService, getUserService } = require("../service/sysmUsersService");
+const { EncryptCryptoJS, DecryptCryptoJS, checkPassword, sequelizeString } = require('../util');
+const ActiveDirectory = require('activedirectory');
 
 const refreshTokens = []
 
@@ -76,6 +77,41 @@ exports.loginControllers = async (req, res, next) => {
     }
 };
 
+exports.loginAD = async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
+
+        const config_ad = {
+            url: `ldap://ptt.corp`,
+            baseDN: `dc=ptt,dc=corp`,
+            username: `${username}@ptt.corp`,
+            password
+        }
+        const ad = new ActiveDirectory(config_ad);
+
+        const user_ad = {
+            username: ad.opts.username,
+            password: ad.opts.password
+        }
+
+        ad.findUser(user_ad.username, (err, user) => {
+            if (err) {
+              console.log('ERROR: ' +JSON.stringify(err));
+              return;
+            }
+           
+            if (! user) throw new Error('User: ' + user_ad.username + ' not found.')
+            else result(res, user)
+        });
+        
+       
+        // result(res, ad)
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.refreshTokenControllers = async (req, res, next) => {
     try {
         const authHeader = req.headers['authorization']
@@ -123,25 +159,24 @@ const generateAccessToken = async (model) => {
 
 
 //---------- ค้นหาผู้ใช้งาน -------------------------ลูกหมี// 
-exports.getSearchUserController = async (req,res)=>{
+exports.getSearchUserController = async (req, res) => {
     const { search } = req.body;
-        let sql =`
+    let sql = `
         select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast from system.sysm_users Suser
         inner join ptt_data.dat_profile_users Puser on Suser.id=Puser.user_id
         inner join system.sysm_roles roles on roles.id=Suser.roles_id`
-        
-        if (search) {
-            sql += ` WHERE Suser.user_name ILIKE '%${search}%'
+
+    if (search) {
+        sql += ` WHERE Suser.user_name ILIKE '%${search}%'
             or Suser.e_mail ILIKE '%${search}%' 
             or Puser.first_name  ILIKE '%${search}%' 
             or Puser.last_name ILIKE '%${search}%' 
             or roles.roles_name ILIKE '%${search}%'`
-        } 
-        res.send(await sequelizeString(sql))
-        
     }
+    res.send(await sequelizeString(sql))
+
+}
 
 
-  
 
 

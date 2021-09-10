@@ -1,4 +1,4 @@
-const { shapeAdd, getAllShape, getAllDataLayer } = require('../controllers/shpControllers');
+const { shapeAdd, getAllShape, getAllDataLayer, convertGeoToShp } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -7,6 +7,8 @@ const router = require('express').Router();
 router.post('/add', [authenticateToken], shapeAdd);
 /* เรียกชั้นข้อมูล */
 router.get('/getDataLayer', [authenticateToken], getAllDataLayer);
+/* แปลง geo เป็น shp */
+router.post('/convertGeoToShp', [authenticateToken], convertGeoToShp);
 
 router.get('/get', [authenticateToken], getAllShape);
 

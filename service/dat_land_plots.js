@@ -79,5 +79,5 @@ exports.getDataLayerService = async () => {
 }
 
 exports.getAllShape = async () => {
-    return models.dat_land_plots.findAll()
+    return await models.dat_land_plots.findAll()
 }

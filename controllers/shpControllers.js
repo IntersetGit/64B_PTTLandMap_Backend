@@ -1,6 +1,7 @@
 const shapefile = require("shapefile");
 const result = require("../middleware/result");
 const shp = require('shpjs');
+const { convert } = require("geojson2shp");
 const { addShapeService, getAllShape, getDataLayerService } = require("../service/dat_land_plots");
 
 
@@ -65,6 +66,23 @@ exports.shapeAdd = async (req, res, next) => {
             }
         }
 
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.convertGeoToShp = async (req, res, next) => {
+    try {
+        const features = [req.body];
+        const options = {
+            layer: "my-layer",
+            targetCrs: 2154,
+        }
+
+        await convert(features, `public/testShapfile/shape/gojson2shape.zip`, options)
+
+        result(res, true)
         
     } catch (error) {
         next(error);
