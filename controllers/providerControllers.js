@@ -83,10 +83,18 @@ exports.loginAD = async (req, res, next) => {
 
         const config_ad = {
             url: `ldap://ptt.corp`,
-            baseDN: `dc=ptt,dc=corp`,
+            baseDN: `DC=ptt,DC=corp`,
             username: `${username}@ptt.corp`,
             password
         }
+
+        
+        // const config_ad = {
+        //     url: `ldap://103.80.51.83`,
+        //     baseDN: `dc=pretty-hub,dc=com`,
+        //     username: `${username}@pretty-hub.com`,
+        //     password
+        // }
         const ad = new ActiveDirectory(config_ad);
 
         const user_ad = {
