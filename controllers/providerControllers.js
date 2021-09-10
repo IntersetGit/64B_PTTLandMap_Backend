@@ -81,14 +81,20 @@ exports.loginAD = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
+        // const config_ad = {
+        //     url: `ldap://ptt.corp`,
+        //     baseDN: `DC=ptt,DC=corp`,
+        //     username: `${username}@ptt.corp`,
+        //     password
+        // }
+
         const config_ad = {
             url: `ldap://ptt.corp`,
-            baseDN: `DC=ptt,DC=corp`,
+            baseDN: `DC=ForestDnsZones,DC=ptt,DC=corp`,
             username: `${username}@ptt.corp`,
-            password
+            password,
         }
 
-        
         // const config_ad = {
         //     url: `ldap://103.80.51.83`,
         //     baseDN: `dc=pretty-hub,dc=com`,
@@ -104,15 +110,16 @@ exports.loginAD = async (req, res, next) => {
 
         ad.findUser(user_ad.username, (err, user) => {
             if (err) {
-              console.log('ERROR: ' +JSON.stringify(err));
-              return;
+                console.log('ERROR: ' + JSON.stringify(err));
+                result(res, JSON.stringify(err), 400)
+                return;
             }
-           
-            if (! user) throw new Error('User: ' + user_ad.username + ' not found.')
+
+            if (!user) result(res, "error", 400)
             else result(res, user)
         });
-        
-       
+
+
         // result(res, ad)
 
     } catch (error) {
