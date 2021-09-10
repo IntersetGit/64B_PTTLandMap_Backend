@@ -69,6 +69,7 @@ exports.loginControllers = async (req, res, next) => {
             expires_in: expires_in.exp
         })
 
+        await transaction.commit();
     } catch (error) {
         if (transaction) await transaction.rollback();
         next(error);
