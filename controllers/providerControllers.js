@@ -81,34 +81,25 @@ exports.loginAD = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
+
         // const config_ad = {
         //     url: `ldap://ptt.corp`,
         //     baseDN: `DC=ptt,DC=corp`,
         //     username: `${username}@ptt.corp`,
-        //     password
+        //     password,
         // }
+
 
         const config_ad = {
-            url: `ldap://ptt.corp`,
-            baseDN: `DC=ForestDnsZones,DC=ptt,DC=corp`,
-            username: `${username}@ptt.corp`,
-            password,
+            url: `ldap://103.80.51.83`,
+            baseDN: `dc=pretty-hub,dc=com`,
+            username: `${username}@pretty-hub.com`,
+            password
         }
 
-        // const config_ad = {
-        //     url: `ldap://103.80.51.83`,
-        //     baseDN: `dc=pretty-hub,dc=com`,
-        //     username: `${username}@pretty-hub.com`,
-        //     password
-        // }
         const ad = new ActiveDirectory(config_ad);
 
-        const user_ad = {
-            username: ad.opts.username,
-            password: ad.opts.password
-        }
-
-        ad.findUser(user_ad.username, (err, user) => {
+        ad.findUser(username, (err, user) => {
             if (err) {
                 console.log('ERROR: ' + JSON.stringify(err));
                 result(res, JSON.stringify(err), 400)
