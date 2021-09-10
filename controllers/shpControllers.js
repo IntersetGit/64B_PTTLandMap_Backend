@@ -60,9 +60,9 @@ exports.shapeAdd = async (req, res, next) => {
                         user_id: sysm_id,
                         created_by: sysm_id
                     })
+                    result(res, _res, 201);
                 }
             }
-            result(res, _res, 201);
         }
 
         
