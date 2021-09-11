@@ -72,7 +72,6 @@ exports.ldap = async ({ user_name, password }, transaction) => {
         }, transaction)
 
         await updateDatProfileUsersService({
-            id: _user.id,
             user_id: _user.id,
             first_name: _res.givenName,
             last_name: _res.sn,
@@ -80,10 +79,9 @@ exports.ldap = async ({ user_name, password }, transaction) => {
             e_mail: _res.mail,
             update_by: _user.id,
         }, transaction)
-
-        // await transaction.commit();
+        
     } else {
-        const err = new Error(`มีผู้ใช้ ${user_name} ในฐานข้อมูล`)
+        const err = new Error(`ไม่มีผู้ใช้ ${user_name} ในฐานข้อมูล`)
         err.statusCode = 404
         throw err;
     }
@@ -151,8 +149,8 @@ exports.ldap = async ({ user_name, password }, transaction) => {
     //         update_by: _data.id,
     //     }, transaction)
     // }
-
-    return await filterUsernameSysmUsersService(user_name)
+    // await transaction.commit();
+    return _user
 }
 
 const ConnectLdap = async ({ username, password }) => {
