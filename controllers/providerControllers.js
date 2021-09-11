@@ -23,13 +23,15 @@ exports.loginControllers = async (req, res, next) => {
         }
 
         const _res = (username.toUpperCase() !== ("superadmin").toUpperCase()) ? await ldap({ user_name: username, password }, transaction) : await filterUsernameSysmUsersService(username)
-        const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
-        if (!passwordecrypt) {
-            const error = new Error("รหัสผ่านไม่ถูกต้อง !");
-            error.statusCode = 500;
-            throw error;
+        if( username ==  "superadmin" ) {
+            const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
+            if (!passwordecrypt) {
+                const error = new Error("รหัสผ่านไม่ถูกต้อง !");
+                error.statusCode = 500;
+                throw error;
+            }
         }
-
+        
         const model = {
             sysm_id: _res.id,
             roles_id: _res.roles_id,
@@ -63,7 +65,7 @@ exports.loginControllers = async (req, res, next) => {
             id: _res.id,
             last_login: new Date(),
             update_by: _res.id,
-        })
+        }, transaction)
         result(res, {
             access_token: _token,
             refresh_token: refreshToken,
@@ -81,19 +83,18 @@ exports.loginAD = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
-
+        /* เพิ่ม user */
         // const config_ad = {
         //     url: `ldap://ptt.corp`,
         //     baseDN: `DC=ptt,DC=corp`,
-        //     username: `${username}@ptt.corp`,
-        //     password,
+        //     username: `580054@ptt.corp`,
+        //     password: "200192xA"
         // }
 
-
         const config_ad = {
-            url: `ldap://103.80.51.83`,
-            baseDN: `dc=pretty-hub,dc=com`,
-            username: `${username}@pretty-hub.com`,
+            url: `ldap://ptt.corp`,
+            baseDN: `DC=ptt,DC=corp`,
+            username: `${username}@ptt.corp`,
             password
         }
 

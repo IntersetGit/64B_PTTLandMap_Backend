@@ -4,6 +4,7 @@ const { filterUsernameSysmUsersService, createSysmUsersService, updateSysmUsersS
 const { encryptPassword } = require("../util");
 const { createDatProfileUsersService, updateDatProfileUsersService } = require("./datProfileUsersService");
 const uuidv4 = require("uuid");
+const ActiveDirectory = require('activedirectory');
 
 const connect = {
     development: {
@@ -52,78 +53,105 @@ const connect = {
 */
 
 exports.ldap = async ({ user_name, password }, transaction) => {
-    const _res = await ConnectLdap({ username: user_name, password })
+    // const _res = await ConnectLdap({ username: user_name, password })
+    const _res = await connectPttAD({ username: user_name, password })
     // console.log('_res :>> ', _res);
     if (!_res) {
         const error = new Error("ไม่พบชื่อผู้ใช้");
         error.statusCode = 404;
         throw error;
     }
-    //fd1afdfd-04fd-48fd-fdfd-fd27065dfdfd = k.karun
-    //63216afd-fd56-47fd-fd1f-fdfd544ffdfd = pondkarun2
-    const code_ldap = formatGUID(_res.objectGUID)
-    const user = await filterUsernameSysmUsersService(user_name)
-    const _user = await findCodeLdapSysmUsersService(code_ldap)
-    if (!user && !_user) {
-        const id = uuidv4.v4()
-        await createSysmUsersService({
-            id,
-            roles_id: "0678bba5-a371-417f-9734-aec46b9579ad", //Viewer
-            user_name,
-            password: await encryptPassword(password),
-            e_mail: _res.mail,
-            note: _res.displayName,
-            created_by: id,
-            code_ldap
-        }, transaction)
 
-        await createDatProfileUsersService({
-            id,
-            user_id: id,
-            first_name: _res.givenName,
-            last_name: _res.sn,
-            initials: _res.initials,
-            e_mail: _res.mail,
-            company: _res.company,
-            department: _res.department,
-            job_title: _res.title,
-            office: _res.physicalDeliveryOfficeName,
-            web_page: _res.wWWHomePage,
-            phone: _res.telephoneNumber,
-            address: _res.streetAddress,
-            description: _res.description,
-            created_by: id,
-        }, transaction)
-    } else {
-        const _data = user ? user : _user ? _user : null
+    const _user = await filterUsernameSysmUsersService(user_name);
+    if (_user) {
         await updateSysmUsersService({
-            id: _data.id,
+            id: _user.id,
             user_name,
-            password: await encryptPassword(password),
             e_mail: _res.mail,
-            update_by: _data.id,
+            update_by: _user.id,
         }, transaction)
 
         await updateDatProfileUsersService({
-            id: _data.id,
-            user_id: _data.id,
+            id: _user.id,
+            user_id: _user.id,
             first_name: _res.givenName,
             last_name: _res.sn,
             initials: _res.initials,
             e_mail: _res.mail,
-            company: _res.company,
-            department: _res.department,
-            job_title: _res.title,
-            office: _res.physicalDeliveryOfficeName,
-            web_page: _res.wWWHomePage,
-            phone: _res.telephoneNumber,
-            address: _res.streetAddress,
-            description: _res.description,
-            update_by: _data.id,
+            update_by: _user.id,
         }, transaction)
-    }
 
-    await transaction.commit();
+        // await transaction.commit();
+    } else {
+        const err = new Error(`มีผู้ใช้ ${user_name} ในฐานข้อมูล`)
+        err.statusCode = 404
+        throw err;
+    }
+    /**------------- pond ------------------------ */
+    //fd1afdfd-04fd-48fd-fdfd-fd27065dfdfd = k.karun
+    //63216afd-fd56-47fd-fd1f-fdfd544ffdfd = pondkarun2
+    // const code_ldap = formatGUID(_res.objectGUID)
+    // const user = await filterUsernameSysmUsersService(user_name)
+    // const _user = await findCodeLdapSysmUsersService(code_ldap)
+    // if (!user && !_user) {
+    //     const id = uuidv4.v4()
+    //     await createSysmUsersService({
+    //         id,
+    //         roles_id: "0678bba5-a371-417f-9734-aec46b9579ad", //Viewer
+    //         user_name,
+    //         password: await encryptPassword(password),
+    //         e_mail: _res.mail,
+    //         note: _res.displayName,
+    //         created_by: id,
+    //         code_ldap
+    //     }, transaction)
+
+    //     await createDatProfileUsersService({
+    //         id,
+    //         user_id: id,
+    //         first_name: _res.givenName,
+    //         last_name: _res.sn,
+    //         initials: _res.initials,
+    //         e_mail: _res.mail,
+    //         company: _res.company,
+    //         department: _res.department,
+    //         job_title: _res.title,
+    //         office: _res.physicalDeliveryOfficeName,
+    //         web_page: _res.wWWHomePage,
+    //         phone: _res.telephoneNumber,
+    //         address: _res.streetAddress,
+    //         description: _res.description,
+    //         created_by: id,
+    //     }, transaction)
+    // } else {
+    //     const _data = user ? user : _user ? _user : null
+    //     await updateSysmUsersService({
+    //         id: _data.id,
+    //         user_name,
+    //         password: await encryptPassword(password),
+    //         e_mail: _res.mail,
+    //         update_by: _data.id,
+    //     }, transaction)
+
+    //     await updateDatProfileUsersService({
+    //         id: _data.id,
+    //         user_id: _data.id,
+    //         first_name: _res.givenName,
+    //         last_name: _res.sn,
+    //         initials: _res.initials,
+    //         e_mail: _res.mail,
+    //         company: _res.company,
+    //         department: _res.department,
+    //         job_title: _res.title,
+    //         office: _res.physicalDeliveryOfficeName,
+    //         web_page: _res.wWWHomePage,
+    //         phone: _res.telephoneNumber,
+    //         address: _res.streetAddress,
+    //         description: _res.description,
+    //         update_by: _data.id,
+    //     }, transaction)
+    // }
+
     return await filterUsernameSysmUsersService(user_name)
 }
 
@@ -190,6 +218,33 @@ const ConnectLdap = async ({ username, password }) => {
 
 
     });
+    return await myPromise
+}
+
+const connectPttAD = async ({ username, password }) => {
+    const myPromise = new Promise((resolve, reject) => {
+
+        const { host, url, search } = connect[config.NODE_ENV]
+
+        const config_ad = {
+            url,
+            baseDN: `${search}`,
+            username: `${username}@ptt.corp`,
+            password
+        }
+
+        const ad = new ActiveDirectory(config_ad);
+        ad.findUser(username, (err, user) => {
+            if (err) {
+                reject(err);
+            }
+            if (!user) {
+                reject("ไม่พบผู้ใช้งานใน AD");
+            }
+            resolve(user);
+        });
+    })
+
     return await myPromise
 }
 

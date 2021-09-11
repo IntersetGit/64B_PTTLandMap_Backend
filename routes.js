@@ -7,4 +7,6 @@ router.use('/provider', require('./routes/provider'));
 router.use('/masterdata', require('./routes/master'));
 router.use('/shp', require('./routes/shpRouter'));
 
+router.use('/system', require('./routes/systemRouter'))
+
 module.exports = router;
