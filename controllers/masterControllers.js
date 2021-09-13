@@ -1,7 +1,7 @@
 const {sequelizeString} = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getMasLayersService,getDatLayersService,getMasProviceService,getMasSubdistrictService,getMasDistrictService , getAllMasterLayers } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getMasLayersService,getDatLayersService,getMasProviceService,getMasSubdistrictService,getMasDistrictService , getAllMasterLayers,getSysmRoleService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 const models = require("../models/index");
 const { checkImgById } = require('../util')
@@ -146,3 +146,12 @@ exports.deleteDataLayers = async (req, res, next) => {
   }
 }
 //---------------------------------------------------------//
+
+//----------- ดึงข้อมูล systems_roles หน้าเพิ่มผู้ใช้ระบบ -----//
+exports.getSysmRoleController = async (req, res, next) => {
+  try {
+    result(res, await getSysmRoleService());
+  } catch (error) {
+    next(error);
+  }
+};

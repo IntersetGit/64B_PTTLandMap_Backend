@@ -119,3 +119,11 @@ exports.deleteDatLayersService = async (data) => {
     return deleteDataLayers;
 };
 //----------------------------------------------------------------------------------//
+
+
+//----------- ดึงข้อมูล systems_roles หน้าเพิ่มผู้ใช้ระบบ -----//
+exports.getSysmRoleService = async ()=>{
+  const userrole = await models.sysm_roles.findAll()
+  return userrole
+
+}

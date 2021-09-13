@@ -28,5 +28,8 @@ router.put('/datLayers', [authenticateToken], masterControllers.updateDataLayers
 router.delete('/datLayers', [authenticateToken], masterControllers.deleteDataLayers);
 //--------------------------------------------------//
 
+//---------- ดึงข้อมูล systems Roles หน้าเพิ่มผู้ใช้ระบบ ----------------------//
+router.get('/getSysmRole', masterControllers.getSysmRoleController);
+
 
 module.exports = router;
