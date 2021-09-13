@@ -84,3 +84,11 @@ exports.getUserService = async ()=>{
     const user = await models.sysm_users.findAll()
     return user
 }
+
+
+//--------------- ดึงข้อมูล systemrole ---------------------//
+exports.getUserRoleService = async ()=>{
+    const userrole = await models.sysm_roles.findAll()
+    return userrole
+}
+

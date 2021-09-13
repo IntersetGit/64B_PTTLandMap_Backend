@@ -2,6 +2,7 @@ const ActiveDirectory = require('activedirectory');
 const config = require("../config");
 const { filterUsernameSysmUsersService } = require('../service/sysmUsersService');
 const { createSysmUsersService } = require('../service/sysmUsersService');
+const {getUserRoleService} = require('../service/sysmUsersService');
 const { createDatProfileUsersService } = require('../service/datProfileUsersService');
 const sequelize = require("../config/dbConfig"); //connect db  query string
 const uuidv4 = require("uuid");
@@ -107,3 +108,15 @@ const connectPttAD_ = async (username) => {
     })
     return await myPromise
 }
+
+
+
+
+//--------------- ดึงข้อมูล systemrole ---------------------//
+exports.getUserController = async (req, res, next) => {
+    try {
+      result(res, await getUserRoleService());
+    } catch (error) {
+      next(error);
+    }
+  }
