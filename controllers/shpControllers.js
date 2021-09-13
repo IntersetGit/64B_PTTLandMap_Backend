@@ -3,6 +3,10 @@ const result = require("../middleware/result");
 const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getAllShape, getDataLayerService } = require("../service/dat_land_plots");
+const fs = require('fs');
+const uuid = require('uuid');
+const config = require('../config');
+const { url } = require("inspector");
 
 
 exports.shapeAdd = async (req, res, next) => {
@@ -76,13 +80,25 @@ exports.convertGeoToShp = async (req, res, next) => {
     try {
         const features = [req.body];
         const options = {
-            layer: "my-layer",
+            layer: "PTT",
             targetCrs: 2154,
         }
+        const id = features[0].id
 
-        await convert(features, `public/testShapfile/shape/gojson2shape.zip`, options)
+        await convert(features, `public/shapfile/PTT-${id}.zip`, options)
 
-        result(res, true)
+        // const _res = async (features, config) => {
+        //     await download(`${config.SERVICE_HOST}/${features[0].id}`, `public`)
+        //     fs.writeFileSync(`public/shapfile/${features[0].id}`, await download(`${config.SERVICE_HOST}/${features[0].id}`))
+    
+        //     download(`${config.SERVICE_HOST}/${features[0].id}`).pipe(fs.createWriteStream(`public/shapfile/${features[0].id}`))
+    
+        //     const data_ = await Promise.all([`${config.SERVICE_HOST}/${features[0].id}`].map(url => download(url, 'public')))
+
+        //     return data_
+        // };
+
+        result(res, _res)
         
     } catch (error) {
         next(error);
