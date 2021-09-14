@@ -3,6 +3,7 @@ const result = require("../middleware/result");
 const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getAllShape, getDataLayerService } = require("../service/dat_land_plots");
+const { getDataShapService } = require('../service/shape_layers')
 const fs = require('fs');
 const uuid = require('uuid');
 const config = require('../config');
@@ -107,17 +108,26 @@ exports.convertGeoToShp = async (req, res, next) => {
 
 exports.getAllDataLayer = async (req, res, next) => {
     try {
-        // const {} = req.qurey
-        const get_all_shp = await getDataLayerService()
+        const get_shp = await getDataShapService()
+        const get_land_plot = await getDataLayerService()
 
         result(res, {
-            land_plot: get_all_shp
+            land_plot: {
+                land_plot_order: get_shp,
+                get_land_plot
+            },
+            gas_line: {},
+            construction_method: {},
+            system_field: {},
+            info: {}
         })
 
     } catch (error) {
         next(error);
     }
 }
+
+exports.changecolor
 
 //--------- แสดงข้อมูล shp -----------//
 exports.getAllShape = async (req, res, next) => {

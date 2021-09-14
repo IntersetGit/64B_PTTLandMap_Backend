@@ -1,6 +1,5 @@
 var DataTypes = require("sequelize").DataTypes;
 var _dat_land_plots = require("./dat_land_plots");
-var _dat_land_plots_old = require("./dat_land_plots_old");
 var _dat_layers = require("./dat_layers");
 var _dat_profile_users = require("./dat_profile_users");
 var _mas_district = require("./mas_district");
@@ -8,12 +7,12 @@ var _mas_layer_groups = require("./mas_layer_groups");
 var _mas_name_titles = require("./mas_name_titles");
 var _mas_province = require("./mas_province");
 var _mas_subdistrict = require("./mas_subdistrict");
+var _shape_layers = require("./shape_layers");
 var _sysm_roles = require("./sysm_roles");
 var _sysm_users = require("./sysm_users");
 
 function initModels(sequelize) {
   var dat_land_plots = _dat_land_plots(sequelize, DataTypes);
-  var dat_land_plots_old = _dat_land_plots_old(sequelize, DataTypes);
   var dat_layers = _dat_layers(sequelize, DataTypes);
   var dat_profile_users = _dat_profile_users(sequelize, DataTypes);
   var mas_district = _mas_district(sequelize, DataTypes);
@@ -21,6 +20,7 @@ function initModels(sequelize) {
   var mas_name_titles = _mas_name_titles(sequelize, DataTypes);
   var mas_province = _mas_province(sequelize, DataTypes);
   var mas_subdistrict = _mas_subdistrict(sequelize, DataTypes);
+  var shape_layers = _shape_layers(sequelize, DataTypes);
   var sysm_roles = _sysm_roles(sequelize, DataTypes);
   var sysm_users = _sysm_users(sequelize, DataTypes);
 
@@ -34,30 +34,18 @@ function initModels(sequelize) {
   sysm_users.hasMany(mas_layer_groups, { as: "update_by_mas_layer_groups", foreignKey: "update_by"});
   dat_land_plots.belongsTo(mas_district, { as: "mas_dist", foreignKey: "mas_dist_id"});
   mas_district.hasMany(dat_land_plots, { as: "dat_land_plots", foreignKey: "mas_dist_id"});
-  dat_land_plots_old.belongsTo(mas_district, { as: "mas_dist", foreignKey: "mas_dist_id"});
-  mas_district.hasMany(dat_land_plots_old, { as: "dat_land_plots_olds", foreignKey: "mas_dist_id"});
-  dat_land_plots.belongsTo(mas_layer_groups, { as: "group_layer", foreignKey: "group_layer_id"});
-  mas_layer_groups.hasMany(dat_land_plots, { as: "dat_land_plots", foreignKey: "group_layer_id"});
-  dat_land_plots_old.belongsTo(mas_layer_groups, { as: "mas_layer_group", foreignKey: "mas_layer_group_id"});
-  mas_layer_groups.hasMany(dat_land_plots_old, { as: "dat_land_plots_olds", foreignKey: "mas_layer_group_id"});
   dat_layers.belongsTo(mas_layer_groups, { as: "group_layer", foreignKey: "group_layer_id"});
   mas_layer_groups.hasMany(dat_layers, { as: "dat_layers", foreignKey: "group_layer_id"});
   dat_profile_users.belongsTo(mas_name_titles, { as: "name_title", foreignKey: "name_title_id"});
   mas_name_titles.hasMany(dat_profile_users, { as: "dat_profile_users", foreignKey: "name_title_id"});
   dat_land_plots.belongsTo(mas_province, { as: "mas_prov", foreignKey: "mas_prov_id"});
   mas_province.hasMany(dat_land_plots, { as: "dat_land_plots", foreignKey: "mas_prov_id"});
-  dat_land_plots_old.belongsTo(mas_province, { as: "mas_prov", foreignKey: "mas_prov_id"});
-  mas_province.hasMany(dat_land_plots_old, { as: "dat_land_plots_olds", foreignKey: "mas_prov_id"});
   dat_land_plots.belongsTo(mas_subdistrict, { as: "mas_subdist", foreignKey: "mas_subdist_id"});
   mas_subdistrict.hasMany(dat_land_plots, { as: "dat_land_plots", foreignKey: "mas_subdist_id"});
-  dat_land_plots_old.belongsTo(mas_subdistrict, { as: "mas_subdist", foreignKey: "mas_subdist_id"});
-  mas_subdistrict.hasMany(dat_land_plots_old, { as: "dat_land_plots_olds", foreignKey: "mas_subdist_id"});
+  dat_land_plots.belongsTo(shape_layers, { as: "shape", foreignKey: "shape_id"});
+  shape_layers.hasMany(dat_land_plots, { as: "dat_land_plots", foreignKey: "shape_id"});
   dat_land_plots.belongsTo(sysm_users, { as: "user", foreignKey: "user_id"});
   sysm_users.hasMany(dat_land_plots, { as: "dat_land_plots", foreignKey: "user_id"});
-  dat_land_plots_old.belongsTo(sysm_users, { as: "created_by_sysm_user", foreignKey: "created_by"});
-  sysm_users.hasMany(dat_land_plots_old, { as: "dat_land_plots_olds", foreignKey: "created_by"});
-  dat_land_plots_old.belongsTo(sysm_users, { as: "updated_by_sysm_user", foreignKey: "updated_by"});
-  sysm_users.hasMany(dat_land_plots_old, { as: "updated_by_dat_land_plots_olds", foreignKey: "updated_by"});
   dat_layers.belongsTo(sysm_users, { as: "created_by_sysm_user", foreignKey: "created_by"});
   sysm_users.hasMany(dat_layers, { as: "dat_layers", foreignKey: "created_by"});
   dat_layers.belongsTo(sysm_users, { as: "update_by_sysm_user", foreignKey: "update_by"});
@@ -77,7 +65,6 @@ function initModels(sequelize) {
 
   return {
     dat_land_plots,
-    dat_land_plots_old,
     dat_layers,
     dat_profile_users,
     mas_district,
@@ -85,6 +72,7 @@ function initModels(sequelize) {
     mas_name_titles,
     mas_province,
     mas_subdistrict,
+    shape_layers,
     sysm_roles,
     sysm_users,
   };

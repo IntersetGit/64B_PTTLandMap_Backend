@@ -7,11 +7,11 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    group_layer_id: {
+    shape_id: {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
-        model: 'mas_layer_groups',
+        model: 'shape_layers',
         key: 'id'
       }
     },
@@ -188,7 +188,7 @@ module.exports = function(sequelize, DataTypes) {
       {
         name: "fki_fk_dlp_group_layer_id",
         fields: [
-          { name: "group_layer_id" },
+          { name: "shape_id" },
         ]
       },
       {
