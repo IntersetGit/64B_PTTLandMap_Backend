@@ -84,3 +84,8 @@ exports.getUserService = async ()=>{
     const user = await models.sysm_users.findAll()
     return user
 }
+
+
+
+
+
