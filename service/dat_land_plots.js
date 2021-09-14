@@ -3,8 +3,8 @@ const uuid4 = require('uuid')
 const { Op } = require('sequelize')
 const { sequelizeString } = require('../util')
 
-exports.addShapeService = async (model) => {
-    const id = uuid4.v4()
+exports.addShapeService = async (model, transaction) => {
+    const id = model.id ?? uuid4.v4()
     const _model = {
         id,
         isuse: 1,
@@ -18,7 +18,7 @@ exports.addShapeService = async (model) => {
     const tam = await models.mas_subdistrict.findOne({ where: { name_th: { [Op.like]: `%${model.tam}%` } } })
 
     if (model.objectid) _model.objectid = model.objectid
-    if (model.group_layer_id) _model.group_layer_id = model.group_layer_id
+    if (model.shape_id) _model.shape_id = model.shape_id
     if (model.project_na) _model.project_na = model.project_na
     if (model.parid) _model.parid = model.parid
     if (model.kp) _model.kp = model.kp
@@ -48,7 +48,7 @@ exports.addShapeService = async (model) => {
     if (model.path_image) _model.path_image = model.path_image
     if (model.area_geometry) _model.area_geometry = model.area_geometry
 
-    await models.dat_land_plots.create(_model)
+    await models.dat_land_plots.create(_model, { transaction })
     return id
 }
 

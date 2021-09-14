@@ -1,7 +1,9 @@
-const { shapeAdd, getAllShape, getAllDataLayer, convertGeoToShp } = require('../controllers/shpControllers');
+const { shapeAdd, getAllShape, getAllDataLayer, convertGeoToShp, demoCreateDatabase } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
+
+router.post('/database', demoCreateDatabase)
 
 /* เพิ่ม shp */
 router.post('/add', [authenticateToken], shapeAdd);

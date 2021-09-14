@@ -3,14 +3,68 @@ const result = require("../middleware/result");
 const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getAllShape, getDataLayerService } = require("../service/dat_land_plots");
-const { getDataShapService } = require('../service/shape_layers')
+const { getDataShapService, addShapeLayers } = require('../service/shape_layers')
 const fs = require('fs');
 const uuid = require('uuid');
 const config = require('../config');
-const { url } = require("inspector");
+const sequelize = require("../config/dbConfig");
+const pg = require('pg')
+
+const _config = {
+    development: {
+        username: config.DB_USERNAME_DEV,
+        password: config.DB_PASSWORD_DEV,
+        database: config.DB_NAME_DEV,
+        host: config.DB_HOST_DEV,
+        dialect: config.DB_DIALECT_DEV,
+        port: config.DB_PORT_DEV
+    },
+    test: {
+        username: config.DB_USERNAME_TEST,
+        password: config.DB_PASSWORD_TEST,
+        database: config.DB_NAME_TEST,
+        host: config.DB_HOST_TEST,
+        dialect: config.DB_DIALECT_TEST,
+        port: config.DB_PORT_TEST
+    },
+    production: {
+        username: config.DB_USERNAME_PROD,
+        password: config.DB_PASSWORD_PROD,
+        database: config.DB_NAME_PROD,
+        host: config.DB_HOST_PROD,
+        dialect: config.DB_DIALECT_PROD,
+        port: config.DB_PORT_PROD
+    }
+}
+
+exports.demoCreateDatabase = async (req, res, next) => {
+    try {
+        const {username, password, database, port, host} = _config[config.NODE_ENV];
+
+        const pool = new pg.Pool({
+            user: username,
+            host,
+            database,
+            password: password,
+            port
+        });
+        await pool.query('CREATE TABLE shape_data.shape_layers_new', (err, res) => {
+            console.log(err, res);
+            if(err) result(res, err, 500)
+            else result(res, res)
+            
+            pool.end();
+        })
+
+        
+    } catch (error) {
+        next(error);
+    }
+}
 
 
 exports.shapeAdd = async (req, res, next) => {
+    const transaction = await sequelize.transaction();
     try {
 
         if (!req.files) {
@@ -19,22 +73,30 @@ exports.shapeAdd = async (req, res, next) => {
             throw err
         } else {
             const { file } = req.files
-            const { color } = req.body
+            const { color, group_layer_id } = req.body
             const { sysm_id } = req.user
-    
+
             const geojson = await shp(file.data.buffer);
+            const id = uuid.v4()
             console.log(geojson);
-    
-            // if(!){
-    
-            // }
+
+            await addShapeLayers({
+                id,
+                name_layer: geojson.fileName,
+                table_name: geojson.fileName,
+                type: geojson.type,
+                group_layer_id,
+                color: color ?? null
+            }, transaction)
+
             for (const i in geojson.features) {
                 if (Object.hasOwnProperty.call(geojson.features, i)) {
                     const e = geojson.features[i];
                     console.log(`object`, e.geometry)
                     console.log(`object`, e.properties)
-    
-                    const _res =  await addShapeService({
+
+                    await addShapeService({
+                        shape_id: id,
                         objectid: e.properties.OBJECTID,
                         project_na: e.properties.PROJECT_NA,
                         parid: e.properties.PARID,
@@ -65,14 +127,14 @@ exports.shapeAdd = async (req, res, next) => {
                         area_geometry: e.geometry,
                         user_id: sysm_id,
                         created_by: sysm_id
-                    })
-                    result(res, _res, 201);
+                    }, transaction)
                 }
             }
+            await transaction.commit();
+            result(res, id, 201);
         }
-
-        
     } catch (error) {
+        if (transaction) await transaction.rollback();
         next(error);
     }
 }
@@ -91,16 +153,16 @@ exports.convertGeoToShp = async (req, res, next) => {
         // const _res = async (features, config) => {
         //     await download(`${config.SERVICE_HOST}/${features[0].id}`, `public`)
         //     fs.writeFileSync(`public/shapfile/${features[0].id}`, await download(`${config.SERVICE_HOST}/${features[0].id}`))
-    
+
         //     download(`${config.SERVICE_HOST}/${features[0].id}`).pipe(fs.createWriteStream(`public/shapfile/${features[0].id}`))
-    
+
         //     const data_ = await Promise.all([`${config.SERVICE_HOST}/${features[0].id}`].map(url => download(url, 'public')))
 
         //     return data_
         // };
 
         result(res, _res)
-        
+
     } catch (error) {
         next(error);
     }

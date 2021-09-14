@@ -8,6 +8,7 @@ const uuidv4 = require("uuid");
 const result = require("../middleware/result");
 const { DecryptCryptoJS } = require("../util");
 const models = require("../models/index");
+const { getSysmRoleService } = require("../service/masterDataService");
 
 const connect = {
   development: {
@@ -133,6 +134,15 @@ exports.updateRoleUser = async (req, res, next) => {
       
     }
     result(res, checkuserid);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** เรียกสิทธิผู้ใช้งาน */
+exports.getSysmRoleController = async (req, res, next) => {
+  try {
+    result(res, await getSysmRoleService());
   } catch (error) {
     next(error);
   }
