@@ -174,24 +174,8 @@ exports.convertGeoToShp = async (req, res, next) => {
 exports.getAllDataLayer = async (req, res, next) => {
     try {
         const get_shp = await getDataShapService()
-        const _res_shape = await shapeDataService()
-
-        const data = get_shp.map(e => {
-            return {
-                id: e.id,
-                group_name: e.group_name,
-                children: e.children ?? []
-            }
-        })
-
-            for (const i in data) {
-                if (Object.hasOwnProperty.call(data, i)) {
-                    const element = data[i];
-                    element.children.length >= 1 ? element.shape = _res_shape.shape : element.shape = {}
-                }
-            }
-        
-        result(res, data)
+       
+        result(res, get_shp)
 
     } catch (error) {
         next(error);
