@@ -48,7 +48,7 @@ exports.addShapeService = async (model, transaction) => {
     if (model.path_image) _model.path_image = model.path_image
     if (model.area_geometry) _model.area_geometry = model.area_geometry
 
-    await models.dat_land_plots.create(_model, { transaction })
+    await models.shape_layers.create(_model, { transaction })
     return id
 }
 

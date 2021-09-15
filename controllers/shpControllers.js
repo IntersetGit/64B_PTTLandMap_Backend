@@ -76,8 +76,8 @@ exports.shapeAdd = async (req, res, next) => {
             const { color, group_layer_id, name_layer, type, text_table } = req.body
             const { sysm_id } = req.user
 
-            // const geojson = await shp(file.data.buffer);
-            // console.log(geojson);
+            const geojson = await shp(file.data.buffer);
+            console.log(geojson);
             // const shapefiles = await 
             const id = uuid.v4()
             
