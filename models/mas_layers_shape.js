@@ -4,12 +4,12 @@ module.exports = function(sequelize, DataTypes) {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
     },
     name_layer: {
       type: DataTypes.STRING,
-      allowNull: false,
-      primaryKey: true
+      allowNull: false
     },
     table_name: {
       type: DataTypes.STRING,
@@ -21,10 +21,6 @@ module.exports = function(sequelize, DataTypes) {
     },
     type: {
       type: DataTypes.TEXT,
-      allowNull: true
-    },
-    text_table: {
-      type: DataTypes.STRING,
       allowNull: true
     },
     group_layer_id: {
@@ -41,7 +37,7 @@ module.exports = function(sequelize, DataTypes) {
         name: "mas_layers_shape_pkey",
         unique: true,
         fields: [
-          { name: "name_layer" },
+          { name: "id" },
         ]
       },
     ]

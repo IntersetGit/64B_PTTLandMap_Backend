@@ -122,34 +122,6 @@ module.exports = function(sequelize, DataTypes) {
     path_image: {
       type: DataTypes.JSON,
       allowNull: true
-    },
-    isuse: {
-      type: DataTypes.SMALLINT,
-      allowNull: false
-    },
-    user_id: {
-      type: DataTypes.UUID,
-      allowNull: false
-    },
-    created_by: {
-      type: DataTypes.UUID,
-      allowNull: false
-    },
-    created_date: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    updated_by: {
-      type: DataTypes.UUID,
-      allowNull: true
-    },
-    updated_date: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    table_name: {
-      type: DataTypes.STRING,
-      allowNull: true
     }
   }, {
     sequelize,

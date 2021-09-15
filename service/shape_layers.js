@@ -29,8 +29,7 @@ exports.getDataShapService = async () => {
 						  ,'name_layer',mls.name_layer
 						  ,'table_name',mls.table_name
 						  ,'color_layer',mls.color_layer
-						  ,'type',mls.type
-						  ,'text_table',mls.text_table))
+						  ,'type',mls.type))
   FROM master_lookup.mas_layers_shape mls 
   WHERE mls.group_layer_id = mlg.id) AS children
   ,(SELECT jsonb_build_object(
@@ -43,7 +42,7 @@ exports.getDataShapService = async () => {
   'geometry',   ST_AsGeoJSON(geom)::jsonb,
   'properties', to_jsonb(inputs) - 'gid' - 'geom'
   ) AS feature
-  FROM (SELECT * FROM shape_data.ptt geodata) inputs) features)
+  FROM (SELECT * FROM shape_data."ptt geodata") inputs) features)
 
 	FROM master_lookup.mas_layer_groups mlg
 	WHERE mlg.isuse = 1
