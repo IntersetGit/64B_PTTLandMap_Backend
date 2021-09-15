@@ -8,7 +8,8 @@ const fs = require('fs');
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig");
-const pg = require('pg')
+const pg = require('pg');
+const { shapeDataService } = require("../service/shape_data");
 
 const _config = {
     development: {
@@ -173,9 +174,24 @@ exports.convertGeoToShp = async (req, res, next) => {
 exports.getAllDataLayer = async (req, res, next) => {
     try {
         const get_shp = await getDataShapService()
-        // const get_land_plot = await getDataLayerService()
+        const _res_shape = await shapeDataService()
 
-        result(res, get_shp)
+        const data = get_shp.map(e => {
+            return {
+                id: e.id,
+                group_name: e.group_name,
+                children: e.children ?? []
+            }
+        })
+
+            for (const i in data) {
+                if (Object.hasOwnProperty.call(data, i)) {
+                    const element = data[i];
+                    element.children.length >= 1 ? element.shape = _res_shape.shape : element.shape = {}
+                }
+            }
+        
+        result(res, data)
 
     } catch (error) {
         next(error);
