@@ -73,20 +73,22 @@ exports.shapeAdd = async (req, res, next) => {
             throw err
         } else {
             const { file } = req.files
-            const { color, group_layer_id } = req.body
+            const { color, group_layer_id, name_layer, type, text_table } = req.body
             const { sysm_id } = req.user
 
-            const geojson = await shp(file.data.buffer);
+            // const geojson = await shp(file.data.buffer);
+            // console.log(geojson);
+            // const shapefiles = await 
             const id = uuid.v4()
-            console.log(geojson);
+            
 
             await addShapeLayers({
                 id,
-                name_layer: geojson.fileName,
+                name_layer,
                 table_name: geojson.fileName,
-                type: geojson.type,
+                type,
                 group_layer_id,
-                color: color ?? null
+                color
             }, transaction)
 
             for (const i in geojson.features) {
@@ -171,18 +173,9 @@ exports.convertGeoToShp = async (req, res, next) => {
 exports.getAllDataLayer = async (req, res, next) => {
     try {
         const get_shp = await getDataShapService()
-        const get_land_plot = await getDataLayerService()
+        // const get_land_plot = await getDataLayerService()
 
-        result(res, {
-            land_plot: {
-                land_plot_order: get_shp,
-                get_land_plot
-            },
-            gas_line: {},
-            construction_method: {},
-            system_field: {},
-            info: {}
-        })
+        result(res, get_shp)
 
     } catch (error) {
         next(error);

@@ -1,19 +1,11 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('dat_land_plots', {
-    id: {
-      type: DataTypes.UUID,
+  return sequelize.define('ptt geodata', {
+    gid: {
+      autoIncrement: true,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: DataTypes.UUIDV4,
       primaryKey: true
-    },
-    shape_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: 'shape_layers',
-        key: 'id'
-      }
     },
     objectid: {
       type: DataTypes.DECIMAL,
@@ -55,32 +47,16 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(254),
       allowNull: true
     },
-    mas_prov_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: 'mas_province',
-        key: 'id'
-      }
+    prov: {
+      type: DataTypes.STRING(254),
+      allowNull: true
     },
-    mas_dist_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: 'mas_district',
-        key: 'id'
-      }
+    amp: {
+      type: DataTypes.STRING(254),
+      allowNull: true
     },
-    mas_subdist_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: 'mas_subdistrict',
-        key: 'id'
-      }
-    },
-    area_geometry: {
-      type: DataTypes.JSON,
+    tam: {
+      type: DataTypes.STRING(254),
       allowNull: true
     },
     area_rai: {
@@ -139,80 +115,27 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DECIMAL,
       allowNull: true
     },
-    path_image: {
-      type: DataTypes.JSON,
-      allowNull: true
-    },
-    isuse: {
-      type: DataTypes.SMALLINT,
-      allowNull: false,
-      comment: "สถานะใช้งานข้อมูล"
-    },
-    user_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: 'sysm_users',
-        key: 'id'
-      }
-    },
-    created_by: {
-      type: DataTypes.UUID,
-      allowNull: false
-    },
-    created_date: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    updated_by: {
-      type: DataTypes.UUID,
-      allowNull: true
-    },
-    updated_date: {
-      type: DataTypes.DATE,
+    geom: {
+      type: DataTypes.GEOMETRY('MULTIPOLYGON', 0),
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'dat_land_plots',
-    schema: 'ptt_data',
+    tableName: 'ptt geodata',
+    schema: 'shape_data',
     timestamps: false,
     indexes: [
       {
-        name: "dat_land_plots_pkey",
+        name: "ptt geodata_geom_idx",
+        fields: [
+          { name: "geom" },
+        ]
+      },
+      {
+        name: "ptt geodata_pkey",
         unique: true,
         fields: [
-          { name: "id" },
-        ]
-      },
-      {
-        name: "fki_fk_dlp_group_layer_id",
-        fields: [
-          { name: "shape_id" },
-        ]
-      },
-      {
-        name: "fki_fk_dlp_mas_dist_id",
-        fields: [
-          { name: "mas_dist_id" },
-        ]
-      },
-      {
-        name: "fki_fk_dlp_mas_prov_id",
-        fields: [
-          { name: "mas_prov_id" },
-        ]
-      },
-      {
-        name: "fki_fk_dlp_mas_subdist_id",
-        fields: [
-          { name: "mas_subdist_id" },
-        ]
-      },
-      {
-        name: "fki_fk_dlp_user_id",
-        fields: [
-          { name: "user_id" },
+          { name: "gid" },
         ]
       },
     ]

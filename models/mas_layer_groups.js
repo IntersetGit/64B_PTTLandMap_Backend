@@ -50,11 +50,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "แก้ไขข้อมูลวันที่"
-    },
-    set_color: {
-      type: DataTypes.JSON,
-      allowNull: true,
-      comment: "ตัวกำหนดสีของกลุ่มชั้นข้อมูล"
     }
   }, {
     sequelize,
