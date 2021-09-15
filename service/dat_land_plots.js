@@ -77,7 +77,3 @@ exports.getDataLayerService = async () => {
 
     return await sequelizeString(sql);
 }
-
-exports.getAllShape = async () => {
-    return await models.dat_land_plots.findAll()
-}

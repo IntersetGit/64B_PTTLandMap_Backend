@@ -174,7 +174,6 @@ exports.convertGeoToShp = async (req, res, next) => {
 exports.getAllDataLayer = async (req, res, next) => {
     try {
         const get_shp = await getDataShapService()
-       
         result(res, get_shp)
 
     } catch (error) {
@@ -182,12 +181,12 @@ exports.getAllDataLayer = async (req, res, next) => {
     }
 }
 
-exports.changecolor
-
 //--------- แสดงข้อมูล shp -----------//
-exports.getAllShape = async (req, res, next) => {
+exports.getShapeData = async (req, res, next) => {
     try {
-        result(res, await getAllShape());
+        const { id } = req.query
+        result(res, await shapeDataService(id))
+
     } catch (error) {
         next(error);
     }
