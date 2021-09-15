@@ -118,6 +118,10 @@ module.exports = function(sequelize, DataTypes) {
     geom: {
       type: DataTypes.GEOMETRY('MULTIPOLYGON', 0),
       allowNull: true
+    },
+    name_table: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     }
   }, {
     sequelize,

@@ -4,12 +4,13 @@ const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getAllShape, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayers } = require('../service/shape_layers')
-const fs = require('fs');
+const { findIdLayersShape } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig");
 const pg = require('pg');
 const { shapeDataService } = require("../service/shape_data");
+const { checkImgById } = require('../util')
 
 const _config = {
     development: {
@@ -74,11 +75,13 @@ exports.shapeAdd = async (req, res, next) => {
             throw err
         } else {
             const { file } = req.files
-            const { color, group_layer_id, name_layer, type, text_table } = req.body
+            const { color, group_layer_id, name_layer, type } = req.body
             const { sysm_id } = req.user
 
-            const geojson = await shp(file.data.buffer);
-            console.log(geojson);
+
+
+            // const geojson = await shp(file.data.buffer);
+            // console.log(geojson);
             // const shapefiles = await 
             const id = uuid.v4()
             
@@ -174,6 +177,13 @@ exports.convertGeoToShp = async (req, res, next) => {
 exports.getAllDataLayer = async (req, res, next) => {
     try {
         const get_shp = await getDataShapService()
+        console.log(get_shp);
+
+        for (let i = 0; i < get_shp.length; i++) {
+            const e = get_shp[i];
+            e.symbol = e.symbol ? await checkImgById(e.id, 'symbol_group') : null
+        }
+
         result(res, get_shp)
 
     } catch (error) {
@@ -185,7 +195,8 @@ exports.getAllDataLayer = async (req, res, next) => {
 exports.getShapeData = async (req, res, next) => {
     try {
         const { id } = req.query
-        result(res, await shapeDataService(id))
+        const _res = await findIdLayersShape(id)
+        result(res, await shapeDataService(_res.table_name))
 
     } catch (error) {
         next(error);
