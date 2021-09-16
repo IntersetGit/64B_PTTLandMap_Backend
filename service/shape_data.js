@@ -13,10 +13,8 @@ exports.shapeDataService = async (table_name) => {
                 'id',         gid,
                 'geometry',   ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom,24047), 4326))::json,
                 'properties', to_jsonb(row) - 'gid' - 'geom'))) AS shape 
-        FROM  `
+        FROM  (SELECT * FROM shape_data."${table_name}") row `
 
-    if (table_name) sql += ` (SELECT * FROM shape_data."ptt geodata" WHERE name_table ilike '%${table_name}%') row `
-    else sql += ` (SELECT * FROM shape_data."ptt geodata") row `
 
     return await sequelizeStringFindOne(sql)
 }
