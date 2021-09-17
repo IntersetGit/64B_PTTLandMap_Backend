@@ -24,12 +24,12 @@ exports.findIdLayersShape = async (id) => {
     return await models.mas_layers_shape.findByPk(id)
 }
 
-exports.createTableShape = async (geojson, queryInterface) => {
+exports.createTableShapeService = async (geojson, transaction, queryInterface) => {
 
     var obj = {};
     var obj1 = {}
     // console.log(geojson);
-    const countTable =  await sequelizeStringFindOne(` 
+    const countTable = await sequelizeStringFindOne(` 
         SELECT COUNT(*) AS tables
         FROM information_schema.tables
         WHERE table_schema  = 'shape_data'
@@ -40,9 +40,7 @@ exports.createTableShape = async (geojson, queryInterface) => {
         const e = geojson.features[i];
         // console.log(e.properties);
         obj.newObject = Object.keys(e.properties) //เอาชื่อตัวแปรมาใช้
-        obj.newObject = obj.newObject.map(e => {
-            return e.toLowerCase()
-        })
+        obj.newObject = obj.newObject.map(e => e.toLowerCase())
         obj.newObject.forEach(colomn => {
             obj1.gid = {
                 type: DataTypes.INTEGER,
@@ -59,16 +57,16 @@ exports.createTableShape = async (geojson, queryInterface) => {
                 type: DataTypes.STRING,
                 allowNull: true
             }
-            
+
         })
         // console.log(obj1.amp);
     }
 
-    await queryInterface.createTable(`${obj.nameTable}`, obj1 ,{
+    await queryInterface.createTable(`${obj.nameTable}`, obj1, {
         schema: "shape_data"
-    })
+    }, { transaction })
     return {
         column: obj1,
         obj
-    } 
+    }
 }

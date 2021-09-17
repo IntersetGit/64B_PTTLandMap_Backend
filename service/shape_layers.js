@@ -2,7 +2,7 @@ const models = require('../models');
 const { sequelizeString } = require('../util');
 const uuid = require('uuid');
 
-exports.addShapeLayers = async (model, transaction) => {
+exports.addShapeLayersService = async (model, transaction) => {
     const id = model.id ?? uuid.v4()
     let _model = {
         id,

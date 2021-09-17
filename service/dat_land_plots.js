@@ -7,20 +7,17 @@ exports.addShapeService = async (table, geojson) => {
     console.log(geojson);
     console.log(table.obj.newObject);
     let arr = []
-
+    const typeGeom = {"type": "MULTIPOLYGON"}
     for (let i = 0; i < geojson.features.length; i++) {
         const data = geojson.features[i];
         data.properties = Object.values(data.properties)
         // console.log(data.properties);
-        // console.log(data.geometry.coordinates);
+        console.log(data.geometry.coordinates);
 
-        data.properties.forEach(e => {
-            arr.push(`'${(String([e]))}'`)
-        })
-        console.log(arr);
-        let sql = ` INSERT INTO shape_data.${table.obj.nameTable}(geom,${table.obj.newObject}) VALUES (null,${arr}) `
-        const data_ = await sequelizeString(sql);
-        console.log(data_);
+        data.properties = data.properties.map(e => String(`'${e}'`))
+        // console.log(data.properties);
+        let sql = `INSERT INTO shape_data.${table.obj.nameTable}(geom,${table.obj.newObject}) VALUES ('${data.geometry}',${data.properties}) `
+        await sequelizeString(sql);
 
         // let geometry = {"type": "Polygon"}
         // geometry.coordinates = data.geometry.coordinates

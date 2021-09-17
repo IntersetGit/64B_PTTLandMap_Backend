@@ -3,8 +3,8 @@ const result = require("../middleware/result");
 const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
-const { getDataShapService, addShapeLayers } = require('../service/shape_layers')
-const { findIdLayersShape, createTableShape } = require('../service/shape_data')
+const { getDataShapService, addShapeLayersService } = require('../service/shape_layers')
+const { findIdLayersShape, createTableShapeService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -55,10 +55,10 @@ exports.shapeAdd = async (req, res, next) => {
             const id = uuid.v4();
             const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
             // console.log(geojson);
-            const _createTableShape = await createTableShape(geojson, queryInterface);
-            console.log(_createTableShape);
+            const _createTableShape = await createTableShapeService(geojson, transaction, queryInterface);
+            // console.log(_createTableShape);
             
-            await addShapeLayers({
+            await addShapeLayersService({
                 id,
                 name_layer,
                 table_name: _createTableShape.obj.nameTable,
