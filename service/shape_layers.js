@@ -6,7 +6,7 @@ exports.addShapeLayers = async (model, transaction) => {
     const id = model.id ?? uuid.v4()
     let _model = {
         id,
-        name_layer: model.name_layer ?? "ptt",
+        name_layer: model.name_layer ?? "test",
         table_name: model.table_name,
         type: model.type
     }

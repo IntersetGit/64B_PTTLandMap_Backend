@@ -2,13 +2,12 @@ const shapefile = require("shapefile");
 const result = require("../middleware/result");
 const shp = require('shpjs');
 const { convert } = require("geojson2shp");
-const { addShapeService, getAllShape, getDataLayerService } = require("../service/dat_land_plots");
+const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayers } = require('../service/shape_layers')
-const { findIdLayersShape } = require('../service/shape_data')
+const { findIdLayersShape, createTableShape } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
-const sequelize = require("../config/dbConfig");
-const pg = require('pg');
+const sequelize = require("../config/dbConfig"); //connect database
 const { shapeDataService } = require("../service/shape_data");
 const { checkImgById } = require('../util');
 
@@ -39,34 +38,9 @@ const _config = {
     }
 }
 
-exports.demoCreateDatabase = async (req, res, next) => {
-    try {
-        const {username, password, database, port, host} = _config[config.NODE_ENV];
-
-        const pool = new pg.Pool({
-            user: username,
-            host,
-            database,
-            password: password,
-            port
-        });
-        await pool.query('CREATE TABLE shape_data.shape_layers_new', (err, res) => {
-            console.log(err, res);
-            if(err) result(res, err, 500)
-            else result(res, res)
-            
-            pool.end();
-        })
-
-        
-    } catch (error) {
-        next(error);
-    }
-}
-
-
 exports.shapeAdd = async (req, res, next) => {
     const transaction = await sequelize.transaction();
+    const queryInterface = await sequelize.getQueryInterface();
     try {
 
         if (!req.files) {
@@ -77,77 +51,26 @@ exports.shapeAdd = async (req, res, next) => {
             const { file } = req.files
             const { color, group_layer_id, name_layer, type } = req.body
             const { sysm_id } = req.user
-            const id = uuid.v4()
 
-            const geojson = await shp(file.data.buffer);
-            console.log(geojson);
+            const id = uuid.v4();
+            const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
+            // console.log(geojson);
+            const _createTableShape = await createTableShape(geojson, queryInterface);
+            console.log(_createTableShape);
+            
+            await addShapeLayers({
+                id,
+                name_layer,
+                table_name: _createTableShape.obj.nameTable,
+                type,
+                group_layer_id,
+                color
+            }, transaction)
 
-            // await addShapeLayers({
-            //     id,
-            //     name_layer,
-            //     table_name: geojson.fileName,
-            //     type,
-            //     group_layer_id,
-            //     color
-            // }, transaction)
+            await addShapeService(_createTableShape, geojson);
 
-            const geometry = {"type": "Polygon"}
-
-            for (const i in geojson.features) {
-                if (Object.hasOwnProperty.call(geojson.features, i)) {
-                    const e = geojson.features[i];
-                    console.log(`object`, e.geometry.coordinates)
-                    console.log(`object`, e.properties)
-                    geometry.coordinates = e.geometry.coordinates
-
-                //    for (let x = 0; x < e.geometry.coordinates.length; x++) {
-                //        const q = e.geometry.coordinates[x];
-                //        console.log(q);
-                //        for (let a = 0; a < q.length; a++) {
-                //            const s = q[a];
-                //            console.log(s);
-                //        }
-                //    }
-                    
-
-                    await addShapeService({
-                        shape_id: id,
-                        objectid: e.properties.OBJECTID,
-                        project_na: e.properties.PROJECT_NA,
-                        parid: e.properties.PARID,
-                        kp: e.properties.KP,
-                        partype: e.properties.PARTYPE,
-                        parlabel1: e.properties.PARLABEL1,
-                        parlabel2: e.properties.PARLABEL2,
-                        parlabel3: e.properties.PARLABEL3,
-                        parlabel4: e.properties.PARLABEL4,
-                        parlabel5: e.properties.PARLABEL5,
-                        prov: e.properties.PROV,
-                        amp: e.properties.AMP,
-                        tam: e.properties.TAM,
-                        area_rai: e.properties.AREA_RAI,
-                        area_ngan: e.properties.AREA_NGAN,
-                        area_wa: e.properties.AREA_WA,
-                        parcel_own: e.properties.PARCEL_OWN,
-                        parcel_o_1: e.properties.PARCEL_O_1,
-                        parcel_o_2: e.properties.PARCEL_O_2,
-                        row_rai: e.properties.ROW_RAI,
-                        row_ngan: e.properties.ROW_NGAN,
-                        row_wa: e.properties.ROW_WA,
-                        row_distan: e.properties.ROW_DISTAN,
-                        status: e.properties.STATUS,
-                        remark: e.properties.REMARK,
-                        shape_leng: e.properties.Shape_Leng,
-                        shape_area: e.properties.Shape_Area,
-                        area_geometry: e.geometry,
-                        geom: geometry,
-                        user_id: sysm_id,
-                        created_by: sysm_id
-                    }, transaction)
-                }
-            }
             await transaction.commit();
-            result(res, geojson, 201);
+            result(res, id, 201);
         }
     } catch (error) {
         if (transaction) await transaction.rollback();
