@@ -122,6 +122,10 @@ module.exports = function(sequelize, DataTypes) {
     path_image: {
       type: DataTypes.JSON,
       allowNull: true
+    },
+    geom: {
+      type: DataTypes.GEOMETRY('GEOMETRY', 0),
+      allowNull: true
     }
   }, {
     sequelize,

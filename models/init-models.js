@@ -1,6 +1,7 @@
 var DataTypes = require("sequelize").DataTypes;
 var _dat_layers = require("./dat_layers");
 var _dat_profile_users = require("./dat_profile_users");
+var _geometry = require("./geometry");
 var _mas_district = require("./mas_district");
 var _mas_layer_groups = require("./mas_layer_groups");
 var _mas_layers_shape = require("./mas_layers_shape");
@@ -15,6 +16,7 @@ var _sysm_users = require("./sysm_users");
 function initModels(sequelize) {
   var dat_layers = _dat_layers(sequelize, DataTypes);
   var dat_profile_users = _dat_profile_users(sequelize, DataTypes);
+  var geometry = _geometry(sequelize, DataTypes);
   var mas_district = _mas_district(sequelize, DataTypes);
   var mas_layer_groups = _mas_layer_groups(sequelize, DataTypes);
   var mas_layers_shape = _mas_layers_shape(sequelize, DataTypes);
@@ -58,6 +60,7 @@ function initModels(sequelize) {
   return {
     dat_layers,
     dat_profile_users,
+    geometry,
     mas_district,
     mas_layer_groups,
     mas_layers_shape,

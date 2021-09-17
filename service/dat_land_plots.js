@@ -18,7 +18,6 @@ exports.addShapeService = async (model, transaction) => {
     const tam = await models.mas_subdistrict.findOne({ where: { name_th: { [Op.like]: `%${model.tam}%` } } })
 
     if (model.objectid) _model.objectid = model.objectid
-    if (model.shape_id) _model.shape_id = model.shape_id
     if (model.project_na) _model.project_na = model.project_na
     if (model.parid) _model.parid = model.parid
     if (model.kp) _model.kp = model.kp
@@ -47,6 +46,7 @@ exports.addShapeService = async (model, transaction) => {
     if (model.shape_area) _model.shape_area = model.shape_area
     if (model.path_image) _model.path_image = model.path_image
     if (model.area_geometry) _model.area_geometry = model.area_geometry
+    if (model.geom) _model.geom = model.geom
 
     await models.shape_layers.create(_model, { transaction })
     return id

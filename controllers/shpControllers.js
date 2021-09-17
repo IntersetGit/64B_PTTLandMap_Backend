@@ -10,7 +10,7 @@ const config = require('../config');
 const sequelize = require("../config/dbConfig");
 const pg = require('pg');
 const { shapeDataService } = require("../service/shape_data");
-const { checkImgById } = require('../util')
+const { checkImgById } = require('../util');
 
 const _config = {
     development: {
@@ -77,16 +77,10 @@ exports.shapeAdd = async (req, res, next) => {
             const { file } = req.files
             const { color, group_layer_id, name_layer, type } = req.body
             const { sysm_id } = req.user
-
-
-           
-            // const geojson = await shp(file.data.buffer);
-            // console.log(geojson);
-            const geojson1 = await shp.combine([shp.parseShp(file.data, 'text'),shp.parseDbf(file.data)]);
-            console.log(geojson1);
-            
             const id = uuid.v4()
-            
+
+            const geojson = await shp(file.data.buffer);
+            console.log(geojson);
 
             // await addShapeLayers({
             //     id,
@@ -97,49 +91,63 @@ exports.shapeAdd = async (req, res, next) => {
             //     color
             // }, transaction)
 
-            // for (const i in geojson.features) {
-            //     if (Object.hasOwnProperty.call(geojson.features, i)) {
-            //         const e = geojson.features[i];
-            //         console.log(`object`, e.geometry)
-            //         console.log(`object`, e.properties)
+            const geometry = {"type": "Polygon"}
 
-            //         await addShapeService({
-            //             shape_id: id,
-            //             objectid: e.properties.OBJECTID,
-            //             project_na: e.properties.PROJECT_NA,
-            //             parid: e.properties.PARID,
-            //             kp: e.properties.KP,
-            //             partype: e.properties.PARTYPE,
-            //             parlabel1: e.properties.PARLABEL1,
-            //             parlabel2: e.properties.PARLABEL2,
-            //             parlabel3: e.properties.PARLABEL3,
-            //             parlabel4: e.properties.PARLABEL4,
-            //             parlabel5: e.properties.PARLABEL5,
-            //             prov: e.properties.PROV,
-            //             amp: e.properties.AMP,
-            //             tam: e.properties.TAM,
-            //             area_rai: e.properties.AREA_RAI,
-            //             area_ngan: e.properties.AREA_NGAN,
-            //             area_wa: e.properties.AREA_WA,
-            //             parcel_own: e.properties.PARCEL_OWN,
-            //             parcel_o_1: e.properties.PARCEL_O_1,
-            //             parcel_o_2: e.properties.PARCEL_O_2,
-            //             row_rai: e.properties.ROW_RAI,
-            //             row_ngan: e.properties.ROW_NGAN,
-            //             row_wa: e.properties.ROW_WA,
-            //             row_distan: e.properties.ROW_DISTAN,
-            //             status: e.properties.STATUS,
-            //             remark: e.properties.REMARK,
-            //             shape_leng: e.properties.Shape_Leng,
-            //             shape_area: e.properties.Shape_Area,
-            //             area_geometry: e.geometry,
-            //             user_id: sysm_id,
-            //             created_by: sysm_id
-            //         }, transaction)
-            //     }
-            // }
+            for (const i in geojson.features) {
+                if (Object.hasOwnProperty.call(geojson.features, i)) {
+                    const e = geojson.features[i];
+                    console.log(`object`, e.geometry.coordinates)
+                    console.log(`object`, e.properties)
+                    geometry.coordinates = e.geometry.coordinates
+
+                //    for (let x = 0; x < e.geometry.coordinates.length; x++) {
+                //        const q = e.geometry.coordinates[x];
+                //        console.log(q);
+                //        for (let a = 0; a < q.length; a++) {
+                //            const s = q[a];
+                //            console.log(s);
+                //        }
+                //    }
+                    
+
+                    await addShapeService({
+                        shape_id: id,
+                        objectid: e.properties.OBJECTID,
+                        project_na: e.properties.PROJECT_NA,
+                        parid: e.properties.PARID,
+                        kp: e.properties.KP,
+                        partype: e.properties.PARTYPE,
+                        parlabel1: e.properties.PARLABEL1,
+                        parlabel2: e.properties.PARLABEL2,
+                        parlabel3: e.properties.PARLABEL3,
+                        parlabel4: e.properties.PARLABEL4,
+                        parlabel5: e.properties.PARLABEL5,
+                        prov: e.properties.PROV,
+                        amp: e.properties.AMP,
+                        tam: e.properties.TAM,
+                        area_rai: e.properties.AREA_RAI,
+                        area_ngan: e.properties.AREA_NGAN,
+                        area_wa: e.properties.AREA_WA,
+                        parcel_own: e.properties.PARCEL_OWN,
+                        parcel_o_1: e.properties.PARCEL_O_1,
+                        parcel_o_2: e.properties.PARCEL_O_2,
+                        row_rai: e.properties.ROW_RAI,
+                        row_ngan: e.properties.ROW_NGAN,
+                        row_wa: e.properties.ROW_WA,
+                        row_distan: e.properties.ROW_DISTAN,
+                        status: e.properties.STATUS,
+                        remark: e.properties.REMARK,
+                        shape_leng: e.properties.Shape_Leng,
+                        shape_area: e.properties.Shape_Area,
+                        area_geometry: e.geometry,
+                        geom: geometry,
+                        user_id: sysm_id,
+                        created_by: sysm_id
+                    }, transaction)
+                }
+            }
             await transaction.commit();
-            result(res, file.data.parent, 201);
+            result(res, geojson, 201);
         }
     } catch (error) {
         if (transaction) await transaction.rollback();

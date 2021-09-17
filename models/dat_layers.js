@@ -58,7 +58,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     created_date: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
       comment: "สร้างข้อมูลวันที่"
     },
     update_by: {
@@ -74,6 +74,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "แก้ไขข้อมูลวันที่"
+    },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
     }
   }, {
     sequelize,
