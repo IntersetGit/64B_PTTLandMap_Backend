@@ -49,7 +49,7 @@ exports.createTableShapeService = async (geojson, transaction, queryInterface) =
                 allowNull: true,
             },
             obj1.geom = {
-                type: DataTypes.GEOMETRY('MULTIPOLYGON', 0),
+                type: DataTypes.GEOMETRY('MultiPolygon', 0),
                 allowNull: true,
             }
             /* loop ใส่ type*/
