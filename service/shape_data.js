@@ -2,6 +2,8 @@ const models = require('../models');
 const { sequelizeString, sequelizeStringFindOne } = require('../util');
 const uuid = require('uuid');
 const { DataTypes } = require("sequelize"); //type Database
+const { SequelizeAuto }  = require('sequelize-auto');
+const sequelize  = require("../config/dbConfig"); //connect database
 
 
 exports.shapeDataService = async (table_name) => {
@@ -65,6 +67,14 @@ exports.createTableShapeService = async (geojson, transaction, queryInterface) =
     await queryInterface.createTable(`${obj.nameTable}`, obj1, {
         schema: "shape_data"
     }, { transaction })
+
+    // const auto = new SequelizeAuto(sequelize, null, null, {
+    //     caseFile: 'o', 
+    //     caseModel: 'o', 
+    //     caseProp: 'o'
+    // })
+    // auto.run();
+
     return {
         column: obj1,
         obj
