@@ -56,5 +56,17 @@
     "faker": "^5.1.0",
     "nodemon": "^2.0.7",
     "sequelize-cli": "^6.2.0"
-  }
+  },
+  "description": "node version 14.17.0\r npm version 6.14.13",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IntersetGit/64B_PTTLandMap_Backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IntersetGit/64B_PTTLandMap_Backend/issues"
+  },
+  "homepage": "https://github.com/IntersetGit/64B_PTTLandMap_Backend#readme"
 }

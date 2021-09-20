@@ -127,3 +127,9 @@ exports.getSysmRoleService = async ()=>{
   return userrole
 
 }
+
+//------------- ตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
+exports.getAllMasLayersShapeService = async () => {
+  const allMasLayersShape = await models.mas_layers_shape.findAll()
+  return allMasLayersShape;
+}
