@@ -49,7 +49,7 @@ exports.shapeAdd = async (req, res, next) => {
             throw err
         } else {
             const { file } = req.files
-            const { color, group_layer_id, name_layer, type } = req.body
+            const { color, group_layer_id, name_layer, type } = req.query
             const { sysm_id } = req.user
 
             const id = uuid.v4();

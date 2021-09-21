@@ -4,8 +4,35 @@ const { Op } = require('sequelize')
 const { sequelizeString } = require('../util')
 
 exports.addShapeService = async (table, geojson) => {
-    // console.log(geojson);
-    // console.log(table.obj.newObject);
+    console.log(geojson);
+    console.log(table.obj.newObject);
+
+    // const arr = []
+    // if (geojson) {
+
+
+    //     geojson.features.forEach(x => {
+    //         const _model = {}
+    //         table.obj.newObject.forEach(e => {
+    //             _model[e] = x.properties[e.toUpperCase()] ?? null 
+    //         });
+    //         arr.push(_model)
+    //     });
+
+
+
+    // }
+
+    // console.log("arr", arr);
+
+    // for (let a = 0; a < arr.length; a++) {
+    //     const element = arr[a];
+    //     console.log(element);
+
+    //     await models[table.obj.nameTable].create(element)
+    // }
+
+    
     /* format insert
     INSERT INTO shape_data.ptt_shape_number3(gid,geom) VALUES (1, ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[[[[99.557856126,14.277867442],[99.637387048,14.297762334],[99.633280354,14.232705561],[99.555778959,14.230984626],[99.557856126,14.277867442]]]]}')) 
     */

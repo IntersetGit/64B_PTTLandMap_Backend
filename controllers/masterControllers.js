@@ -43,7 +43,7 @@ exports.getMasLayersName = async (req,res,next)=>{
     const _res = await getAllMasterLayers(search)
     
     _res.forEach(val => {
-      val.img = checkImgById(val.id, "groupLayersImg")
+      val.symbol = checkImgById(val.id, "symbol_group") ?? null
     });
   
     result(res, _res)
