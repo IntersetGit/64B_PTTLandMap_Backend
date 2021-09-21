@@ -6,6 +6,7 @@ const { viewGetNameTitleService } = require('../service/views_database/view_name
 const models = require("../models/index");
 const { checkImgById } = require('../util')
 const { sequelize } = require("../models/index");
+const { getAllMasLayersShapeService } = require("../service/masterDataService");
 
 exports.getNameTitle = async (req, res, next) => {
   try {
@@ -155,3 +156,14 @@ exports.getSysmRoleController = async (req, res, next) => {
     next(error);
   }
 };
+
+//------------- ตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
+exports.getAllMasLayersShape =  async (req, res, next) => {
+  try {
+    result(res, await getAllMasLayersShapeService())
+  } catch (error) {
+    next(error);
+  }
+}
+
+//------------- เพิ่ม ลบ แก้ไข GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
