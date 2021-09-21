@@ -94,6 +94,7 @@ exports.createDatLayersService = async (data, users) => {
     isuse:data.isuse ?? 1 ,
     created_by:users.sysm_id,
     created_date:new Date(),
+    date:data.date
   })
   return createDatLayers
 };
@@ -110,7 +111,7 @@ exports.updateDatLayersService = async (data, users) => {
   if (data.url) _data.url = data.url
   if (data.wms_url) _data.wms_url = data.wms_url
   if (data.type_server) _data.type_server = data.type_server
-
+  if (data.date) _data.date = data.date
   const updateDatLayers = await models.dat_layers.update(_data ,{ where:{id:data.id} })
   return updateDatLayers[0];
 };
