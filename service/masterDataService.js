@@ -71,9 +71,9 @@ exports.deleteMasLayersService = async (data) => {
 exports.getDatLayersService = async (search)=>{
   
   let sql = `
-  SELECT * FROM ptt_data.dat_layers WHERE id is not null `
+  SELECT * FROM ptt_data.dat_layers  `
 
-  if (search) sql += ` AND layer_name ILIKE '%${search}%'`
+  if (search) sql += `  where layer_name ILIKE '%${search}%' or wms ILIKE '%${search}%' or url ILIKE '%${search}%' or wms_url ILIKE '%${search}%' or type_server ILIKE '%${search}%'`
 
   return await sequelizeString(sql)
 
