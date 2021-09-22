@@ -21,10 +21,16 @@ exports.loginControllers = async (req, res, next) => {
             username = _decrypt.username
             password = _decrypt.password
         }
-
-        const _res = (username.toUpperCase() !== ("superadmin").toUpperCase()) ? await ldap({ user_name: username, password }, transaction) : await filterUsernameSysmUsersService(username)
-        if( username ==  "superadmin" ) {
+        
+        const _res = (username.toUpperCase()) !== ('superadmin'.toUpperCase()) && (username.toUpperCase()) !== ('editor'.toUpperCase()) && (username.toUpperCase()) !== ('viewer'.toUpperCase()) ? await ldap({ user_name: username, password }, transaction) :  await filterUsernameSysmUsersService(username)
+        if (!_res) {
+            const error = new Error("ไม่มีผู้ใช้ในระบบฐานข้อมูล");
+            error.statusCode = 500;
+            throw error; 
+        }
+        if( username ==  "superadmin" || username == "editor" || username == "viewer" ) {
             const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
+            console.log(passwordecrypt);
             if (!passwordecrypt) {
                 const error = new Error("รหัสผ่านไม่ถูกต้อง !");
                 error.statusCode = 500;

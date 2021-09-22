@@ -57,7 +57,7 @@ exports.ldap = async ({ user_name, password }, transaction) => {
     const _res = await connectPttAD({ username: user_name, password })
     // console.log('_res :>> ', _res);
     if (!_res) {
-        const error = new Error("ไม่พบชื่อผู้ใช้");
+        const error = new Error("ไม่พบชื่อผู้ใช้ AD");
         error.statusCode = 404;
         throw error;
     }
@@ -234,12 +234,12 @@ const connectPttAD = async ({ username, password }) => {
         const ad = new ActiveDirectory(config_ad);
         ad.findUser(username, (err, user) => {
             if (err) {
-                const _err = { message: 'error'}
+                const _err = { message: 'เชื่อมต่อผิดพลาด'}
                 reject(_err);
             }
             if (!user) {
                 console.log(user);
-                const _err = { message: "ไม่พบชื่อผู้ใช้" }
+                const _err = { message: "ชื่อผู้ใช้และรหัสผ่านไม่ถูกต้อง" }
                 reject(_err)
             }
             resolve(user);
