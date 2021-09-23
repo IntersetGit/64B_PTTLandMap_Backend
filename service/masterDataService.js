@@ -85,10 +85,7 @@ exports.getDatLayersService = async (search)=>{
 
 exports.createDatLayersService = async (data, users) => {
   const createDatLayers = await models.dat_layers.create({
-    group_layer_id:data.group_layer_id,
     layer_name:data.layer_name,
-    wms:data.wms,
-    url:data.url,
     wms_url:data.wms_url,
     type_server:data.type_server,
     isuse:data.isuse ?? 1 ,
