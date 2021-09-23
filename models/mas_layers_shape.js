@@ -25,7 +25,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     group_layer_id: {
       type: DataTypes.UUID,
-      allowNull: true
+      allowNull: true,
+      references: {
+        model: 'mas_layers_shape',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
@@ -33,6 +37,12 @@ module.exports = function(sequelize, DataTypes) {
     schema: 'master_lookup',
     timestamps: false,
     indexes: [
+      {
+        name: "fki_fk_mls_group_layer_id",
+        fields: [
+          { name: "group_layer_id" },
+        ]
+      },
       {
         name: "mas_layers_shape_pkey",
         unique: true,

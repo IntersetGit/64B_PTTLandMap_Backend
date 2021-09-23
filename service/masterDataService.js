@@ -73,7 +73,7 @@ exports.getDatLayersService = async (search)=>{
   let sql = `
   SELECT * FROM ptt_data.dat_layers  `
 
-  if (search) sql += `  where layer_name ILIKE '%${search}%' or wms ILIKE '%${search}%' or url ILIKE '%${search}%' or wms_url ILIKE '%${search}%' or type_server ILIKE '%${search}%'`
+  if (search) sql += `  where layer_name ILIKE '%${search}%'  or wms_url ILIKE '%${search}%' or type_server ILIKE '%${search}%'`
 
   return await sequelizeString(sql)
 
@@ -91,7 +91,8 @@ exports.createDatLayersService = async (data, users) => {
     isuse:data.isuse ?? 1 ,
     created_by:users.sysm_id,
     created_date:new Date(),
-    date:data.date
+    date:data.date,
+    image_type:data.image_type
   })
   return createDatLayers
 };
