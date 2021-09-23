@@ -101,12 +101,11 @@ exports.updateDatLayersService = async (data, users) => {
   const _data = {
     isuse: 1 , 
     update_by:users.user_id,
-    update_date:new Date()
+    update_date:new Date(),
+    layer_name:data.layer_name
   }
 
-  if (data.layer_name) _data.layer_name = data.layer_name
-  if (data.wms) _data.wms = data.wms
-  if (data.url) _data.url = data.url
+  // if (data.layer_name) _data.layer_name = data.layer_name
   if (data.wms_url) _data.wms_url = data.wms_url
   if (data.type_server) _data.type_server = data.type_server
   if (data.date) _data.date = data.date
