@@ -7,10 +7,11 @@ exports.getAllTitleNameService = async() => {
 }
 
 exports.getAllMasterLayers = async (search) => {
-  let sql = ` select * from master_lookup.mas_layer_groups where isuse =1 `
+  let sql = ` select * from master_lookup.mas_layer_groups where isuse =1  `
 
   if(search) sql += ` and group_name ILIKE '%${search}%' `
 
+  sql+='order by  order_by'
   return sequelizeString(sql)
 }
 //----------------------- แสดง จังหวัด อำเภอ ตำบล ----------------------//
