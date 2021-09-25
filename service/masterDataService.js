@@ -7,10 +7,11 @@ exports.getAllTitleNameService = async() => {
 }
 
 exports.getAllMasterLayers = async (search) => {
-  let sql = ` select * from master_lookup.mas_layer_groups where isuse =1 `
+  let sql = ` select * from master_lookup.mas_layer_groups where isuse =1  `
 
   if(search) sql += ` and group_name ILIKE '%${search}%' `
 
+  sql+='order by  order_by'
   return sequelizeString(sql)
 }
 //----------------------- แสดง จังหวัด อำเภอ ตำบล ----------------------//
@@ -73,7 +74,7 @@ exports.getDatLayersService = async (search)=>{
   let sql = `
   SELECT * FROM ptt_data.dat_layers  `
 
-  if (search) sql += `  where layer_name ILIKE '%${search}%' or wms ILIKE '%${search}%' or url ILIKE '%${search}%' or wms_url ILIKE '%${search}%' or type_server ILIKE '%${search}%'`
+  if (search) sql += `  where layer_name ILIKE '%${search}%'  or wms_url ILIKE '%${search}%' or type_server ILIKE '%${search}%'`
 
   return await sequelizeString(sql)
 
@@ -85,16 +86,14 @@ exports.getDatLayersService = async (search)=>{
 
 exports.createDatLayersService = async (data, users) => {
   const createDatLayers = await models.dat_layers.create({
-    group_layer_id:data.group_layer_id,
     layer_name:data.layer_name,
-    wms:data.wms,
-    url:data.url,
     wms_url:data.wms_url,
     type_server:data.type_server,
     isuse:data.isuse ?? 1 ,
     created_by:users.sysm_id,
     created_date:new Date(),
-    date:data.date
+    date:data.date,
+    image_type:data.image_type
   })
   return createDatLayers
 };
@@ -103,12 +102,11 @@ exports.updateDatLayersService = async (data, users) => {
   const _data = {
     isuse: 1 , 
     update_by:users.user_id,
-    update_date:new Date()
+    update_date:new Date(),
+    layer_name:data.layer_name
   }
 
-  if (data.layer_name) _data.layer_name = data.layer_name
-  if (data.wms) _data.wms = data.wms
-  if (data.url) _data.url = data.url
+  // if (data.layer_name) _data.layer_name = data.layer_name
   if (data.wms_url) _data.wms_url = data.wms_url
   if (data.type_server) _data.type_server = data.type_server
   if (data.date) _data.date = data.date
