@@ -7,7 +7,6 @@ exports.addShapeService = async (table, geojson) => {
     console.log(geojson);
     console.log(table.obj.newObject);
 
-    // const arr = []
     // if (geojson) {
 
 
@@ -32,11 +31,12 @@ exports.addShapeService = async (table, geojson) => {
     //     await models[table.obj.nameTable].create(element)
     // }
 
-    
+
     /* format insert
     INSERT INTO shape_data.ptt_shape_number3(gid,geom) VALUES (1, ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[[[[99.557856126,14.277867442],[99.637387048,14.297762334],[99.633280354,14.232705561],[99.555778959,14.230984626],[99.557856126,14.277867442]]]]}')) 
     */
 
+   
     for (let i = 0; i < geojson.features.length; i++) {
         const data = geojson.features[i];
         data.properties = Object.values(data.properties)
@@ -45,12 +45,20 @@ exports.addShapeService = async (table, geojson) => {
 
         for (let a = 0; a < data.geometry.coordinates.length; a++) {
             const geo = data.geometry.coordinates[a];
+            let arr = []
+            // console.log(geo);
+            for (let x = 0; x < geo.length; x++) {
+                const _geo = geo[x];
+                arr.push(`[${_geo}]`)
+            }
+           
             data.properties = data.properties.map(e => String(`'${e}'`))
             // console.log(data.properties);
             let sql = `INSERT INTO shape_data.${table.obj.nameTable}(geom,${table.obj.newObject}) VALUES (ST_GeomFromGeoJSON('{
             "type":"MultiPolygon",
-            "coordinates":[[[ [${geo[0][0]} , ${geo[0][1]}] , [${geo[1][0]} , ${geo[1][1]}] , [${geo[2][0]} , ${geo[2][1]}] , [${geo[3][0]} , ${geo[3][1]}] , [${geo[4][0]} , ${geo[4][1]}] ]]]
+            "coordinates":[[[ ${arr} ]]]
             }'),${data.properties}) `
+            // "coordinates":[[[ [${geo[0][0]} , ${geo[0][1]}] , [${geo[1][0]} , ${geo[1][1]}] , [${geo[2][0]} , ${geo[2][1]}] , [${geo[3][0]} , ${geo[3][1]}] , [${geo[4][0]} , ${geo[4][1]}] ]]]
             await sequelizeString(sql);
         }
     }

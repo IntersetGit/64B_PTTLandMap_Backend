@@ -56,7 +56,7 @@ exports.createSysmUsersService = async (model, transaction) => {
 }
 
 /* แก้ไข ตารางผู้ใช้งานระบบ */
-exports.updateSysmUsersService = async (model, transaction) => {
+exports.updateSysmUsersService = async (model) => {
     const _model = {
         update_date: new Date(),
     }
@@ -70,7 +70,7 @@ exports.updateSysmUsersService = async (model, transaction) => {
     if (model.update_by) _model.update_by = model.update_by
     if (model.last_login) _model.last_login = model.last_login
 
-    await models.sysm_users.update(_model, { where: { id: model.id }, transaction });
+    await models.sysm_users.update(_model, { where: { id: model.id } });
     return model.id;
 }
 
