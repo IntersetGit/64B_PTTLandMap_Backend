@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { demoLdap, demoShap } = require("../controllers/demoControllers");
+const { demoLdap, demoShap , gatKmlTest } = require("../controllers/demoControllers");
 const { authenticateToken } = require("../middleware/authenticateToken");
 const shapefile = require("shapefile");
 const { convert } = require("geojson2shp");
@@ -31,6 +31,11 @@ router.get("/demoShape", async (req, res) => {
     req.body
   ];
   res.json(await convert(features, "public/testShapfile/shape/gojson2shape.zip", options))
+
 });
+
+
+router.get("/getKmlTest",gatKmlTest)
+
 
 module.exports = router;

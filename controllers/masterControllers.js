@@ -46,7 +46,7 @@ exports.getMasLayersName = async (req, res, next) => {
     const _res = await getAllMasterLayers(search)
 
     _res.forEach(val => {
-      val.img = checkImgById(val.id, "groupLayersImg")
+      val.symbol = checkImgById(val.id, "symbol_group") ?? null
     });
 
     result(res, _res)
@@ -93,21 +93,8 @@ exports.deleteMasLayers = async (req, res, next) => {
 //------------------------------------------------------------//
 
 
-//----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ---------//
-exports.getDataLayersName = async (req, res, next) => {
-  try {
-    const { layername } = req.query
-    result(res, await models.dat_layers.findOne(
-      {
-        where: { layer_name: layername }
-      }))
-  } catch (error) {
-    next(error)
-  }
-}
-
-
-exports.getDataLayers = async (req, res, next) => {
+//----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers  ---------//
+exports.getDataLayers = async (req,res,next)=>{
   try {
     const { search } = req.query
     result(res, await getDatLayersService(search))

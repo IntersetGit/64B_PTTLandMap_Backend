@@ -8,31 +8,12 @@ module.exports = function(sequelize, DataTypes) {
       comment: "รหัสหลักจัดการข้อมูลพื้นที่",
       primaryKey: true
     },
-    group_layer_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      comment: "รหัสกลุ่มข้อมูลพื้นที่",
-      references: {
-        model: 'mas_layer_groups',
-        key: 'id'
-      }
-    },
     layer_name: {
       type: DataTypes.STRING(255),
       allowNull: true,
       comment: "ชื่อข้อมูลพื้นที่"
     },
-    wms: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-      comment: "wms"
-    },
     url: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-      comment: "ชื่อ url"
-    },
-    wms_url: {
       type: DataTypes.STRING(255),
       allowNull: true,
       comment: "url 3 มิติ"
@@ -77,6 +58,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     date: {
       type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    image_type: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    wms: {
+      type: DataTypes.STRING,
       allowNull: true
     }
   }, {

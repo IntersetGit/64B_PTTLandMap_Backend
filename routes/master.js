@@ -20,8 +20,7 @@ router.put('/masLayers', [authenticateToken], masterControllers.updateMasLayers)
 router.delete('/masLayers', [authenticateToken], masterControllers.deleteMasLayers);
 //--------------------------------------------------//
 
-//-------เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย)-----------//
-router.get('/datLayersname',[authenticateToken],masterControllers.getDataLayersName)
+//---------เพิ่่ม ลบ แก้ไข dat_layers ------------------//
 router.get('/datLayers',[authenticateToken],masterControllers.getDataLayers)
 router.post('/datLayers', [authenticateToken], masterControllers.createDataLayers);
 router.put('/datLayers', [authenticateToken], masterControllers.updateDataLayers);

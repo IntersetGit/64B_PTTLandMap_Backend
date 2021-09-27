@@ -12,7 +12,6 @@ const refreshTokens = []
 
 /* เข้าสู่ระบบ */
 exports.loginControllers = async (req, res, next) => {
-    const transaction = await sequelize.transaction();
     try {
         let { username, password, token } = req.body;
 
@@ -21,10 +20,16 @@ exports.loginControllers = async (req, res, next) => {
             username = _decrypt.username
             password = _decrypt.password
         }
-
-        const _res = (username.toUpperCase() !== ("superadmin").toUpperCase()) ? await ldap({ user_name: username, password }, transaction) : await filterUsernameSysmUsersService(username)
-        if( username ==  "superadmin" ) {
+        
+        const _res = (username.toUpperCase()) !== ('superadmin'.toUpperCase()) && (username.toUpperCase()) !== ('editor'.toUpperCase()) && (username.toUpperCase()) !== ('viewer'.toUpperCase()) ? await ldap({ user_name: username, password }) :  await filterUsernameSysmUsersService(username)
+        if (!_res) {
+            const error = new Error("ไม่มีผู้ใช้ในระบบฐานข้อมูล");
+            error.statusCode = 500;
+            throw error; 
+        }
+        if( username ==  "superadmin" || username == "editor" || username == "viewer" ) {
             const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
+            console.log(passwordecrypt);
             if (!passwordecrypt) {
                 const error = new Error("รหัสผ่านไม่ถูกต้อง !");
                 error.statusCode = 500;
@@ -65,16 +70,14 @@ exports.loginControllers = async (req, res, next) => {
             id: _res.id,
             last_login: new Date(),
             update_by: _res.id,
-        }, transaction)
+        })
         result(res, {
             access_token: _token,
             refresh_token: refreshToken,
             expires_in: expires_in.exp
         })
 
-        await transaction.commit();
     } catch (error) {
-        if (transaction) await transaction.rollback();
         next(error);
     }
 };
