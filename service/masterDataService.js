@@ -1,5 +1,4 @@
 const uuid = require("uuid")
-const { deleteDataLayers } = require("../controllers/masterControllers")
 const models = require("../models/")
 const { sequelizeString, sequelizeStringFindOne } = require("../util/index")
 
@@ -119,8 +118,8 @@ exports.updateDatLayersService = async (data, users) => {
 };
 
 exports.deleteDatLayersService = async (data) => {
-  const deleteDataLayers = await models.dat_layers.destroy({ where: { id: data.id } })
-  return deleteDataLayers;
+  await models.dat_layers.destroy({ where: { id: data.id } })
+  return true
 };
 //----------------------------------------------------------------------------------//
 

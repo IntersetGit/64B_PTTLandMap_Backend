@@ -1,8 +1,8 @@
 const ActiveDirectory = require("activedirectory");
 const config = require("../config");
-const {filterUsernameSysmUsersService} = require("../service/sysmUsersService");
+const { filterUsernameSysmUsersService, updateSysmUsersService } = require("../service/sysmUsersService");
 const { createSysmUsersService } = require("../service/sysmUsersService");
-const {createDatProfileUsersService} = require("../service/datProfileUsersService");
+const { createDatProfileUsersService } = require("../service/datProfileUsersService");
 const sequelize = require("../config/dbConfig"); //connect db  query string
 const uuidv4 = require("uuid");
 const result = require("../middleware/result");
@@ -88,6 +88,80 @@ exports.createUserAD = async (req, res, next) => {
   }
 };
 
+//-------- update roles_id โดย id---------//
+exports.updateRoleUser = async (req, res, next) => {
+  try {
+
+    const { id, roles_id } = req.body
+
+    if (req.user.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') {
+      const err = new Error('คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้')
+      err.statusCode = 403
+      throw err
+    }
+
+    await updateSysmUsersService({ id, roles_id, update_by: req.user.sysm_id })
+
+    result(res, id, 201)
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** เรียกสิทธิผู้ใช้งาน */
+exports.getSysmRoleController = async (req, res, next) => {
+  try {
+    result(res, await getSysmRoleService());
+  } catch (error) {
+    next(error);
+  }
+};
+
+/** ค้นหา AD  */
+exports.findUserAd = async (req, res, next) => {
+  try {
+    const { username } = req.query
+
+    if (!username) {
+      const err = new Error('กรอกข้อมูล username')
+      err.statusCode = 400
+      throw err
+    }
+    const _res = await connectPttAD_(username)
+    const _model = {
+      employeeID: _res.employeeID,
+      displayName: _res.displayName,
+      isUsers: true
+    }
+
+    result(res, _model)
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+exports.delUserAd = async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    if (req.user.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') {
+      const err = new Error('คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้')
+      err.statusCode = 403
+      throw err
+    }
+
+    await updateSysmUsersService({ id, isuse: 2 })
+
+    result(res, true)
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* funcion connect ADPTT */
 const connectPttAD_ = async (username) => {
   const myPromise = new Promise((resolve, reject) => {
     const { url, search } = connect[config.NODE_ENV];
@@ -115,37 +189,3 @@ const connectPttAD_ = async (username) => {
   });
   return await myPromise;
 };
-
-
-//-------- update roles_id โดย id---------//
-exports.updateRoleUser = async (req, res, next) => {
-  try {
-    const { User_id, roles_id } = req.body;
-
-    const checkuserid = await models.sysm_users.findAll({
-      where: { id: User_id },
-    });
-    if (checkuserid) {
-      const DataRoleId = { roles_id: roles_id };
-      const UpdateRoleId = await models.sysm_users.update(DataRoleId, {
-        where: { id: User_id },
-      });
-      result(res, UpdateRoleId);
-      
-    }
-    result(res, checkuserid);
-  } catch (error) {
-    next(error);
-  }
-};
-
-/** เรียกสิทธิผู้ใช้งาน */
-exports.getSysmRoleController = async (req, res, next) => {
-  try {
-    result(res, await getSysmRoleService());
-  } catch (error) {
-    next(error);
-  }
-};
-
-
