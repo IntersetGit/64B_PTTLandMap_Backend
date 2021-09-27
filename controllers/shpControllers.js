@@ -64,7 +64,7 @@ exports.shapeAdd = async (req, res, next) => {
                 table_name: _createTableShape.obj.nameTable,
                 type,
                 group_layer_id,
-                color
+                color_layer: color
             }, transaction)
 
             await addShapeService(_createTableShape, geojson);

@@ -27,7 +27,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.UUID,
       allowNull: true,
       references: {
-        model: 'mas_layers_shape',
+        model: 'mas_layer_groups',
         key: 'id'
       }
     }

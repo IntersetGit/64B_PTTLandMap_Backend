@@ -52,7 +52,7 @@ const connect = {
         company คือ Company
 */
 
-exports.ldap = async ({ user_name, password }, transaction) => {
+exports.ldap = async ({ user_name, password }) => {
     // const _res = await ConnectLdap({ username: user_name, password })
     const _res = await connectPttAD({ username: user_name, password })
     // console.log('_res :>> ', _res);
@@ -69,7 +69,7 @@ exports.ldap = async ({ user_name, password }, transaction) => {
             user_name,
             e_mail: _res.mail,
             update_by: _user.id,
-        }, transaction)
+        })
 
         await updateDatProfileUsersService({
             user_id: _user.id,
@@ -78,7 +78,7 @@ exports.ldap = async ({ user_name, password }, transaction) => {
             initials: _res.initials,
             e_mail: _res.mail,
             update_by: _user.id,
-        }, transaction)
+        })
         
     } else {
         const err = new Error(`ไม่มีผู้ใช้ ${user_name} ในฐานข้อมูล`)

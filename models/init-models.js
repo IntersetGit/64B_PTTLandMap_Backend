@@ -8,7 +8,7 @@ var _mas_name_titles = require("./mas_name_titles");
 var _mas_province = require("./mas_province");
 var _mas_status_project = require("./mas_status_project");
 var _mas_subdistrict = require("./mas_subdistrict");
-var _ptt_geodata = require("./ptt_geodata");
+var _ptt_geodata = require("./ptt geodata");
 var _shape_layers = require("./shape_layers");
 var _sysm_roles = require("./sysm_roles");
 var _sysm_users = require("./sysm_users");
@@ -30,8 +30,8 @@ function initModels(sequelize) {
 
   mas_subdistrict.belongsTo(mas_district, { as: "district", foreignKey: "district_id"});
   mas_district.hasMany(mas_subdistrict, { as: "mas_subdistricts", foreignKey: "district_id"});
-  mas_layers_shape.belongsTo(mas_layers_shape, { as: "group_layer", foreignKey: "group_layer_id"});
-  mas_layers_shape.hasMany(mas_layers_shape, { as: "mas_layers_shapes", foreignKey: "group_layer_id"});
+  mas_layers_shape.belongsTo(mas_layer_groups, { as: "group_layer", foreignKey: "group_layer_id"});
+  mas_layer_groups.hasMany(mas_layers_shape, { as: "mas_layers_shapes", foreignKey: "group_layer_id"});
   mas_district.belongsTo(mas_province, { as: "province", foreignKey: "province_id"});
   mas_province.hasMany(mas_district, { as: "mas_districts", foreignKey: "province_id"});
   mas_layer_groups.belongsTo(sysm_users, { as: "created_by_sysm_user", foreignKey: "created_by"});
