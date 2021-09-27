@@ -74,7 +74,7 @@ exports.getDatLayersService = async (search)=>{
   let sql = `
   SELECT * FROM ptt_data.dat_layers  `
 
-  if (search) sql += `  where layer_name ILIKE '%${search}%'  or wms_url ILIKE '%${search}%' or type_server ILIKE '%${search}%'`
+  if (search) sql += `  where layer_name ILIKE '%${search}%'  or url ILIKE '%${search}%' or type_server ILIKE '%${search}%' or wms ILIKE '${search}'`
 
   return await sequelizeString(sql)
 
@@ -87,7 +87,8 @@ exports.getDatLayersService = async (search)=>{
 exports.createDatLayersService = async (data, users) => {
   const createDatLayers = await models.dat_layers.create({
     layer_name:data.layer_name,
-    wms_url:data.wms_url,
+    wms:data.wms,
+    url:data.url,
     type_server:data.type_server,
     isuse:data.isuse ?? 1 ,
     created_by:users.sysm_id,
@@ -107,7 +108,8 @@ exports.updateDatLayersService = async (data, users) => {
   }
 
   // if (data.layer_name) _data.layer_name = data.layer_name
-  if (data.wms_url) _data.wms_url = data.wms_url
+  if (data.wms) _data.wms = data.wms
+  if (data.url) _data.url = data.url
   if (data.type_server) _data.type_server = data.type_server
   if (data.date) _data.date = data.date
   const updateDatLayers = await models.dat_layers.update(_data ,{ where:{id:data.id} })

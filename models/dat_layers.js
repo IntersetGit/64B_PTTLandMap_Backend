@@ -13,7 +13,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       comment: "ชื่อข้อมูลพื้นที่"
     },
-    wms_url: {
+    url: {
       type: DataTypes.STRING(255),
       allowNull: true,
       comment: "url 3 มิติ"
@@ -61,6 +61,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     image_type: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    wms: {
       type: DataTypes.STRING,
       allowNull: true
     }
