@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="1111111" id="1111111">
+	<SimpleField name="OBJECTID" type="float"></SimpleField>
+	<SimpleField name="PROJECT_NA" type="string"></SimpleField>
+	<SimpleField name="PARID" type="string"></SimpleField>
+	<SimpleField name="KP" type="string"></SimpleField>
+	<SimpleField name="PARTYPE" type="string"></SimpleField>
+	<SimpleField name="PARLABEL1" type="string"></SimpleField>
+	<SimpleField name="PARLABEL2" type="string"></SimpleField>
+	<SimpleField name="PARLABEL3" type="string"></SimpleField>
+	<SimpleField name="PARLABEL4" type="string"></SimpleField>
+	<SimpleField name="PARLABEL5" type="string"></SimpleField>
+	<SimpleField name="PROV" type="string"></SimpleField>
+	<SimpleField name="AMP" type="string"></SimpleField>
+	<SimpleField name="TAM" type="string"></SimpleField>
+	<SimpleField name="AREA_RAI" type="float"></SimpleField>
+	<SimpleField name="AREA_NGAN" type="float"></SimpleField>
+	<SimpleField name="AREA_WA" type="float"></SimpleField>
+	<SimpleField name="PARCEL_OWN" type="string"></SimpleField>
+	<SimpleField name="PARCEL_O_1" type="string"></SimpleField>
+	<SimpleField name="PARCEL_O_2" type="string"></SimpleField>
+	<SimpleField name="ROW_RAI" type="float"></SimpleField>
+	<SimpleField name="ROW_NGAN" type="float"></SimpleField>
+	<SimpleField name="ROW_WA" type="float"></SimpleField>
+	<SimpleField name="ROW_DISTAN" type="float"></SimpleField>
+	<SimpleField name="STATUS" type="string"></SimpleField>
+	<SimpleField name="REMARK" type="string"></SimpleField>
+	<SimpleField name="Shape_Leng" type="float"></SimpleField>
+	<SimpleField name="Shape_Area" type="float"></SimpleField>
+</Schema>
+<Folder><name>1111111</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#1111111">
+		<SimpleData name="OBJECTID">1</SimpleData>
+		<SimpleData name="PROJECT_NA">โครงการท่อส่งก๊าซธรรมชาติจากบางปะกงไปโรงไฟฟ้าพระนครใต้</SimpleData>
+		<SimpleData name="PARID">1</SimpleData>
+		<SimpleData name="KP">0+200 - 0+250</SimpleData>
+		<SimpleData name="PARTYPE">โฉนดที่ดิน</SimpleData>
+		<SimpleData name="PARLABEL1">1000</SimpleData>
+		<SimpleData name="PARLABEL2">23</SimpleData>
+		<SimpleData name="PARLABEL3">455</SimpleData>
+		<SimpleData name="PARLABEL4">5037 II 7520-3</SimpleData>
+		<SimpleData name="PROV">สระบุรี</SimpleData>
+		<SimpleData name="AMP">หนองแค</SimpleData>
+		<SimpleData name="TAM">ไผ่ต่ำ</SimpleData>
+		<SimpleData name="AREA_RAI">1</SimpleData>
+		<SimpleData name="AREA_NGAN">0</SimpleData>
+		<SimpleData name="AREA_WA">2.500000000000000</SimpleData>
+		<SimpleData name="PARCEL_OWN">(1) บริษัท ปตท. จำกัด (มหาชน)</SimpleData>
+		<SimpleData name="PARCEL_O_1">(1) 0-1075-44000-10-8</SimpleData>
+		<SimpleData name="PARCEL_O_2">(1) 555 ถ.วิภาวดีรังสิต แขวงจตุจักร เขตจตุจักร กรุงเทพมหานคร 10900</SimpleData>
+		<SimpleData name="ROW_RAI">0</SimpleData>
+		<SimpleData name="ROW_NGAN">1</SimpleData>
+		<SimpleData name="ROW_WA">8.500000000000000</SimpleData>
+		<SimpleData name="ROW_DISTAN">1.754500000000000</SimpleData>
+		<SimpleData name="STATUS">1</SimpleData>
+		<SimpleData name="Shape_Leng">29618.746384378810035</SimpleData>
+		<SimpleData name="Shape_Area">52033033.983212009072304</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>99.5609488316463,14.2751177438657 99.6404786279805,14.2950115153504 99.6363711341661,14.2299551342998 99.5588710712424,14.2282351956784 99.5609488316463,14.2751177438657</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#1111111">
+		<SimpleData name="OBJECTID">2</SimpleData>
+		<SimpleData name="PROJECT_NA">โครงการท่อส่งก๊าซธรรมชาติจากบางปะกงไปโรงไฟฟ้าพระนครใต้</SimpleData>
+		<SimpleData name="PARID">1.1</SimpleData>
+		<SimpleData name="KP">100+000 - 101+000</SimpleData>
+		<SimpleData name="PARTYPE">น.ส.3ก.</SimpleData>
+		<SimpleData name="PARLABEL1">791</SimpleData>
+		<SimpleData name="PARLABEL2">8ข.</SimpleData>
+		<SimpleData name="PARLABEL3">41</SimpleData>
+		<SimpleData name="PARLABEL4">166</SimpleData>
+		<SimpleData name="PARLABEL5">5238 III แผ่นที่ 101</SimpleData>
+		<SimpleData name="PROV">พระนครศรีอยุธยา</SimpleData>
+		<SimpleData name="AMP">วังน้อย</SimpleData>
+		<SimpleData name="TAM">วังจุฬา</SimpleData>
+		<SimpleData name="AREA_RAI">200</SimpleData>
+		<SimpleData name="AREA_NGAN">3</SimpleData>
+		<SimpleData name="AREA_WA">0.000000000000000</SimpleData>
+		<SimpleData name="PARCEL_OWN">(1) นางสาวพิกุล ฮวดใช้ (2) นางสาวลำใย ฮวดใช้</SimpleData>
+		<SimpleData name="PARCEL_O_1">(1) 2-4204-00002-97-5 (2) 3-1102-00533-34-3</SimpleData>
+		<SimpleData name="PARCEL_O_2">(1) 39 หมู่ที่ 7 แขวงลำปลาทิว เขตลาดกระบัง กรุงเทพมหานคร 10520 (2) 45/1 หมู่ที่ 1 แขวงลำปลาทิว เขตลาดกระบั</SimpleData>
+		<SimpleData name="ROW_RAI">0</SimpleData>
+		<SimpleData name="ROW_NGAN">0</SimpleData>
+		<SimpleData name="ROW_WA">17.000000000000000</SimpleData>
+		<SimpleData name="ROW_DISTAN">0.052000000000000</SimpleData>
+		<SimpleData name="STATUS">2</SimpleData>
+		<SimpleData name="Shape_Leng">36562.815618661203189</SimpleData>
+		<SimpleData name="Shape_Area">83165488.826295375823975</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>99.5431164299315,14.2033923447374 99.6264326822439,14.1830942968665 99.5977884064349,14.1056594460477 99.5174322458119,14.1230697221409 99.5431164299315,14.2033923447374</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>

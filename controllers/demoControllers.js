@@ -4,6 +4,7 @@ const messages = require('../messages/index');
 const result = require("../middleware/result");
 const { ldap } = require("../service/ldapService");
 const { error } = require("../messages/index");
+const { getKml } = require("../service/testKml");
 
 exports.demoLdap = async (req, res, next) => {
   const transaction = await sequelize.transaction();
@@ -34,3 +35,46 @@ exports.demoShap = async (req, res, next) => {
     next(error);
   }
 }
+
+
+
+
+
+exports.gatKmlTest = async (req, res, next) => {
+  try {
+    result(res, await getKml());
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+
+
+
+
+// import fs from 'graceful-fs'
+// import geo from 'verrazzano'
+
+// const As = require("graceful-fs")
+// const geo = require("verrazzano")
+
+// As.createReadStream('testkml.kml')
+//   .pipe(geo.from('kml'))
+//   .pipe(geo.to('kmz'))
+//   .pipe(As.createWriteStream('testkml.kmz'))
+
+//   console.log(As)
+
+// var KMZGeoJSON = require('kmz-geojson');
+// console.log(datakml)
+// var KMZUrl = "../testkmz.kmz";
+
+// var datakml =  KMZGeoJSON.toKML(KMZUrl, function(err, kml) {
+//   // console.log(kml)
+// });
+// console.log(datakml)
+
+// KMZGeoJSON.toGeoJSON(KMZUrl, function(err, json) {
+//   // Do something with the GeoJSON data.
+// });
