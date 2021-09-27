@@ -4,39 +4,13 @@ const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService } = require('../service/shape_layers')
-const { findIdLayersShape, createTableShapeService } = require('../service/shape_data')
+const { findIdLayersShape, createTableShapeService, getKmlService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
 const { shapeDataService } = require("../service/shape_data");
 const { checkImgById } = require('../util');
-
-const _config = {
-    development: {
-        username: config.DB_USERNAME_DEV,
-        password: config.DB_PASSWORD_DEV,
-        database: config.DB_NAME_DEV,
-        host: config.DB_HOST_DEV,
-        dialect: config.DB_DIALECT_DEV,
-        port: config.DB_PORT_DEV
-    },
-    test: {
-        username: config.DB_USERNAME_TEST,
-        password: config.DB_PASSWORD_TEST,
-        database: config.DB_NAME_TEST,
-        host: config.DB_HOST_TEST,
-        dialect: config.DB_DIALECT_TEST,
-        port: config.DB_PORT_TEST
-    },
-    production: {
-        username: config.DB_USERNAME_PROD,
-        password: config.DB_PASSWORD_PROD,
-        database: config.DB_NAME_PROD,
-        host: config.DB_HOST_PROD,
-        dialect: config.DB_DIALECT_PROD,
-        port: config.DB_PORT_PROD
-    }
-}
+const kml = require('gtran-kml')
 
 exports.shapeAdd = async (req, res, next) => {
     const transaction = await sequelize.transaction();
@@ -131,6 +105,22 @@ exports.getShapeData = async (req, res, next) => {
         const _res = await findIdLayersShape(id)
         result(res, await shapeDataService(_res.table_name))
 
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.gatKmlData = async (req, res, next) => {
+    try {
+        const { kmls } = req.files
+        console.log(kmls);
+        
+        const data = await kml.toGeoJson(kmls.name, kmls.data)
+        console.log(data);
+
+        // await getKmlService(kml.data)
+        result(res, data)
+        
     } catch (error) {
         next(error);
     }
