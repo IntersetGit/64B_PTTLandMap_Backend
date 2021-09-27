@@ -31,7 +31,9 @@ router.delete('/datLayers', [authenticateToken], masterControllers.deleteDataLay
 //---------- ดึงข้อมูล systems Roles หน้าเพิ่มผู้ใช้ระบบ ----------------------//
 router.get('/getSysmRole', masterControllers.getSysmRoleController);
 
-//------------ตาราง GIS Layer เพิ่ม ลบ แก้ไข Layer mas_layer_shape------------//
-router.get('/getMasLayersShape', [authenticateToken], masterControllers.getAllMasLayersShape);
+//------------ GIS Layer แสดง เพิ่ม ลบ แก้ไข Layer mas_layer_shape------------//
+router.get('/masLayersShape', [authenticateToken], masterControllers.getAllMasLayersShape);
+router.post('/masLayersShape', [authenticateToken], masterControllers.createAndEditMasLayersShape);
+router.delete('/masLayersShape', [authenticateToken], masterControllers.deleteMasLayersShape);
 
 module.exports = router;

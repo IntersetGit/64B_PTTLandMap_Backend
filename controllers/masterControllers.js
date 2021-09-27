@@ -1,12 +1,14 @@
-const {sequelizeString} = require("../util/index"); //connect db  query string
+const { sequelizeString } = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService,updateMasLayersService, deleteMasLayersService, getAllTitleNameService,getMasLayersService,getDatLayersService,getMasProviceService,getMasSubdistrictService,getMasDistrictService , getAllMasterLayers,getSysmRoleService } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService, getMasLayersService, getDatLayersService, getMasProviceService, getMasSubdistrictService, getMasDistrictService, getAllMasterLayers, getSysmRoleService, editMasLayersShapeService } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 const models = require("../models/index");
 const { checkImgById } = require('../util')
 const { sequelize } = require("../models/index");
 const { getAllMasLayersShapeService } = require("../service/masterDataService");
+const { createMasLayersShapeService } = require('../service/masterDataService')
+const { deleteMasLayersShapeService } = require('../service/masterDataService')
 
 exports.getNameTitle = async (req, res, next) => {
   try {
@@ -26,27 +28,27 @@ exports.viewGetNameTitle = async (req, res, next) => {
 }
 
 //------------------- แสดง จังหวัด อำเภอ ตำบล -------------------------//
-exports.getProvince = async(req,res,next)=>{
-  result(res,await getMasProviceService())
+exports.getProvince = async (req, res, next) => {
+  result(res, await getMasProviceService())
 }
-exports.getDistrict = async (req,res,next)=>{
-  result(res,await getMasDistrictService())
+exports.getDistrict = async (req, res, next) => {
+  result(res, await getMasDistrictService())
 }
-exports.getSubDistrict = async (req,res,next)=>{
-  result(res,await getMasSubdistrictService())
+exports.getSubDistrict = async (req, res, next) => {
+  result(res, await getMasSubdistrictService())
 }
 //------------------------------------------------------------------//
 
 //---------------- แสดง เพิ่ม ลบ แก้ไข mas_layers_group -------------- //
-exports.getMasLayersName = async (req,res,next)=>{
+exports.getMasLayersName = async (req, res, next) => {
   try {
-    const {search} = await req.body
+    const { search } = await req.body
     const _res = await getAllMasterLayers(search)
-    
+
     _res.forEach(val => {
       val.img = checkImgById(val.id, "groupLayersImg")
     });
-  
+
     result(res, _res)
   } catch (error) {
     next(error)
@@ -72,7 +74,7 @@ exports.updateMasLayers = async (req, res, next) => {
     const data = req.body
     const users = req.user
     if (users.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถแก้ข้อมูลได้")
-    result(res, await updateMasLayersService(data,users))
+    result(res, await updateMasLayersService(data, users))
   } catch (error) {
     next(error)
   }
@@ -92,12 +94,12 @@ exports.deleteMasLayers = async (req, res, next) => {
 
 
 //----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers (หัวข้อย่อย) ---------//
-exports.getDataLayersName = async (req,res,next)=>{
+exports.getDataLayersName = async (req, res, next) => {
   try {
-    const {layername} = req.query
-    result(res,await models.dat_layers.findOne(
+    const { layername } = req.query
+    result(res, await models.dat_layers.findOne(
       {
-      where:{layer_name:layername}
+        where: { layer_name: layername }
       }))
   } catch (error) {
     next(error)
@@ -105,10 +107,10 @@ exports.getDataLayersName = async (req,res,next)=>{
 }
 
 
-exports.getDataLayers = async (req,res,next)=>{
+exports.getDataLayers = async (req, res, next) => {
   try {
     const { search } = req.query
-    result(res,await getDatLayersService(search))
+    result(res, await getDatLayersService(search))
   } catch (error) {
     next(error)
   }
@@ -158,7 +160,7 @@ exports.getSysmRoleController = async (req, res, next) => {
 };
 
 //------------- ตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
-exports.getAllMasLayersShape =  async (req, res, next) => {
+exports.getAllMasLayersShape = async (req, res, next) => {
   try {
     result(res, await getAllMasLayersShapeService())
   } catch (error) {
@@ -167,3 +169,28 @@ exports.getAllMasLayersShape =  async (req, res, next) => {
 }
 
 //------------- เพิ่ม ลบ แก้ไข GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
+exports.createAndEditMasLayersShape = async (req, res, next) => {
+  try {
+    const data = req.body
+    if (req.user.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+
+    if (data.id) {
+      result(res, await editMasLayersShapeService(data))
+    } else {
+      result(res, await createMasLayersShapeService(data))
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.deleteMasLayersShape = async (req, res, next) => {
+  try {
+    const data = req.body
+    const users = req.user
+    if (users.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถลบข้อมูลได้")
+    result(res, await deleteMasLayersShapeService(data))
+  } catch (error) {
+    next(error)
+  }
+}
