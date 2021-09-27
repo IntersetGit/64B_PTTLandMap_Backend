@@ -35,7 +35,4 @@ router.get("/demoShape", async (req, res) => {
 });
 
 
-router.get("/getKmlTest",gatKmlTest)
-
-
 module.exports = router;

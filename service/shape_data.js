@@ -4,9 +4,6 @@ const uuid = require('uuid');
 const { DataTypes } = require("sequelize"); //type Database
 const { SequelizeAuto }  = require('sequelize-auto');
 const sequelize  = require("../config/dbConfig"); //connect database
-const tj = require("@tmcw/togeojson");
-const fs = require("fs");
-const { DOMParser } = require("xmldom");
 
 
 exports.shapeDataService = async (table_name) => {
@@ -82,12 +79,4 @@ exports.createTableShapeService = async (geojson, transaction, queryInterface) =
         column: obj1,
         obj
     }
-}
-
-
-exports.getKmlService = async (kml) => {
-    const kml2 = new DOMParser().parseFromString(fs.readFileSync(`testkml.kml`, "utf8"));
-    console.log(kml2);
-    const converted = tj.kml(kml2);
-    return converted
 }

@@ -5,11 +5,12 @@
   "scripts": {
     "start": "node ./bin/64B",
     "dev": "nodemon ./bin/64B",
+    "server": "nodemon ./bin/ptt",
+    "openpm2": "pm2 start ./bin/ptt -i max",
     "up-models": "sequelize-auto -o './models' -d pttlandmap_db -h 10.224.166.39 -u postgres -p 5432 -x Interset@1234 -e postgres",
     "up-models_": "sequelize-auto -o './models' -d pttlandmap_db -h 103.253.72.178 -u hrSystemAdmin -p 5432 -x 4Dm!n2020@Interset -e postgres"
   },
   "dependencies": {
-    "@tmcw/togeojson": "^4.5.0",
     "activedirectory": "^0.7.2",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
@@ -29,7 +30,6 @@
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
-    "kmz-geojson": "^0.1.0",
     "ldapjs": "^2.3.1",
     "lodash": "^4.17.20",
     "mariadb": "^2.5.2",
@@ -41,7 +41,6 @@
     "mysql2": "^2.2.5",
     "node-cmd": "^4.0.0",
     "node-cron": "^2.0.3",
-    "parse2-kmz": "^1.0.5",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.5.1",
@@ -54,24 +53,11 @@
     "socket.io": "^3.1.0",
     "swagger-generator-express": "^2.1.1",
     "tedious": "^9.2.3",
-    "uuid": "^8.3.2",
-    "verrazzano": "^2.2.3"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "faker": "^5.1.0",
     "nodemon": "^2.0.7",
     "sequelize-cli": "^6.2.0"
-  },
-  "description": "node version 14.17.0\r npm version 6.14.13",
-  "main": "app.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/IntersetGit/64B_PTTLandMap_Backend.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/IntersetGit/64B_PTTLandMap_Backend/issues"
-  },
-  "homepage": "https://github.com/IntersetGit/64B_PTTLandMap_Backend#readme"
+  }
 }
