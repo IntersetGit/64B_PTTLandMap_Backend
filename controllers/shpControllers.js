@@ -10,7 +10,10 @@ const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
 const { shapeDataService } = require("../service/shape_data");
 const { checkImgById } = require('../util');
-const kml = require('gtran-kml')
+const fs = require('fs')
+const path = require("path");
+const parseKML = require('parse-kml')
+
 
 exports.shapeAdd = async (req, res, next) => {
     const transaction = await sequelize.transaction();
@@ -19,7 +22,7 @@ exports.shapeAdd = async (req, res, next) => {
 
         if (!req.files) {
             const err = new Error('ต้องการไฟล์เพื่ออัพโหลด')
-            err.statusCode = 404
+            err.statusCode = 302
             throw err
         } else {
             const { file } = req.files
@@ -112,14 +115,30 @@ exports.getShapeData = async (req, res, next) => {
 
 exports.gatKmlData = async (req, res, next) => {
     try {
-        const { kmls } = req.files
-        console.log(kmls);
-        
-        const data = await kml.toGeoJson(kmls.name, kmls.data)
-        console.log(data);
+        if (!req.files) {
+            const err = new Error('ต้องการไฟล์ .kml')
+            err.statusCode = 302
+            throw err
+        }
+        const { kml } = req.files
+        const _path = `${path.resolve()}/public/kmlfile/`;
+        const _kml = `${_path}/${kml.name}`
 
-        // await getKmlService(kml.data)
-        result(res, data)
+        //เช็ค path ว่ามีไหม ถ้าไม่มีจะสร้างขึ้นมา
+        if (!fs.existsSync(_path)) {
+            fs.mkdirSync(_path);
+        }
+
+        kml.mv(_kml, (err) => {
+            if (err) {
+                const error = new Error(err);
+                error.statusCode = 400;
+                throw error;
+            }
+        })
+        const geodata = await parseKML.toJson(_kml)
+
+        result(res, geodata)
         
     } catch (error) {
         next(error);
