@@ -91,7 +91,6 @@ exports.createUserAD = async (req, res, next) => {
 //-------- update roles_id โดย id---------//
 exports.updateRoleUser = async (req, res, next) => {
   try {
-
     const { id, roles_id } = req.body
 
     if (req.user.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') {
