@@ -113,7 +113,7 @@ exports.getShapeData = async (req, res, next) => {
     }
 }
 
-exports.gatKmlData = async (req, res, next) => {
+exports.getKmlData = async (req, res, next) => {
     try {
         if (!req.files) {
             const err = new Error('ต้องการไฟล์ .kml')
@@ -137,6 +137,19 @@ exports.gatKmlData = async (req, res, next) => {
             }
         })
         const geodata = await parseKML.toJson(_kml)
+
+        result(res, geodata)
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
+var KMZGeoJSON = require('parse2-kmz');
+exports.getKmzData = async (req, res, next) => {
+    try {
+        
+        const geodata = await KMZGeoJSON.toJson('boothbay2018.kmz')
 
         result(res, geodata)
         

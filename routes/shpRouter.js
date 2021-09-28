@@ -1,4 +1,4 @@
-const { shapeAdd, getAllShape, getAllDataLayer, convertGeoToShp, getShapeData, gatKmlData } = require('../controllers/shpControllers');
+const { shapeAdd, getAllShape, getAllDataLayer, convertGeoToShp, getShapeData, getKmlData, getKmzData } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -12,6 +12,8 @@ router.get('/shapeData', [authenticateToken], getShapeData);
 /* แปลง geo เป็น shp */
 router.post('/convertGeoToShp', [authenticateToken], convertGeoToShp);
 
-router.post('/getKmlData', [authenticateToken], gatKmlData);
+router.post('/getKmlData', [authenticateToken], getKmlData);
+
+router.post('/getKmzData', getKmzData)
 
 module.exports = router;

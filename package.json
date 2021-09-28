@@ -41,6 +41,7 @@
     "node-cmd": "^4.0.0",
     "node-cron": "^2.0.3",
     "parse-kml": "^1.0.1",
+    "parse2-kmz": "^1.0.5",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.5.1",
