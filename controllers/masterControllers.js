@@ -94,7 +94,7 @@ exports.deleteMasLayers = async (req, res, next) => {
 
 
 //----------- แสดง เพิ่่ม ลบ แก้ไข dat_layers  ---------//
-exports.getDataLayers = async (req,res,next)=>{
+exports.getDataLayers = async (req, res, next) => {
   try {
     const { search } = req.query
     result(res, await getDatLayersService(search))
@@ -173,7 +173,7 @@ exports.createAndEditMasLayersShape = async (req, res, next) => {
 
 exports.deleteMasLayersShape = async (req, res, next) => {
   try {
-    const data = req.body
+    const data = req.query
     const users = req.user
     if (users.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถลบข้อมูลได้")
     result(res, await deleteMasLayersShapeService(data))
@@ -181,3 +181,5 @@ exports.deleteMasLayersShape = async (req, res, next) => {
     next(error)
   }
 }
+
+
