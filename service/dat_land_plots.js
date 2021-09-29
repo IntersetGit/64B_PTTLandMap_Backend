@@ -8,8 +8,6 @@ exports.addShapeService = async (table, geojson) => {
     console.log(table.obj.newObject);
 
     // if (geojson) {
-
-
     //     geojson.features.forEach(x => {
     //         const _model = {}
     //         table.obj.newObject.forEach(e => {
@@ -18,17 +16,6 @@ exports.addShapeService = async (table, geojson) => {
     //         arr.push(_model)
     //     });
 
-
-
-    // }
-
-    // console.log("arr", arr);
-
-    // for (let a = 0; a < arr.length; a++) {
-    //     const element = arr[a];
-    //     console.log(element);
-
-    //     await models[table.obj.nameTable].create(element)
     // }
 
 
@@ -58,7 +45,6 @@ exports.addShapeService = async (table, geojson) => {
             "type":"MultiPolygon",
             "coordinates":[[[ ${arr} ]]]
             }'),${data.properties}) `
-            // "coordinates":[[[ [${geo[0][0]} , ${geo[0][1]}] , [${geo[1][0]} , ${geo[1][1]}] , [${geo[2][0]} , ${geo[2][1]}] , [${geo[3][0]} , ${geo[3][1]}] , [${geo[4][0]} , ${geo[4][1]}] ]]]
             await sequelizeString(sql);
         }
     }

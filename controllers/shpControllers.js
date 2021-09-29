@@ -12,7 +12,8 @@ const { shapeDataService } = require("../service/shape_data");
 const { checkImgById } = require('../util');
 const fs = require('fs')
 const path = require("path");
-const parseKML = require('parse-kml')
+const parseKML = require('parse-kml');
+const KMZGeoJSON = require('parse2-kmz');
 
 
 exports.shapeAdd = async (req, res, next) => {
@@ -145,11 +146,42 @@ exports.getKmlData = async (req, res, next) => {
     }
 }
 
-var KMZGeoJSON = require('parse2-kmz');
 exports.getKmzData = async (req, res, next) => {
     try {
+        if (!req.files) {
+            const err = new Error('ต้องการไฟล์ .kmz')
+            err.statusCode = 302
+            throw err
+        }
+
+        const { kmz } = req.files
+        const _path = `${path.resolve()}/public/kmzfile/`;
+        const _kmz = `${_path}/${kmz.name}`
+
+        //เช็ค path ว่ามีไหม ถ้าไม่มีจะสร้างขึ้นมา
+        if (!fs.existsSync(_path)) {
+            fs.mkdirSync(_path);
+        }
+
+        kmz.mv(_kmz, (err) => {
+            if (err) {
+                const error = new Error(err);
+                error.statusCode = 400;
+                throw error;
+            }
+        })
         
-        const geodata = await KMZGeoJSON.toJson('boothbay2018.kmz')
+        const geodata = await KMZGeoJSON.toJson(_kmz)
+        
+        for (let a = 0; a < geodata.features.length; a++) {
+            for (let i = 0; i < geodata.features[a].geometry.coordinates.length; i++) {
+                const e = geodata.features[a].geometry.coordinates[i];
+                for (let z = 0; z < e.length; z++) {
+                    const coordinates = e[z];
+                    coordinates.length > 0 ? coordinates.pop() : []
+                }
+            }
+        }
 
         result(res, geodata)
         

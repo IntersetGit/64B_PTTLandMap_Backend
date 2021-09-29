@@ -175,12 +175,13 @@ const connectPttAD_ = async (username) => {
     const ad = new ActiveDirectory(config_ad);
     ad.findUser(username, (err, user) => {
       if (err) {
-        const _err = { message: "error" };
+        const _err = { message: "การเชื่อมต่อผิดพลาด" };
         reject(_err);
       }
       if (!user) {
         console.log(user);
-        const _err = { message: "ไม่พบชื่อผู้ใช้" };
+        const _err = new Error('ไม่พบชื่อผู้ใช้')
+        _err.statusCode = 404
         reject(_err);
       }
       resolve(user);
