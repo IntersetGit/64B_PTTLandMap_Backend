@@ -9,6 +9,10 @@ const { sequelize } = require("../models/index");
 const { getAllMasLayersShapeService } = require("../service/masterDataService");
 const { createMasLayersShapeService } = require('../service/masterDataService')
 const { deleteMasLayersShapeService } = require('../service/masterDataService')
+const { getAllMasStatusProjectService } = require('../service/masterDataService')
+const { createMasStatusProjectService } = require ('../service/masterDataService')
+const { editMasStatusProjectService } = require ('../service/masterDataService')
+const { deleteMasStatusProjectService } = require ('../service/masterDataService')
 
 exports.getNameTitle = async (req, res, next) => {
   try {
@@ -146,7 +150,7 @@ exports.getSysmRoleController = async (req, res, next) => {
   }
 };
 
-//------------- ตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
+//------------- แสดงตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
 exports.getAllMasLayersShape = async (req, res, next) => {
   try {
     result(res, await getAllMasLayersShapeService())
@@ -182,4 +186,38 @@ exports.deleteMasLayersShape = async (req, res, next) => {
   }
 }
 
+//------------ แสดงตารางข้อมูล Status Project หน้า Status โครงการ ------------//
+exports.getAllMasStatusProject = async (req, res, next) => {
+  try{
+    result (res, await getAllMasStatusProjectService())
+  } catch (error) {
+    next(error)
+  }
+}
 
+//------------ เพิ่ม ลบ แก้ไข Status Project หน้า Status โครงการ------------//
+exports.createAndEditMasStatusProject = async(req, res, next) => {
+  try {
+    const data = req.body
+    if (req.user.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถเพิ่มข้อมูลได้")
+
+    if (data.id) {
+      result(res, await editMasStatusProjectService(data))
+    } else {
+      result(res, await createMasStatusProjectService(data))
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.deleteMasStatusProject = async (req, res, next) => {
+  try {
+    const data = req.query
+    const users = req.user
+    if (users.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถลบข้อมูลได้")
+    result(res, await deleteMasStatusProjectService(data))
+  } catch (error) {
+    next(error)
+  }
+}

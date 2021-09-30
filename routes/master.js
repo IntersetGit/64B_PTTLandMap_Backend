@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { authenticate } = require('passport');
 const masterControllers = require('../controllers/masterControllers');
 const { authenticateToken } = require('../middleware/authenticateToken')
 
@@ -30,9 +31,18 @@ router.delete('/datLayers', [authenticateToken], masterControllers.deleteDataLay
 //---------- ดึงข้อมูล systems Roles หน้าเพิ่มผู้ใช้ระบบ ----------------------//
 router.get('/getSysmRole', masterControllers.getSysmRoleController);
 
-//------------ GIS Layer แสดง เพิ่ม ลบ แก้ไข Layer mas_layer_shape------------//
+//------------ GIS Layer แสดง เพิ่ม ลบ แก้ไข  mas_layer_shape------------//
 router.get('/masLayersShape', [authenticateToken], masterControllers.getAllMasLayersShape);
 router.post('/masLayersShape', [authenticateToken], masterControllers.createAndEditMasLayersShape);
 router.delete('/masLayersShape', [authenticateToken], masterControllers.deleteMasLayersShape);
+
+//------------ Status Project แสดง เพิ่ม ลบ แก้ไข mas_status_project------------//
+router.get('/masStatusProject', [authenticateToken], masterControllers.getAllMasStatusProject);
+router.post('/masStatusProject', [authenticateToken], masterControllers.createAndEditMasStatusProject);
+router.delete('/masStatusProject', [authenticateToken], masterControllers.deleteMasStatusProject);
+
+
+
+
 
 module.exports = router;

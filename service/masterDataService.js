@@ -12,7 +12,7 @@ exports.getAllMasterLayers = async (search) => {
 
   if (search) sql += ` and group_name ILIKE '%${search}%' `
 
-  sql+='order by  order_by'
+  sql += 'order by  order_by'
   return sequelizeString(sql)
 }
 //----------------------- แสดง จังหวัด อำเภอ ตำบล ----------------------//
@@ -87,25 +87,25 @@ exports.getDatLayersService = async (search) => {
 
 exports.createDatLayersService = async (data, users) => {
   const createDatLayers = await models.dat_layers.create({
-    layer_name:data.layer_name,
-    wms:data.wms,
-    url:data.url,
-    type_server:data.type_server,
-    isuse:data.isuse ?? 1 ,
-    created_by:users.sysm_id,
-    created_date:new Date(),
-    date:data.date,
-    image_type:data.image_type
+    layer_name: data.layer_name,
+    wms: data.wms,
+    url: data.url,
+    type_server: data.type_server,
+    isuse: data.isuse ?? 1,
+    created_by: users.sysm_id,
+    created_date: new Date(),
+    date: data.date,
+    image_type: data.image_type
   })
   return createDatLayers
 };
 
 exports.updateDatLayersService = async (data, users) => {
   const _data = {
-    isuse: 1 , 
-    update_by:users.user_id,
-    update_date:new Date(),
-    layer_name:data.layer_name
+    isuse: 1,
+    update_by: users.user_id,
+    update_date: new Date(),
+    layer_name: data.layer_name
   }
 
   // if (data.layer_name) _data.layer_name = data.layer_name
@@ -113,7 +113,7 @@ exports.updateDatLayersService = async (data, users) => {
   if (data.url) _data.url = data.url
   if (data.type_server) _data.type_server = data.type_server
   if (data.date) _data.date = data.date
-  const updateDatLayers = await models.dat_layers.update(_data ,{ where:{id:data.id} })
+  const updateDatLayers = await models.dat_layers.update(_data, { where: { id: data.id } })
   return updateDatLayers[0];
 };
 
@@ -131,7 +131,7 @@ exports.getSysmRoleService = async () => {
 
 }
 
-//------------- ตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
+//------------- แสดงตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
 exports.getAllMasLayersShapeService = async () => {
   const allMasLayersShape = await models.mas_layers_shape.findAll()
   return allMasLayersShape;
@@ -174,7 +174,55 @@ exports.editMasLayersShapeService = async (data, user) => {
 
 exports.deleteMasLayersShapeService = async (data, user) => {
   await models.mas_layers_shape.destroy({
-    where:{id:data.id}
+    where: { id: data.id }
+  })
+  return true
+}
+
+//------------ แสดงตารางข้อมูล Status Project หน้า Status โครงการ ------------//
+exports.getAllMasStatusProjectService = async () => {
+  const allMasStatus = await models.mas_status_project.findAll()
+  return allMasStatus;
+}
+
+
+//------------ เพิ่ม ลบ แก้ไข Status Project หน้า Status โครงการ------------//
+exports.createMasStatusProjectService = async (data, user) => {
+  let sql = await sequelizeStringFindOne(` SELECT MAX(sort)+1 as sort FROM master_lookup.mas_status_project `)
+  const id = uuid.v4()
+  await models.mas_status_project.create({
+    id,
+    status_code: data.status_code,
+    name: data.name,
+    isuse: data.isuse ?? 1,
+    sort: sql.sort
+  })
+  return id
+}
+
+exports.editMasStatusProjectService = async (data, user) => {
+  const editMasStatusProject = await models.mas_status_project.findOne({
+    where: { id: data.id }
+  })
+  if (!editMasStatusProject) {
+    const error = new Error('ไม่พบข้อมูล');
+    error.statusCode = 404;
+    throw error;
+  }
+  await models.mas_status_project.update({
+    status_code: data.status_code,
+    name: data.name,
+    isuse: data.isuse ?? 1,
+    sort: data.sort
+  }, {
+    where: { id: data.id }
+  })
+  return data.id
+}
+
+exports.deleteMasStatusProjectService = async (data, user) => {
+  await models.mas_status_project.destroy({
+    where: { id: data.id }
   })
   return true
 }
