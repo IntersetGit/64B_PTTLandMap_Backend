@@ -118,8 +118,8 @@ exports.updateDatLayersService = async (data, users) => {
 };
 
 exports.deleteDatLayersService = async (data) => {
-  await models.dat_layers.destroy({ where: { id: data.id } })
-  return true
+  const deleteDataLayers = await models.dat_layers.destroy({ where: { id: data.id } })
+  return deleteDataLayers;
 };
 //----------------------------------------------------------------------------------//
 
