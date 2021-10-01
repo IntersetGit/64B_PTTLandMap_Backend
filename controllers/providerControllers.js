@@ -134,7 +134,7 @@ exports.refreshTokenControllers = async (req, res, next) => {
             if (err) res.sendStatus(403)
             const _res = DecryptCryptoJS(__res.token)
             const _model = {
-                sysm_id: _res.id,
+                sysm_id: _res.sysm_id,
                 roles_id: _res.roles_id,
                 code_ldap: _res.code_ldap,
                 roles_name: _res.roles_name,
