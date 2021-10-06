@@ -12,7 +12,7 @@ router.get('/shapeData', [authenticateToken], getShapeData);
 /* แปลง geo เป็น shp */
 router.post('/convertGeoToShp', [authenticateToken], convertGeoToShp);
 
-router.post('/getKmlData', [authenticateToken], getKmlData);
+router.post('/getKmlData', getKmlData);
 
 router.post('/getKmzData', getKmzData)
 

@@ -2,9 +2,9 @@ const shapefile = require("shapefile");
 const result = require("../middleware/result");
 const shp = require('shpjs');
 const { convert } = require("geojson2shp");
-const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
-const { getDataShapService, addShapeLayersService } = require('../service/shape_layers')
-const { findIdLayersShape, createTableShapeService, getKmlService } = require('../service/shape_data')
+const { addShapeService, getDataLayerService,addkmlService } = require("../service/dat_land_plots");
+const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
+const { findIdLayersShape, createTableShapeService, getKmlService,createTableKmlService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -88,7 +88,7 @@ exports.convertGeoToShp = async (req, res, next) => {
 exports.getAllDataLayer = async (req, res, next) => {
     try {
         const get_shp = await getDataShapService()
-        console.log(get_shp);
+        // console.log(get_shp);
 
         for (let i = 0; i < get_shp.length; i++) {
             const e = get_shp[i];
@@ -138,8 +138,39 @@ exports.getKmlData = async (req, res, next) => {
             }
         })
         const geodata = await parseKML.toJson(_kml)
+        console.log(geodata);
+        // const { color, group_layer_id, name_layer, type } = req.query
 
-        result(res, geodata)
+        // const transactionn = await sequelize.transaction();
+        // const queryInterfacee = await sequelize.getQueryInterface();
+        // const id = uuid.v4();
+
+
+        // const _createTableKML = await createTableKmlService(geodata, transactionn, queryInterfacee);
+
+        // await addkmlLayersService({
+        //     id,
+        //     name_layer,
+        //     table_name: _createTableKML.obj.nameTable,
+        //     type,
+        //     group_layer_id,
+        //     color_layer: color
+        // }, transactionn)
+
+        
+        // // console.log("_createTableShap+++++++++++++++++++++++++++++++++++++++++++++++++e");
+        // // console.log(_createTableKML.obj.nameTable);
+        // // console.log(_createTableKML.obj.nameTable);
+        // // console.log(_createTableKML.obj.nameTable);
+        // // console.log(_createTableKML.obj.nameTable);
+        // // console.log(_createTableKML.obj.nameTable);
+        
+        // await addkmlService(_createTableKML, geodata);
+
+        // await transactionn.commit();
+        result(res, geodata, 201);
+
+        // result(res, geodata)
         
     } catch (error) {
         next(error);
