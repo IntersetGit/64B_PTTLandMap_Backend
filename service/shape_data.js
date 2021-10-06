@@ -2,8 +2,8 @@ const models = require('../models');
 const { sequelizeString, sequelizeStringFindOne, stringToSnakeCase } = require('../util');
 const uuid = require('uuid');
 const { DataTypes } = require("sequelize"); //type Database
-const { SequelizeAuto }  = require('sequelize-auto');
-const sequelize  = require("../config/dbConfig"); //connect database
+const { SequelizeAuto } = require('sequelize-auto');
+const sequelize = require("../config/dbConfig"); //connect database
 
 
 exports.shapeDataService = async (table_name) => {
@@ -32,10 +32,10 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     var obj1 = {}
     var schema = ``
 
-    if(type.toLowerCase() == "shape file".toLowerCase()) schema += `shape_data`
-    if(type.toLowerCase() == "kml".toLowerCase()) schema += `kml_data`
-    if(type.toLowerCase() == "kmz".toLowerCase()) schema += `kmz_data`
-    
+    if (type.toLowerCase() == "shape file".toLowerCase()) schema += `shape_data`
+    if (type.toLowerCase() == "kml".toLowerCase()) schema += `kml_data`
+    if (type.toLowerCase() == "kmz".toLowerCase()) schema += `kmz_data`
+
     // console.log(geojson);
     const countTable = await sequelizeStringFindOne(` 
         SELECT COUNT(*) AS tables
@@ -43,7 +43,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
         WHERE table_schema  = '${schema}'
     `)
 
-    if(type.toLowerCase() == "shape file".toLowerCase()) {
+    if (type.toLowerCase() == "shape file".toLowerCase()) {
         obj.nameTable = `ptt_shape_number${Number(countTable.tables) + 1}`
     } else if (type.toLowerCase() == "kml".toLowerCase()) {
         obj.nameTable = `ptt_kml_number${Number(countTable.tables) + 1}`
@@ -51,12 +51,20 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
         obj.nameTable = `ptt_kmz_number${Number(countTable.tables) + 1}`
     }
 
+    const arrPropertie = []
+
     for (let i = 0; i < geojson.features.length; i++) {
         const e = geojson.features[i];
         // console.log(e.properties);
         obj.newObject = Object.keys(e.properties) //เอาชื่อตัวแปรมาใช้
         obj.newObject = obj.newObject.map(e => e.toLowerCase())
-        obj.newObject = obj.newObject.map(str =>  stringToSnakeCase(str)) //แปลงเป็น SnakeCase
+        obj.newObject = obj.newObject.map(str => stringToSnakeCase(str)) //แปลงเป็น SnakeCase
+        arrPropertie.push(obj.newObject)
+
+    }
+    const newArrPropertie = arrPropertie.length > 0 ? arrPropertie[arrPropertie.length - 1] : []
+    if (newArrPropertie.length > 0) {
+
         obj1.gid = {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -67,17 +75,22 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
             type: DataTypes.GEOMETRY('MultiPolygon', 0),
             allowNull: true,
         }
-        obj.newObject.forEach(colomn => {
+        newArrPropertie.forEach(colomn => {
             /* loop ใส่ type*/
             obj1[colomn] = {
-                type: DataTypes.STRING, 
+                type: DataTypes.STRING,
                 allowNull: true
             }
-
+    
         })
-    }
-    // console.log(typeof new Date());
 
+    } else {
+        const err = new Error('ผิดพลาดไม่สามารถสร้างฐานข้อมูลได้')
+        err.statusCode = 400
+        throw err
+    }
+
+    // console.log(typeof new Date());
 
     await queryInterface.createTable(`${obj.nameTable}`, obj1, { schema })
 
@@ -89,7 +102,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     // auto.run();
 
     return {
-        column: obj1,
-        obj
+        obj,
+        schema
     }
 }

@@ -51,9 +51,9 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             if(type == "kml") {
 
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
-                const geodata = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
-                console.log(geodata);
-                const _createTableShape = await createTableShapeService(geodata, queryInterface, type);
+                const geojson = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
+                // console.log(geojson);
+                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
                 console.log(_createTableShape);
                 
                 await addShapeLayersService({
@@ -70,20 +70,20 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
 
             
            
-            // console.log(geojson);
-            const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-            console.log(_createTableShape);
+            // // console.log(geojson);
+            // const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+            // console.log(_createTableShape);
             
-            await addShapeLayersService({
-                id,
-                name_layer,
-                table_name: _createTableShape.obj.nameTable,
-                type,
-                group_layer_id,
-                color_layer: color
-            })
+            // await addShapeLayersService({
+            //     id,
+            //     name_layer,
+            //     table_name: _createTableShape.obj.nameTable,
+            //     type,
+            //     group_layer_id,
+            //     color_layer: color
+            // })
 
-            await addShapeService(_createTableShape, geojson);
+            // await addShapeService(_createTableShape, geojson);
             result(res, {id, "file_type": type}, 201);
         }
     } catch (error) {
