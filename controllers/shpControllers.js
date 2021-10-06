@@ -16,8 +16,7 @@ const parseKML = require('parse-kml');
 const KMZGeoJSON = require('parse2-kmz');
 
 
-exports.shapeAdd = async (req, res, next) => {
-    const transaction = await sequelize.transaction();
+exports.shapeKmlKmzAdd = async (req, res, next) => {
     const queryInterface = await sequelize.getQueryInterface();
     try {
 
@@ -29,12 +28,51 @@ exports.shapeAdd = async (req, res, next) => {
             const { file } = req.files
             const { color, group_layer_id, name_layer, type } = req.query
             const { sysm_id } = req.user
-
             const id = uuid.v4();
-            const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
+
+            if(type == "shape file") {
+                const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
+                // console.log(geojson);
+                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+                console.log(_createTableShape);
+                
+                await addShapeLayersService({
+                    id,
+                    name_layer,
+                    table_name: _createTableShape.obj.nameTable,
+                    type,
+                    group_layer_id,
+                    color_layer: color
+                })
+
+                await addShapeService(_createTableShape, geojson);
+            }
+
+            if(type == "kml") {
+
+                const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
+                const geodata = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
+                console.log(geodata);
+                const _createTableShape = await createTableShapeService(geodata, queryInterface, type);
+                console.log(_createTableShape);
+                
+                await addShapeLayersService({
+                    id,
+                    name_layer,
+                    table_name: _createTableShape.obj.nameTable,
+                    type,
+                    group_layer_id,
+                    color_layer: color
+                })
+
+                await addShapeService(_createTableShape, geojson);
+            }
+
+            
+           
             // console.log(geojson);
-            const _createTableShape = await createTableShapeService(geojson, transaction, queryInterface);
-            // console.log(_createTableShape);
+            const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+            console.log(_createTableShape);
             
             await addShapeLayersService({
                 id,
@@ -43,15 +81,12 @@ exports.shapeAdd = async (req, res, next) => {
                 type,
                 group_layer_id,
                 color_layer: color
-            }, transaction)
+            })
 
             await addShapeService(_createTableShape, geojson);
-
-            await transaction.commit();
-            result(res, id, 201);
+            result(res, {id, "file_type": type}, 201);
         }
     } catch (error) {
-        if (transaction) await transaction.rollback();
         next(error);
     }
 }
@@ -114,74 +149,11 @@ exports.getShapeData = async (req, res, next) => {
     }
 }
 
-exports.getKmlData = async (req, res, next) => {
-    try {
-        if (!req.files) {
-            const err = new Error('ต้องการไฟล์ .kml')
-            err.statusCode = 302
-            throw err
-        }
-        const { kml } = req.files
-        const _path = `${path.resolve()}/public/kmlfile/`;
-        const _kml = `${_path}/${kml.name}`
-
-        //เช็ค path ว่ามีไหม ถ้าไม่มีจะสร้างขึ้นมา
-        if (!fs.existsSync(_path)) {
-            fs.mkdirSync(_path);
-        }
-
-        kml.mv(_kml, (err) => {
-            if (err) {
-                const error = new Error(err);
-                error.statusCode = 400;
-                throw error;
-            }
-        })
-        const geodata = await parseKML.toJson(_kml)
-        console.log(geodata);
-        // const { color, group_layer_id, name_layer, type } = req.query
-
-        // const transactionn = await sequelize.transaction();
-        // const queryInterfacee = await sequelize.getQueryInterface();
-        // const id = uuid.v4();
-
-
-        // const _createTableKML = await createTableKmlService(geodata, transactionn, queryInterfacee);
-
-        // await addkmlLayersService({
-        //     id,
-        //     name_layer,
-        //     table_name: _createTableKML.obj.nameTable,
-        //     type,
-        //     group_layer_id,
-        //     color_layer: color
-        // }, transactionn)
-
-        
-        // // console.log("_createTableShap+++++++++++++++++++++++++++++++++++++++++++++++++e");
-        // // console.log(_createTableKML.obj.nameTable);
-        // // console.log(_createTableKML.obj.nameTable);
-        // // console.log(_createTableKML.obj.nameTable);
-        // // console.log(_createTableKML.obj.nameTable);
-        // // console.log(_createTableKML.obj.nameTable);
-        
-        // await addkmlService(_createTableKML, geodata);
-
-        // await transactionn.commit();
-        result(res, geodata, 201);
-
-        // result(res, geodata)
-        
-    } catch (error) {
-        next(error);
-    }
-}
-
 exports.getKmzData = async (req, res, next) => {
     try {
         if (!req.files) {
             const err = new Error('ต้องการไฟล์ .kmz')
-            err.statusCode = 302
+            err.statusCode = 404
             throw err
         }
 
@@ -219,4 +191,24 @@ exports.getKmzData = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+}
+
+const updataKmlKmz = (files) => {
+    const _path = `${path.resolve()}/public/kmlfile/`;
+    const _file = `${_path}/${files.name}`
+
+    //เช็ค path ว่ามีไหม ถ้าไม่มีจะสร้างขึ้นมา
+    if (!fs.existsSync(_path)) {
+        fs.mkdirSync(_path);
+    }
+
+    files.mv(_file, (err) => {
+        if (err) {
+            const error = new Error(err);
+            error.statusCode = 400;
+            throw error;
+        }
+    })
+
+    return _file
 }
