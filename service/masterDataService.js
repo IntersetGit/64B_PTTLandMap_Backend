@@ -133,9 +133,18 @@ exports.getSysmRoleService = async () => {
 
 //------------- แสดงตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
 exports.getAllMasLayersShapeService = async () => {
-  const allMasLayersShape = await models.mas_layers_shape.findAll()
-  return allMasLayersShape;
+  const sql = await sequelizeString(` SELECT sh.id
+  ,sh.name_layer
+  ,sh.table_name
+  ,sh.color_layer
+  ,sh.type
+  ,sh.group_layer_id
+  ,gr.group_name
+  FROM master_lookup.mas_layers_shape AS sh
+  INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id `)
+  return sql
 }
+
 
 //------------- เพิ่ม แก้ไข ลบ GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
 exports.createMasLayersShapeService = async (data, user) => {
