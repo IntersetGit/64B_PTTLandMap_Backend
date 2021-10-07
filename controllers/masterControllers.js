@@ -13,6 +13,7 @@ const { getAllMasStatusProjectService } = require('../service/masterDataService'
 const { createMasStatusProjectService } = require ('../service/masterDataService')
 const { editMasStatusProjectService } = require ('../service/masterDataService')
 const { deleteMasStatusProjectService } = require ('../service/masterDataService')
+const { getByIdMasStatusProjectService } = require ('../service/masterDataService')
 
 exports.getNameTitle = async (req, res, next) => {
   try {
@@ -159,6 +160,8 @@ exports.getAllMasLayersShape = async (req, res, next) => {
   }
 }
 
+
+
 //------------- เพิ่ม ลบ แก้ไข GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
 exports.createAndEditMasLayersShape = async (req, res, next) => {
   try {
@@ -190,6 +193,15 @@ exports.deleteMasLayersShape = async (req, res, next) => {
 exports.getAllMasStatusProject = async (req, res, next) => {
   try{
     result (res, await getAllMasStatusProjectService())
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.getByIdMasStatusProject = async (req, res, next) => {
+  try {
+    const {id} = req.params
+    result(res, await getByIdMasStatusProjectService(id))
   } catch (error) {
     next(error)
   }
