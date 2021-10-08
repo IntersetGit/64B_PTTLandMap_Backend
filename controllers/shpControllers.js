@@ -54,7 +54,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 const geojson = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-                console.log(_createTableShape);
+                // console.log(_createTableShape);
                 
                 await addShapeLayersService({
                     id,
