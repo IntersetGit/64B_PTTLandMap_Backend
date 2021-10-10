@@ -38,8 +38,10 @@ router.delete('/masLayersShape', [authenticateToken], masterControllers.deleteMa
 
 //------------ Status Project แสดง เพิ่ม ลบ แก้ไข mas_status_project------------//
 router.get('/masStatusProject', [authenticateToken], masterControllers.getAllMasStatusProject);
+router.get('/masStatusProject/:id', [authenticateToken], masterControllers.getByIdMasStatusProject);
 router.post('/masStatusProject', [authenticateToken], masterControllers.createAndEditMasStatusProject);
 router.delete('/masStatusProject', [authenticateToken], masterControllers.deleteMasStatusProject);
+
 
 
 
