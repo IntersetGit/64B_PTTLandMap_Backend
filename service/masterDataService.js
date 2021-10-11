@@ -141,11 +141,16 @@ exports.getAllMasLayersShapeService = async () => {
   ,sh.group_layer_id
   ,gr.group_name
   FROM master_lookup.mas_layers_shape AS sh
-  INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id
-  WHERE sh.id is NOT NULL AND sh.id `)
+  INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id `)
   return sql
 }
- 
+
+exports.getByIdMasLayersShapeService = async (id) => {
+  const byIDMasLayersShape = await models.mas_layers_shape.findOne({
+    where: { id }
+  })
+  return byIDMasLayersShape;
+}
 
 //------------- เพิ่ม แก้ไข ลบ GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
 exports.createMasLayersShapeService = async (data, user) => {

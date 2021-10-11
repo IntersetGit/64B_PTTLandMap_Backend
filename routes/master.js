@@ -33,6 +33,7 @@ router.get('/getSysmRole', masterControllers.getSysmRoleController);
 
 //------------ GIS Layer แสดง เพิ่ม ลบ แก้ไข  mas_layer_shape------------//
 router.get('/masLayersShape', [authenticateToken], masterControllers.getAllMasLayersShape);
+router.get('/masLayersShape/:id', [authenticateToken], masterControllers.getByIdMasLayersShape);
 router.post('/masLayersShape', [authenticateToken], masterControllers.createAndEditMasLayersShape);
 router.delete('/masLayersShape', [authenticateToken], masterControllers.deleteMasLayersShape);
 
