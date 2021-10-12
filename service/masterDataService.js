@@ -50,13 +50,17 @@ exports.createMasLayersService = async (data, users) => {
 
 exports.updateMasLayersService = async (data, users) => {
   const _data = {
-    update_by: data.update_by,
-    updata_data: new Date()
+    update_by: users.sysm_id,
+    update_data: new Date()
   }
 
   if (data.group_name) _data.group_name = data.group_name
   if (data.order_by) _data.order_by = data.order_by
   if (data.isuse) _data.isuse = data.isuse
+  else _data.isuse = 2  
+    
+ 
+  // (data.isuse) ? _data.isuse = data.isuse : _data.isuse = 2
 
   const updateMasLayers = await models.mas_layer_groups.update(_data, { where: { id: data.id } })
   return updateMasLayers[0]
