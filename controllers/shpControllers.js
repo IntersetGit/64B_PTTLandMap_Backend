@@ -4,7 +4,7 @@ const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService,addkmlService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
-const { findIdLayersShape, createTableShapeService, getKmlService,createTableKmlService } = require('../service/shape_data')
+const { findIdLayersShape, createTableShapeService, getKmlService,createTableKmlService, getAllShapeDataService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -217,27 +217,28 @@ const updataKmlKmz = (files) => {
 
 
 
-    //------------ แสดงข้อมูล โครงการ จังหวัด อำเภอ ตำบล หน้า search map ------------//
-    exports.GetInfoProject = async () => {
-        //ค้นหาชื่อตารางทั้งหมดใน shape_data
-                const table_name = await sequelizeString(`  
-                SELECT table_name FROM information_schema.tables
-            WHERE table_schema like 'shape_data' `)
+//------------ แสดงข้อมูล โครงการ จังหวัด อำเภอ ตำบล หน้า search map ------------//
+exports.GetInfoProject = async (req, res, next) => {
+    try {
+
+    const { search, value } = req.query
         
-        //สร้างตัวแปลเพื่อเก็บข้อมูล project_na, prov, amp, tam ของแต่ละ table ที่ Select มา
-            const KeepData = []
-        
-            //วนลูปเพื่อเอาข้อมูล project_na, prov, amp, tam ของแต่ละ Table มา
-            for (let i = 0; i < table_name.length; i++) {
-        
-                let tablename = table_name.table_name[i];
-        
-                let getdatatable = await sequelizeString(` 
-                SELECT project_na, prov, amp, tam
-                FROM shape_data.'${tablename}'`)
-        
-                //เก็บข้อมูลไว้ใน KeepData
-                KeepData.push(getdatatable)
-            }
-        //นำข้อมูลที่เก็บไว้ใน KeepData ไปใช้ต่อ อาจจะนำไปสร้างตารางต่อ
-        }
+    result(res, await getAllShapeDataService())
+
+    // for (let i = 0; i < table_name.length; i++) {
+
+    //     let tablename = table_name.table_name[i];
+
+    //     let getdatatable = await sequelizeString(` 
+    //     SELECT project_na, prov, amp, tam
+    //     FROM shape_data.'${tablename}'`)
+
+        //เก็บข้อมูลไว้ใน KeepData
+        // KeepData.push(getdatatable)
+    // }
+//นำข้อมูลที่เก็บไว้ใน KeepData ไปใช้ต่อ อาจจะนำไปสร้างตารางต่อ
+
+    } catch (error) {
+        next(error);
+    }
+}
