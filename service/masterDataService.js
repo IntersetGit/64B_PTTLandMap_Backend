@@ -50,17 +50,13 @@ exports.createMasLayersService = async (data, users) => {
 
 exports.updateMasLayersService = async (data, users) => {
   const _data = {
-    update_by: users.sysm_id,
-    update_data: new Date()
+    update_by: data.update_by,
+    updata_data: new Date()
   }
 
   if (data.group_name) _data.group_name = data.group_name
   if (data.order_by) _data.order_by = data.order_by
   if (data.isuse) _data.isuse = data.isuse
-  else _data.isuse = 2  
-    
- 
-  // (data.isuse) ? _data.isuse = data.isuse : _data.isuse = 2
 
   const updateMasLayers = await models.mas_layer_groups.update(_data, { where: { id: data.id } })
   return updateMasLayers[0]
@@ -136,8 +132,8 @@ exports.getSysmRoleService = async () => {
 }
 
 //------------- แสดงตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
-exports.getAllMasLayersShapeService = async () => {
-  const sql = await sequelizeString(` SELECT sh.id
+exports.getAllMasLayersShapeService = async (search) => {
+  let sql = ` SELECT sh.id
   ,sh.name_layer
   ,sh.table_name
   ,sh.color_layer
@@ -145,8 +141,11 @@ exports.getAllMasLayersShapeService = async () => {
   ,sh.group_layer_id
   ,gr.group_name
   FROM master_lookup.mas_layers_shape AS sh
-  INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id `)
-  return sql
+  INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id `
+
+  if(search) sql+= ` WHERE sh.name_layer ILIKE '%${search}%' OR gr.group_name ILIKE '%${search}%' `
+  
+  return await sequelizeString(sql)
 }
 
 exports.getByIdMasLayersShapeService = async (id) => {
