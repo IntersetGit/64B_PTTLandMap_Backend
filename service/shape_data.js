@@ -135,14 +135,36 @@ exports.getAllShapeDataService = async(search, value) => {
 
         if (Object.hasOwnProperty.call(KeepData, a)) {
             const e = KeepData[a]
-            console.log(e);
+            // console.log(e);
             arr_sql.push(`shape_data.${e}`)
             
         }
     }
+    
+    // const arrayAllTable = []
     var sql = ""
-
     if(search){
+
+  /* ดึงข้อมูลจากทุกตาราง ${value} ต้องมีชื่อเหมือนกันทุกตาราง */
+
+//        for (const m in arr_sql) {
+//         var sql = ""
+//         if (Object.hasOwnProperty.call(arr_sql, m)) {
+//             const tableeee = arr_sql[m]
+//             console.log("=====================")
+//             console.log(m);
+//             console.log(tableeee);
+
+
+//             sql += `SELECT *
+//         FROM ${tableeee}
+//          WHERE ${value} LIKE '%${search}%'` 
+
+//          console.log(sql)
+// const result = await sequelizeString (sql)
+//          arrayAllTable.push(result)
+//         }
+//     }
 
         sql += `SELECT *
         FROM shape_data.shape_layers
@@ -152,9 +174,11 @@ exports.getAllShapeDataService = async(search, value) => {
         sql += arr_sql.toString()
     }
 
-    console.log(sql);
+    // console.log(sql);
 
     return  await sequelizeString (sql)
+
+    // return arrayAllTable
 
     //ชื่อโครงการ 
     // var value =  prov
