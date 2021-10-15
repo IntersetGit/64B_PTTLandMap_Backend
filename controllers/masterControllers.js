@@ -200,7 +200,8 @@ exports.deleteMasLayersShape = async (req, res, next) => {
 //------------ แสดงตารางข้อมูล Status Project หน้า Status โครงการ ------------//
 exports.getAllMasStatusProject = async (req, res, next) => {
   try{
-    result (res, await getAllMasStatusProjectService())
+    const { search } = req.query
+    result (res, await getAllMasStatusProjectService(search))
   } catch (error) {
     next(error)
   }
