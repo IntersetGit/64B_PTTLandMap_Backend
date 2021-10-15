@@ -73,17 +73,23 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
                 const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
                 // console.log(geojson);
-        
-                for (let a = 0; a < geojson.features.length; a++) {
-                    for (let i = 0; i < geojson.features[a].geometry.coordinates.length; i++) {
-                        const e = geojson.features[a].geometry.coordinates[i];
-                        for (let z = 0; z < e.length; z++) {
-                            const coordinates = e[z];
-                            coordinates.length > 0 ? coordinates.pop() : []
-                        }
+
+                geojson.features.forEach(a => {
+                    const _coordinates = a.geometry.coordinates
+                    if (_coordinates.length <= 1) {
+                        _coordinates.forEach(e => {
+                            if(e.length > 0) {
+                                e.forEach(val => {
+                                    val.length > 0 ? val.pop() : val
+                                    console.log(val);
+                                })
+                            }
+                        })
+                    } else {
+                        _coordinates.pop()
                     }
-                }
-               
+                })
+                
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
                 // console.log(_createTableShape);
                 
