@@ -110,7 +110,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
 /* เรียกข้อมูลทั้งหมด shape_data */
 
-exports.getAllShapeDataService = async() => {
+exports.getAllShapeDataService = async(search, value) => {
     //ค้นหาชื่อตารางทั้งหมดใน shape_data
     const table_name = await sequelizeString(`  
     SELECT * FROM information_schema.tables
@@ -120,7 +120,7 @@ exports.getAllShapeDataService = async() => {
     const KeepData = []
     const arr_sql = []
 	
-    var sql = ` SELECT * FROM `
+    
 
     //วนลูปเพื่อเอาข้อมูล project_na, prov, amp, tam ของแต่ละ Table มา
 
@@ -132,6 +132,7 @@ exports.getAllShapeDataService = async() => {
     }
 
     for (const a in KeepData) {
+
         if (Object.hasOwnProperty.call(KeepData, a)) {
             const e = KeepData[a]
             console.log(e);
@@ -139,18 +140,23 @@ exports.getAllShapeDataService = async() => {
             
         }
     }
-    sql += arr_sql.toString()
+    var sql = ""
 
     if(search){
 
+        sql += `SELECT *
+        FROM shape_data.shape_layers
+         WHERE ${value} LIKE '%${search}%'` 
+    } else {
+        sql += ` SELECT * FROM `
+        sql += arr_sql.toString()
     }
+
+    console.log(sql);
 
     return  await sequelizeString (sql)
 
     //ชื่อโครงการ 
     // var value =  prov
-
-    `SELECT *
-	FROM shape_data."ptt geodata" WHERE gid is not null
-	AND ${value} LIKE '%${search}%'` 
+ 
 }

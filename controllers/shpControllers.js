@@ -223,7 +223,7 @@ exports.GetInfoProject = async (req, res, next) => {
 
     const { search, value } = req.query
         
-    result(res, await getAllShapeDataService())
+    result(res, await getAllShapeDataService(search, value))
 
     // for (let i = 0; i < table_name.length; i++) {
 
