@@ -40,7 +40,7 @@ exports.findIdLayersShape = async (id) => {
     return await models.mas_layers_shape.findByPk(id)
 }
 
-exports.createTableShapeService = async (geojson, queryInterface, type) => {
+exports.createTableShapeService = async (geojson, queryInterface, type, transaction) => {
 
     var obj = {};
     var obj1 = {}

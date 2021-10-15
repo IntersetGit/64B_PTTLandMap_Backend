@@ -47,7 +47,6 @@ exports.addShapeService = async (table, geojson) => {
         }
     }
     sql += arrSql.toString()
-    // console.log("===================================================================================" , sql);
     await sequelizeString(sql);
 
 }

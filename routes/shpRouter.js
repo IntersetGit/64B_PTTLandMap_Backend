@@ -12,6 +12,4 @@ router.get('/shapeData', [authenticateToken], getShapeData);
 /* แปลง geo เป็น shp */
 router.post('/convertGeoToShp', [authenticateToken], convertGeoToShp);
 
-router.post('/getKmzData', getKmzData)
-
 module.exports = router;

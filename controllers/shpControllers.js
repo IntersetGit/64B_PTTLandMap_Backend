@@ -18,6 +18,7 @@ const KMZGeoJSON = require('parse2-kmz');
 
 exports.shapeKmlKmzAdd = async (req, res, next) => {
     const queryInterface = await sequelize.getQueryInterface();
+    const transaction  = await sequelize.transaction ();
     try {
 
         if (!req.files) {
@@ -43,7 +44,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     type,
                     group_layer_id,
                     color_layer: color
-                })
+                }, transaction )
 
                 await addShapeService(_createTableShape, geojson);
             }
@@ -63,30 +64,45 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     type,
                     group_layer_id,
                     color_layer: color
-                })
+                }, transaction)
 
                 await addShapeService(_createTableShape, geojson);
             }
 
-            
-           
-            // // console.log(geojson);
-            // const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-            // console.log(_createTableShape);
-            
-            // await addShapeLayersService({
-            //     id,
-            //     name_layer,
-            //     table_name: _createTableShape.obj.nameTable,
-            //     type,
-            //     group_layer_id,
-            //     color_layer: color
-            // })
+            if(type == "kmz") {
+                const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
+                const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
+                // console.log(geojson);
+        
+                for (let a = 0; a < geojson.features.length; a++) {
+                    for (let i = 0; i < geojson.features[a].geometry.coordinates.length; i++) {
+                        const e = geojson.features[a].geometry.coordinates[i];
+                        for (let z = 0; z < e.length; z++) {
+                            const coordinates = e[z];
+                            coordinates.length > 0 ? coordinates.pop() : []
+                        }
+                    }
+                }
+               
+                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+                // console.log(_createTableShape);
+                
+                await addShapeLayersService({
+                    id,
+                    name_layer,
+                    table_name: _createTableShape.obj.nameTable,
+                    type,
+                    group_layer_id,
+                    color_layer: color
+                }, transaction )
 
-            // await addShapeService(_createTableShape, geojson);
+                await addShapeService(_createTableShape, geojson);
+            }
+            await transaction.commit();
             result(res, {id, "file_type": type}, 201);
         }
     } catch (error) {
+        if (transaction) await transaction.rollback();
         next(error);
     }
 }
@@ -127,7 +143,7 @@ exports.getAllDataLayer = async (req, res, next) => {
 
         for (let i = 0; i < get_shp.length; i++) {
             const e = get_shp[i];
-            e.symbol = e.symbol ? await checkImgById(e.id, 'symbol_group') : null
+            e.symbol = await checkImgById(e.id, 'symbol_group')
         }
 
         result(res, get_shp)
@@ -144,50 +160,6 @@ exports.getShapeData = async (req, res, next) => {
         const _res = await findIdLayersShape(id)
         result(res, await shapeDataService(_res.table_name))
 
-    } catch (error) {
-        next(error);
-    }
-}
-
-exports.getKmzData = async (req, res, next) => {
-    try {
-        if (!req.files) {
-            const err = new Error('ต้องการไฟล์ .kmz')
-            err.statusCode = 404
-            throw err
-        }
-
-        const { kmz } = req.files
-        const _path = `${path.resolve()}/public/kmzfile/`;
-        const _kmz = `${_path}/${kmz.name}`
-
-        //เช็ค path ว่ามีไหม ถ้าไม่มีจะสร้างขึ้นมา
-        if (!fs.existsSync(_path)) {
-            fs.mkdirSync(_path);
-        }
-
-        kmz.mv(_kmz, (err) => {
-            if (err) {
-                const error = new Error(err);
-                error.statusCode = 400;
-                throw error;
-            }
-        })
-        
-        const geodata = await KMZGeoJSON.toJson(_kmz)
-        
-        for (let a = 0; a < geodata.features.length; a++) {
-            for (let i = 0; i < geodata.features[a].geometry.coordinates.length; i++) {
-                const e = geodata.features[a].geometry.coordinates[i];
-                for (let z = 0; z < e.length; z++) {
-                    const coordinates = e[z];
-                    coordinates.length > 0 ? coordinates.pop() : []
-                }
-            }
-        }
-
-        result(res, geodata)
-        
     } catch (error) {
         next(error);
     }
