@@ -88,10 +88,10 @@ exports.updateMasLayers = async (req, res, next) => {
 
 exports.deleteMasLayers = async (req, res, next) => {
   try {
-    const data = req.body
+    const data = req.query
     const users = req.user
     if (users.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2') throw new Error("คุณไม่ใช่ Administrator ไม่สามารถลบข้อมูลได้")
-    result(res, await updateMasLayersService(data, users))
+    result(res, await deleteMasLayersService(data))
   } catch (error) {
     next(error)
   }
@@ -155,7 +155,8 @@ exports.getSysmRoleController = async (req, res, next) => {
 //------------- แสดงตารางข้อมูล GIS Layer หน้าจัดการข้อมูล GIS Layer ------------//
 exports.getAllMasLayersShape = async (req, res, next) => {
   try {
-    result(res, await getAllMasLayersShapeService())
+    const { search } = req.query
+    result(res, await getAllMasLayersShapeService(search))
   } catch (error) {
     next(error);
   }
@@ -199,7 +200,8 @@ exports.deleteMasLayersShape = async (req, res, next) => {
 //------------ แสดงตารางข้อมูล Status Project หน้า Status โครงการ ------------//
 exports.getAllMasStatusProject = async (req, res, next) => {
   try{
-    result (res, await getAllMasStatusProjectService())
+    const { search, order = 'status_code', sort = 'ASC'} = req.query
+    result (res, await getAllMasStatusProjectService(search, order, sort))
   } catch (error) {
     next(error)
   }

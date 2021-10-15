@@ -7,26 +7,40 @@ const sequelize = require("../config/dbConfig"); //connect database
 
 
 exports.shapeDataService = async (table_name) => {
-    let sql = `  
-    SELECT json_build_object(
-        'type', 'FeatureCollection',
-        'features', json_agg(
-            json_build_object(
-                'type',       'Feature',
-                'id',         gid,
-                'geometry',   ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom,4326), 4326))::json,
-                'properties', to_jsonb(row) - 'gid' - 'geom'))) AS shape 
-        FROM  (SELECT * FROM shape_data.${table_name}) row `
+
+    const schema = await sequelizeString(` 
+        SELECT *
+        FROM information_schema.tables
+        WHERE table_schema  = 'shape_data' 
+    `)
+    const find_name = schema.filter(e => e.table_name == table_name)
+
+    if (find_name.length > 0) {
+        let sql = `  
+        SELECT json_build_object(
+            'type', 'FeatureCollection',
+            'features', json_agg(
+                json_build_object(
+                    'type',       'Feature',
+                    'id',         gid,
+                    'geometry',   ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom,4326), 4326))::json,
+                    'properties', to_jsonb(row) - 'gid' - 'geom'))) AS shape 
+            FROM  (SELECT * FROM shape_data.${table_name}) row `
 
 
-    return await sequelizeStringFindOne(sql)
+        return await sequelizeStringFindOne(sql)
+    } else {
+        const err = new Error('ไม่พบข้อมูล SHAPEFILE')
+        err.statusCode = 404
+        throw err
+    }
 }
 
 exports.findIdLayersShape = async (id) => {
     return await models.mas_layers_shape.findByPk(id)
 }
 
-exports.createTableShapeService = async (geojson, queryInterface, type) => {
+exports.createTableShapeService = async (geojson, queryInterface, type, transaction) => {
 
     var obj = {};
     var obj1 = {}
@@ -81,7 +95,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
                 type: DataTypes.STRING,
                 allowNull: true
             }
-    
+
         })
 
     } else {
