@@ -198,10 +198,13 @@ exports.deleteMasLayersShapeService = async (data, user) => {
 }
 
 //------------ แสดงตารางข้อมูล Status Project หน้า Status โครงการ ------------//
-exports.getAllMasStatusProjectService = async (search) => {
+exports.getAllMasStatusProjectService = async (search, order, sort) => {
   let sql = ` SELECT * FROM master_lookup.mas_status_project AS st `
 
   if(search) sql+= ` WHERE st.name ILIKE '%${search}%' `
+
+  sql += ` ORDER BY ${order} ${sort} `
+  // sql += ` LIMIT ${limit} `
   
   return await sequelizeString(sql)
   // const allMasStatus = await models.mas_status_project.findAll()
