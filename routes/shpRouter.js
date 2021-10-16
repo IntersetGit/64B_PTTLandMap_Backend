@@ -1,4 +1,4 @@
-const { shapeKmlKmzAdd, getAllShape, getAllDataLayer, convertGeoToShp, getShapeData, GetInfoProject } = require('../controllers/shpControllers');
+const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, GetInfoProject } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();

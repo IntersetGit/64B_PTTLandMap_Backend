@@ -8,40 +8,26 @@ const alasql = require('alasql')
 
 
 exports.shapeDataService = async (table_name) => {
-
-    const schema = await sequelizeString(` 
-        SELECT *
-        FROM information_schema.tables
-        WHERE table_schema  = 'shape_data' 
-    `)
-    const find_name = schema.filter(e => e.table_name == table_name)
-
-    if (find_name.length > 0) {
-        let sql = `  
-        SELECT json_build_object(
-            'type', 'FeatureCollection',
-            'features', json_agg(
-                json_build_object(
-                    'type',       'Feature',
-                    'id',         gid,
-                    'geometry',   ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom,4326), 4326))::json,
-                    'properties', to_jsonb(row) - 'gid' - 'geom'))) AS shape 
-            FROM  (SELECT * FROM shape_data.${table_name}) row `
+    let sql = `  
+    SELECT json_build_object(
+        'type', 'FeatureCollection',
+        'features', json_agg(
+            json_build_object(
+                'type',       'Feature',
+                'id',         gid,
+                'geometry',   ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom,4326), 4326))::json,
+                'properties', to_jsonb(row) - 'gid' - 'geom'))) AS shape 
+        FROM  (SELECT * FROM shape_data.${table_name}) row `
 
 
-        return await sequelizeStringFindOne(sql)
-    } else {
-        const err = new Error('ไม่พบข้อมูล SHAPEFILE')
-        err.statusCode = 404
-        throw err
-    }
+    return await sequelizeStringFindOne(sql)
 }
 
 exports.findIdLayersShape = async (id) => {
     return await models.mas_layers_shape.findByPk(id)
 }
 
-exports.createTableShapeService = async (geojson, queryInterface, type, transaction) => {
+exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
     var obj = {};
     var obj1 = {}
@@ -96,7 +82,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type, transact
                 type: DataTypes.STRING,
                 allowNull: true
             }
-
+    
         })
 
     } else {
