@@ -4,7 +4,6 @@ const uuid = require('uuid');
 const { DataTypes } = require("sequelize"); //type Database
 const { SequelizeAuto } = require('sequelize-auto');
 const sequelize = require("../config/dbConfig"); //connect database
-const alasql = require('alasql')
 
 
 exports.shapeDataService = async (table_name) => {

@@ -199,22 +199,8 @@ const updataKmlKmz = (files) => {
 exports.GetInfoProject = async (req, res, next) => {
     try {
 
-    const { search, value } = req.query
-        
-    result(res, await getAllShapeDataService(search, value))
-
-    // for (let i = 0; i < table_name.length; i++) {
-
-    //     let tablename = table_name.table_name[i];
-
-    //     let getdatatable = await sequelizeString(` 
-    //     SELECT project_na, prov, amp, tam
-    //     FROM shape_data.'${tablename}'`)
-
-        //เก็บข้อมูลไว้ใน KeepData
-        // KeepData.push(getdatatable)
-    // }
-//นำข้อมูลที่เก็บไว้ใน KeepData ไปใช้ต่อ อาจจะนำไปสร้างตารางต่อ
+        const { search, value } = req.query
+        result(res, await getAllShapeDataService(search, value))
 
     } catch (error) {
         next(error);
