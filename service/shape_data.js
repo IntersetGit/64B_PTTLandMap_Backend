@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const { DataTypes } = require("sequelize"); //type Database
 const { SequelizeAuto } = require('sequelize-auto');
 const sequelize = require("../config/dbConfig"); //connect database
+const alasql = require('alasql')
 
 
 exports.shapeDataService = async (table_name) => {
@@ -131,70 +132,49 @@ exports.getAllShapeDataService = async(search, value) => {
     WHERE table_schema = 'shape_data' `)
 
     //สร้างตัวแปลเพื่อเก็บข้อมูล project_na, prov, amp, tam ของแต่ละ table ที่ Select มา
-    const KeepData = []
-    const arr_sql = []
-	
-    
-
+    const KeepData = [], arr_sql = []
+	var sql, _res
     //วนลูปเพื่อเอาข้อมูล project_na, prov, amp, tam ของแต่ละ Table มา
 
     for (const i in table_name) {
         if (Object.hasOwnProperty.call(table_name, i)) {
             KeepData.push(table_name[i].table_name)
-           
         }
     }
 
     for (const a in KeepData) {
-
         if (Object.hasOwnProperty.call(KeepData, a)) {
             const e = KeepData[a]
             // console.log(e);
-            arr_sql.push(`shape_data.${e}`)
-            
+            // arr_sql.push(`shape_data.${e}`)
+            sql = `SELECT * FROM shape_data.${e} `
+            console.log(sql);
+            _res = await sequelizeString(sql)
+            arr_sql.push(_res)
         }
     }
     
-    // const arrayAllTable = []
-    var sql = ""
-    if(search){
+    return arr_sql
+    
+    
+    // sql += arr_sql.toString()
 
-  /* ดึงข้อมูลจากทุกตาราง ${value} ต้องมีชื่อเหมือนกันทุกตาราง */
+    // if (search) {
+    //     sql += ` WHERE ${value} LIKE '%${search}%'`
+    // }
+    
 
-//        for (const m in arr_sql) {
-//         var sql = ""
-//         if (Object.hasOwnProperty.call(arr_sql, m)) {
-//             const tableeee = arr_sql[m]
-//             console.log("=====================")
-//             console.log(m);
-//             console.log(tableeee);
+    // const result_sql = await sequelizeString(`SELECT row_to_json(row) as data
+    // FROM (SELECT * FROM master_lookup.mas_layer_groups) row
+    
+    // `)
+    // const new_values = result_sql.filter((item, index ) => {
+    //     return result_sql.indexOf(item) == index
+    // })
+    // console.log(new_values);
 
+    // return  result_sql
 
-//             sql += `SELECT *
-//         FROM ${tableeee}
-//          WHERE ${value} LIKE '%${search}%'` 
+    
 
-//          console.log(sql)
-// const result = await sequelizeString (sql)
-//          arrayAllTable.push(result)
-//         }
-//     }
-
-        sql += `SELECT *
-        FROM shape_data.shape_layers
-         WHERE ${value} LIKE '%${search}%'` 
-    } else {
-        sql += ` SELECT * FROM `
-        sql += arr_sql.toString()
-    }
-
-    // console.log(sql);
-
-    return  await sequelizeString (sql)
-
-    // return arrayAllTable
-
-    //ชื่อโครงการ 
-    // var value =  prov
- 
 }
