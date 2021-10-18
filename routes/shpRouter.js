@@ -1,4 +1,4 @@
-const { shapeKmlKmzAdd, getAllShape, getAllDataLayer, convertGeoToShp, getShapeData, getKmlData, getKmzData, GetInfoProject } = require('../controllers/shpControllers');
+const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, GetInfoProject } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -11,9 +11,6 @@ router.get('/getDataLayer', [authenticateToken], getAllDataLayer);
 router.get('/shapeData', [authenticateToken], getShapeData);
 /* แปลง geo เป็น shp */
 router.post('/convertGeoToShp', [authenticateToken], convertGeoToShp);
-
-router.post('/getKmzData', getKmzData)
-
 
 /* ค้นหาข้อมูลหน้า map */
 router.get('/getSearchData', GetInfoProject)
