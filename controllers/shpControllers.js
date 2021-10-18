@@ -185,7 +185,7 @@ exports.getInfoProject = async (req, res, next) => {
 }
 
 /* ----------- ค้นหา จังหวัด อำเภอ ตำบล  ----------------      */
-exports.getShapeProvince = async (req, res, next) => {
+exports.getShapeProvinceMap = async (req, res, next) => {
 
 }
 
