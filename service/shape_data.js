@@ -128,7 +128,11 @@ exports.getAllShapeDataService = async (search, value, layer_group) => {
             if (value == "partype" || "project_na") {
                 sql = `SELECT * FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%'`
                 _res = await sequelizeString(sql)
-                arr_sql.push(_res)
+                _res.forEach(e => {
+                    e.table_name = tables.table_name,
+                    arr_sql.push(e)
+                })
+               
             }
         }
 
@@ -148,18 +152,16 @@ exports.getAllShapeDataService = async (search, value, layer_group) => {
                     // arr_sql.push(`shape_data.${e}`)
                     sql = `SELECT * FROM shape_data.${e} `
                     _res = await sequelizeString(sql)
-                    arr_sql.push(_res)
+                    _res.forEach(x => {
+                        x.table_name = e
+                        arr_sql.push(x)
+                    })
+
                 }
             }
     }
 
-    return (
-        arr_sql.filter(arr_sqls => {
-            if (arr_sqls.length > 0) {
-                return arr_sqls
-            }
-        })
-    )
+    return arr_sql
 
 }
 
