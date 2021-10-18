@@ -2,9 +2,9 @@ const shapefile = require("shapefile");
 const result = require("../middleware/result");
 const shp = require('shpjs');
 const { convert } = require("geojson2shp");
-const { addShapeService, getDataLayerService,addkmlService } = require("../service/dat_land_plots");
+const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
-const { findIdLayersShape, createTableShapeService, getKmlService,createTableKmlService, getAllShapeDataService } = require('../service/shape_data')
+const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -186,7 +186,13 @@ exports.getInfoProject = async (req, res, next) => {
 
 /* ----------- ค้นหา จังหวัด อำเภอ ตำบล  ----------------      */
 exports.getShapeProvinceMap = async (req, res, next) => {
-
+    try {
+        const { layer_group } = req.query
+        result(res, await getShapeProvinceMapService(layer_group))
+        
+    } catch (error) {
+        next(error);
+    }
 }
 
 

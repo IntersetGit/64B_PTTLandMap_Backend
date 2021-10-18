@@ -81,7 +81,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
                 type: DataTypes.STRING,
                 allowNull: true
             }
-    
+
         })
 
     } else {
@@ -107,57 +107,92 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     }
 }
 
-
 /* เรียกข้อมูลทั้งหมด shape_data */
 
-exports.getAllShapeDataService = async(search, value) => {
+exports.getAllShapeDataService = async (search, value, layer_group) => {
+
     //ค้นหาชื่อตารางทั้งหมดใน shape_data
     const table_name = await sequelizeString(`  
     SELECT * FROM information_schema.tables
     WHERE table_schema = 'shape_data' `)
 
     //สร้างตัวแปลเพื่อเก็บข้อมูล project_na, prov, amp, tam ของแต่ละ table ที่ Select มา
-    const KeepData = [] , arr_sql = []
-	var sql, _res
+    const KeepData = [], arr_sql = []
+    var sql, _res
     //วนลูปเพื่อเอาข้อมูล project_na, prov, amp, tam ของแต่ละ Table มา
 
-    if(search) {
+    if (search) {
 
         for (let a = 0; a < table_name.length; a++) {
             const tables = table_name[a];
-            if(value == "partype" || "project_na") {
+            if (value == "partype" || "project_na") {
                 sql = `SELECT * FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%'`
                 _res = await sequelizeString(sql)
                 arr_sql.push(_res)
             }
-        }    
-        
+        }
+
     } else {
-        for (const i in table_name) {
-            if (Object.hasOwnProperty.call(table_name, i)) {
-                KeepData.push(table_name[i].table_name)
+
+        //เรียกข้อมูลทั้งหมด schema shape
+            for (const i in table_name) {
+                if (Object.hasOwnProperty.call(table_name, i)) {
+                    KeepData.push(table_name[i].table_name)
+                }
             }
-        }
-    
-        for (const a in KeepData) {
-            if (Object.hasOwnProperty.call(KeepData, a)) {
-                const e = KeepData[a]
-                // console.log(e);
-                // arr_sql.push(`shape_data.${e}`)
-                sql = `SELECT * FROM shape_data.${e} `
-                _res = await sequelizeString(sql)
-                arr_sql.push(_res)
+
+            for (const a in KeepData) {
+                if (Object.hasOwnProperty.call(KeepData, a)) {
+                    const e = KeepData[a]
+                    // console.log(e);
+                    // arr_sql.push(`shape_data.${e}`)
+                    sql = `SELECT * FROM shape_data.${e} `
+                    _res = await sequelizeString(sql)
+                    arr_sql.push(_res)
+                }
             }
-        }
     }
 
-
     return (
-        arr_sql.filter(arr_sqls => { 
-            if(arr_sqls.length > 0) {
+        arr_sql.filter(arr_sqls => {
+            if (arr_sqls.length > 0) {
                 return arr_sqls
             }
         })
     )
+
+}
+
+
+exports.getShapeProvinceMapService = async (layer_group) => {
+    const layers_data = await models.mas_layers_shape.findAll({ where: { group_layer_id: layer_group } })
+    const KeepData = [], arr_sql = []
+    var sql, _res
+    console.log(layers_data);
+    if (layer_group) {
+        if (layers_data.length > 0) {
+            layers_data.forEach(e => [
+                KeepData.push(e.table_name)
+            ])
+
+        } else []
+
+        for (const af in KeepData) {
+            if (Object.hasOwnProperty.call(KeepData, af)) {
+                const tables_name = KeepData[af];
+                _res = await sequelizeString(sql = `SELECT * FROM shape_data.${tables_name} `)
+                _res.forEach(province => {
+                    const { prov, amp, tam } = province
+                    arr_sql.push({ prov, amp, tam })
+                })
+            }
+        }
+    }
+    
+    return { 
+        prov: [...new Set(arr_sql.map(({prov}) => prov ))], 
+        amp: [...new Set(arr_sql.map(({amp}) => amp ))], 
+        tam: [...new Set(arr_sql.map(({tam}) => tam ))] 
+    }
 
 }

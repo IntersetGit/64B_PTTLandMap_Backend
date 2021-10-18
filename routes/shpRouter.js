@@ -13,8 +13,8 @@ router.get('/shapeData', [authenticateToken], getShapeData);
 router.post('/convertGeoToShp', [authenticateToken], convertGeoToShp);
 
 /* ค้นหาข้อมูลหน้า และเรียกข้อมูล map  */
-router.get('/getSearchData', getInfoProject)
+router.get('/getSearchData', [authenticateToken], getInfoProject)
 /* ค้นหาจังหวัง อำเภอ ตำบล map */
-router.get('/getShapeProvince', getShapeProvinceMap)
+router.get('/getShapeProvince', [authenticateToken], getShapeProvinceMap)
 
 module.exports = router;
