@@ -117,32 +117,20 @@ exports.getAllShapeDataService = async(search, value) => {
     WHERE table_schema = 'shape_data' `)
 
     //สร้างตัวแปลเพื่อเก็บข้อมูล project_na, prov, amp, tam ของแต่ละ table ที่ Select มา
-    const KeepData = [], arr_sql = []
+    const KeepData = [] , arr_sql = []
 	var sql, _res
     //วนลูปเพื่อเอาข้อมูล project_na, prov, amp, tam ของแต่ละ Table มา
 
     if(search) {
-        if(value == "project_na" || "partype"){ 
-            for (const i in table_name) {
-                if (Object.hasOwnProperty.call(table_name, i)) {
-                    const datas = table_name[i];
-                    const filterColumnSql = await sequelizeString(` SELECT * FROM  shape_data.${datas.table_name}`) //เรียกตารางใน shape_data
-                    // console.log(filterColumnSql);
-                    for (let e = 0; e < filterColumnSql.length; e++) {
-                        let element = filterColumnSql[e];
-                        element = Object.keys(element) //เซ็ตค่าใหม่เป็น key
-                        for (let x = 0; x < element.length; x++) {
-                            const values = element[x];
-                            if(values == value){
-                                sql = `SELECT * FROM shape_data.${datas.table_name} WHERE ${value} ILIKE '%${search}%'`
-                                _res = await sequelizeString(sql)
-                                arr_sql.push(_res)
-                            }
-                        }
-                    }
-                }
+
+        for (let a = 0; a < table_name.length; a++) {
+            const tables = table_name[a];
+            if(value == "partype" || "project_na") {
+                sql = `SELECT * FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%'`
+                _res = await sequelizeString(sql)
+                arr_sql.push(_res)
             }
-        }
+        }    
         
     } else {
         for (const i in table_name) {
@@ -163,7 +151,13 @@ exports.getAllShapeDataService = async(search, value) => {
         }
     }
 
-    
-    return arr_sql
+
+    return (
+        arr_sql.filter(arr_sqls => { 
+            if(arr_sqls.length > 0) {
+                return arr_sqls
+            }
+        })
+    )
 
 }
