@@ -167,7 +167,7 @@ exports.getAllShapeDataService = async(search, value) => {
 //     }
 
         sql += `SELECT *
-        FROM shape_data.shape_layers
+        FROM shape_data.ptt_shape_number3
          WHERE ${value} LIKE '%${search}%'` 
     } else {
         sql += ` SELECT * FROM `
