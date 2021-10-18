@@ -171,6 +171,30 @@ exports.getShapeData = async (req, res, next) => {
     }
 }
 
+
+//------------ แสดงข้อมูล search map ------------//
+exports.getInfoProject = async (req, res, next) => {
+    try {
+
+        const { search, value } = req.query
+        result(res, await getAllShapeDataService(search, value))
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+/* ----------- ค้นหา จังหวัด อำเภอ ตำบล  ----------------      */
+exports.getShapeProvince = async (req, res, next) => {
+
+}
+
+
+
+
+
+
+
 const updataKmlKmz = (files) => {
     const _path = `${path.resolve()}/public/kmlfile/`;
     const _file = `${_path}/${files.name}`
@@ -195,14 +219,3 @@ const updataKmlKmz = (files) => {
 
 
 
-//------------ แสดงข้อมูล โครงการ จังหวัด อำเภอ ตำบล หน้า search map ------------//
-exports.GetInfoProject = async (req, res, next) => {
-    try {
-
-        const { search, value } = req.query
-        result(res, await getAllShapeDataService(search, value))
-
-    } catch (error) {
-        next(error);
-    }
-}

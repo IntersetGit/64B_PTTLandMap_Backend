@@ -121,45 +121,49 @@ exports.getAllShapeDataService = async(search, value) => {
 	var sql, _res
     //วนลูปเพื่อเอาข้อมูล project_na, prov, amp, tam ของแต่ละ Table มา
 
-    for (const i in table_name) {
-        if (Object.hasOwnProperty.call(table_name, i)) {
-            KeepData.push(table_name[i].table_name)
+    if(search) {
+        if(value == "project_na" || "partype"){ 
+            for (const i in table_name) {
+                if (Object.hasOwnProperty.call(table_name, i)) {
+                    const datas = table_name[i];
+                    const filterColumnSql = await sequelizeString(` SELECT * FROM  shape_data.${datas.table_name}`) //เรียกตารางใน shape_data
+                    // console.log(filterColumnSql);
+                    for (let e = 0; e < filterColumnSql.length; e++) {
+                        let element = filterColumnSql[e];
+                        element = Object.keys(element) //เซ็ตค่าใหม่เป็น key
+                        for (let x = 0; x < element.length; x++) {
+                            const values = element[x];
+                            if(values == value){
+                                sql = `SELECT * FROM shape_data.${datas.table_name} WHERE ${value} ILIKE '%${search}%'`
+                                _res = await sequelizeString(sql)
+                                arr_sql.push(_res)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+    } else {
+        for (const i in table_name) {
+            if (Object.hasOwnProperty.call(table_name, i)) {
+                KeepData.push(table_name[i].table_name)
+            }
+        }
+    
+        for (const a in KeepData) {
+            if (Object.hasOwnProperty.call(KeepData, a)) {
+                const e = KeepData[a]
+                // console.log(e);
+                // arr_sql.push(`shape_data.${e}`)
+                sql = `SELECT * FROM shape_data.${e} `
+                _res = await sequelizeString(sql)
+                arr_sql.push(_res)
+            }
         }
     }
 
-    for (const a in KeepData) {
-        if (Object.hasOwnProperty.call(KeepData, a)) {
-            const e = KeepData[a]
-            // console.log(e);
-            // arr_sql.push(`shape_data.${e}`)
-            sql = `SELECT * FROM shape_data.${e} `
-            console.log(sql);
-            _res = await sequelizeString(sql)
-            arr_sql.push(_res)
-        }
-    }
     
     return arr_sql
-    
-    
-    // sql += arr_sql.toString()
-
-    // if (search) {
-    //     sql += ` WHERE ${value} LIKE '%${search}%'`
-    // }
-    
-
-    // const result_sql = await sequelizeString(`SELECT row_to_json(row) as data
-    // FROM (SELECT * FROM master_lookup.mas_layer_groups) row
-    
-    // `)
-    // const new_values = result_sql.filter((item, index ) => {
-    //     return result_sql.indexOf(item) == index
-    // })
-    // console.log(new_values);
-
-    // return  result_sql
-
-    
 
 }
