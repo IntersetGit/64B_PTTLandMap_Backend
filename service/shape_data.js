@@ -163,12 +163,12 @@ exports.getAllShapeDataService = async (search, value, limit) => {
 
 }
 
-
+/* เรียกจังหวัด อำเภอตำบล ตามข้อมูลที่มีใน mas_layers_shape */
 exports.getShapeProvinceMapService = async (layer_group) => {
     const layers_data = await models.mas_layers_shape.findAll({ where: { group_layer_id: layer_group } })
     const KeepData = [], arr_sql = []
     var sql, _res
-    console.log(layers_data);
+    // console.log(layers_data);
     if (layer_group) {
         if (layers_data.length > 0) {
             layers_data.forEach(e => [
@@ -181,18 +181,52 @@ exports.getShapeProvinceMapService = async (layer_group) => {
             if (Object.hasOwnProperty.call(KeepData, af)) {
                 const tables_name = KeepData[af];
                 _res = await sequelizeString(sql = `SELECT * FROM shape_data.${tables_name} `)
-                _res.forEach(province => {
-                    const { prov, amp, tam } = province
-                    arr_sql.push({ prov, amp, tam })
-                })
+                if (_res.length > 0) {
+                    _res.forEach(province => {
+                        const { prov, amp, tam } = province
+                        arr_sql.push({ prov, amp, tam })
+                    })
+                }
             }
         }
     }
-    
+
     return { 
-        prov: [...new Set(arr_sql.map(({prov}) => prov ))], 
-        amp: [...new Set(arr_sql.map(({amp}) => amp ))], 
-        tam: [...new Set(arr_sql.map(({tam}) => tam ))] 
+        prov: [...new Set(arr_sql.map(({prov}) => prov.replace(/\n/g, '') ))], 
+        amp: [...new Set(arr_sql.map(({amp}) => amp.replace(/\n/g, '') ))], 
+        tam: [...new Set(arr_sql.map(({tam}) => tam.replace(/\n/g, '') ))] 
     }
 
 }
+
+/* ค้นหา จังหวัด อำเภอ ตำบล */
+exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
+
+    //ค้นหาชื่อตารางทั้งหมดใน shape_data
+    const table_name = await sequelizeString(`  
+    SELECT * FROM information_schema.tables
+    WHERE table_schema = 'shape_data' `)
+    const KeepData = [], arr_sql = []
+    var sql, _res
+
+    if (table_name.length > 0) {
+        for (const key in table_name) {
+            if (Object.hasOwnProperty.call(table_name, key)) {
+                const tables = table_name[key];
+                if (prov) {
+                    sql = await sequelizeString(` SELECT * FROM shape_data.${tables.table_name} WHERE prov = '${prov}' `)
+                    sql.forEach(provs => {
+                        provs.table_name = tables.table_name
+                        arr_sql.push(provs)
+                    })
+                } 
+            }
+        }
+    } 
+    
+    return  (arr_sql.length > 0) ?  arr_sql : []
+
+}
+
+
+

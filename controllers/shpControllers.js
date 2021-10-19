@@ -4,7 +4,7 @@ const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
-const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService } = require('../service/shape_data')
+const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -186,7 +186,7 @@ exports.getInfoProject = async (req, res, next) => {
     }
 }
 
-/* ----------- ค้นหา จังหวัด อำเภอ ตำบล  ----------------      */
+/* ----------- เรียก จังหวัด อำเภอ ตำบล  ----------------      */
 exports.getShapeProvinceMap = async (req, res, next) => {
     try {
         const { layer_group } = req.query
@@ -196,7 +196,17 @@ exports.getShapeProvinceMap = async (req, res, next) => {
         next(error);
     }
 }
+/* -------------- ค้นหา จังหวัด  อำเภอ ตำบล  ------------ */
+exports.searchDataShapeProvAmpTamMap = async (req, res, next) => {
+    try {
+        const { prov, amp, tam } = req.query
+        result(res, await searchDataShapeProvAmpTamMapService(prov, amp, tam))
 
+
+    } catch (error) {
+        next(error);
+    }
+}
 
 
 
