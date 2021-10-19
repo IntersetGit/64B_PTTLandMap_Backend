@@ -176,8 +176,10 @@ exports.getShapeData = async (req, res, next) => {
 exports.getInfoProject = async (req, res, next) => {
     try {
 
-        const { search, value } = req.query
-        result(res, await getAllShapeDataService(search, value))
+        const { search, value, limit = 10 } = req.query
+        const _res_sql = await getAllShapeDataService(search, value, limit)
+        
+        result(res, _res_sql)
 
     } catch (error) {
         next(error);

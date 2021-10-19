@@ -109,7 +109,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
 /* เรียกข้อมูลทั้งหมด shape_data */
 
-exports.getAllShapeDataService = async (search, value, layer_group) => {
+exports.getAllShapeDataService = async (search, value, limit) => {
 
     //ค้นหาชื่อตารางทั้งหมดใน shape_data
     const table_name = await sequelizeString(`  
@@ -126,7 +126,7 @@ exports.getAllShapeDataService = async (search, value, layer_group) => {
         for (let a = 0; a < table_name.length; a++) {
             const tables = table_name[a];
             if (value == "partype" || "project_na") {
-                sql = `SELECT * FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%'`
+                sql = `SELECT * FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%' LIMIT ${limit}`
                 _res = await sequelizeString(sql)
                 _res.forEach(e => {
                     e.table_name = tables.table_name,
@@ -139,26 +139,24 @@ exports.getAllShapeDataService = async (search, value, layer_group) => {
     } else {
 
         //เรียกข้อมูลทั้งหมด schema shape
-            for (const i in table_name) {
-                if (Object.hasOwnProperty.call(table_name, i)) {
-                    KeepData.push(table_name[i].table_name)
-                }
+        for (const i in table_name) {
+            if (Object.hasOwnProperty.call(table_name, i)) {
+                KeepData.push(table_name[i].table_name)
             }
+        }
 
-            for (const a in KeepData) {
-                if (Object.hasOwnProperty.call(KeepData, a)) {
-                    const e = KeepData[a]
-                    // console.log(e);
-                    // arr_sql.push(`shape_data.${e}`)
-                    sql = `SELECT * FROM shape_data.${e} `
-                    _res = await sequelizeString(sql)
-                    _res.forEach(x => {
-                        x.table_name = e
-                        arr_sql.push(x)
-                    })
+        for (const a in KeepData) {
+            if (Object.hasOwnProperty.call(KeepData, a)) {
+                const e = KeepData[a]
+                sql = `SELECT * FROM shape_data.${e} LIMIT ${limit}`
+                _res = await sequelizeString(sql)
+                _res.forEach(x => {
+                    x.table_name = e
+                    arr_sql.push(x)
+                })
 
-                }
             }
+        }
     }
 
     return arr_sql
