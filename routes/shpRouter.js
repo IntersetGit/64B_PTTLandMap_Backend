@@ -1,4 +1,5 @@
-const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, getInfoProject, getShapeProvinceMap, searchDataShapeProvAmpTamMap } = require('../controllers/shpControllers');
+const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, getInfoProject, getShapeProvinceMap, 
+    searchDataShapeProvAmpTamMap, getByidShapeMap } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -13,10 +14,12 @@ router.get('/shapeData', [authenticateToken], getShapeData);
 router.post('/convertGeoToShp', [authenticateToken], convertGeoToShp);
 
 /* ค้นหาข้อมูลหน้า และเรียกข้อมูล map  */
-router.get('/getSearchData', [authenticateToken], getInfoProject)
+router.get('/getSearchData', [authenticateToken], getInfoProject);
 /* เรียกจังหวัง อำเภอ ตำบล map */
-router.get('/getShapeProvince', [authenticateToken], getShapeProvinceMap)
+router.get('/getShapeProvince', [authenticateToken], getShapeProvinceMap);
 /* ค้นหาจังหวัด อำเภอ ตำบล map search */
-router.get('/searchDataShapeProvAumTam', [authenticateToken], searchDataShapeProvAmpTamMap)
+router.get('/searchDataShapeProvAumTam', [authenticateToken], searchDataShapeProvAmpTamMap);
+/* แก้ไขไฟล์ shape */
+router.get('/getByIdShape', [authenticateToken], getByidShapeMap);
 
 module.exports = router;
