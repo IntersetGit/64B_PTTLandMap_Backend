@@ -263,7 +263,15 @@ exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
             if (Object.hasOwnProperty.call(table_name, key)) {
                 const tables = table_name[key];
                 if (prov) {
-                    sql = await sequelizeString(` SELECT * FROM shape_data.${tables.table_name} WHERE prov = '${prov}' `)
+                    var wheresql = ''
+                    if (amp) {
+                        wheresql += ` and amp = '${amp}' `
+                    }
+                    if (tam) {
+                        wheresql += ` and tam = '${tam}' `
+                    }
+                    sql = await sequelizeString(` SELECT * FROM shape_data.${tables.table_name} WHERE prov = '${prov}' '${wheresql}' `)
+                    
                     sql.forEach(provs => {
                         provs.table_name = tables.table_name
                         arr_sql.push(provs)
