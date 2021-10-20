@@ -8,7 +8,6 @@ var _mas_name_titles = require("./mas_name_titles");
 var _mas_province = require("./mas_province");
 var _mas_status_project = require("./mas_status_project");
 var _mas_subdistrict = require("./mas_subdistrict");
-var _ptt_geodata = require("./ptt_geodata");
 var _shape_layers = require("./shape_layers");
 var _sysm_roles = require("./sysm_roles");
 var _sysm_users = require("./sysm_users");
@@ -23,7 +22,6 @@ function initModels(sequelize) {
   var mas_province = _mas_province(sequelize, DataTypes);
   var mas_status_project = _mas_status_project(sequelize, DataTypes);
   var mas_subdistrict = _mas_subdistrict(sequelize, DataTypes);
-  var ptt_geodata = _ptt_geodata(sequelize, DataTypes);
   var shape_layers = _shape_layers(sequelize, DataTypes);
   var sysm_roles = _sysm_roles(sequelize, DataTypes);
   var sysm_users = _sysm_users(sequelize, DataTypes);
@@ -67,7 +65,6 @@ function initModels(sequelize) {
     mas_province,
     mas_status_project,
     mas_subdistrict,
-    ptt_geodata,
     shape_layers,
     sysm_roles,
     sysm_users,
