@@ -270,7 +270,7 @@ exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
                     if (tam) {
                         wheresql += ` and tam = '${tam}' `
                     }
-                    sql = await sequelizeString(` SELECT * FROM shape_data.${tables.table_name} WHERE prov = '${prov}' '${wheresql}' `)
+                    sql = await sequelizeString(` SELECT * FROM shape_data.${tables.table_name} WHERE prov = '${prov}' ${wheresql} `)
                     
                     sql.forEach(provs => {
                         provs.table_name = tables.table_name
