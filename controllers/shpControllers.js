@@ -177,8 +177,8 @@ exports.getShapeData = async (req, res, next) => {
 exports.getInfoProject = async (req, res, next) => {
     try {
 
-        const { search, value, limit = 10 } = req.query
-        const _res_sql = await getAllShapeDataService(search, value, limit)
+        const { search, project_name, limit = 10 } = req.query
+        const _res_sql = await getAllShapeDataService(search, project_name, limit)
 
         result(res, {
             data: _res_sql.arr_sql,

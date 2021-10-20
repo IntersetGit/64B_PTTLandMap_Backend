@@ -116,7 +116,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
 /* เรียกข้อมูลทั้งหมด shape_data */
 
-exports.getAllShapeDataService = async (search, value, limit) => {
+exports.getAllShapeDataService = async (search, project_name, limit) => {
 
     //ค้นหาชื่อตารางทั้งหมดใน shape_data
     const table_name = await sequelizeString(`  
@@ -132,10 +132,10 @@ exports.getAllShapeDataService = async (search, value, limit) => {
 
         for (let a = 0; a < table_name.length; a++) {
             const tables = table_name[a];
-            if (value == "partype" || "project_na") {
+            if (project_name == "partype" || "project_na") {
                 const filter_color_amountdata = await models.mas_layers_shape.findOne({where: {table_name : tables.table_name}})
-                _res = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%' LIMIT ${limit}`)
-                sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%' `)
+                _res = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' LIMIT ${limit}`)
+                sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
                 amount.push(sql_count.amount_data)
                 _res.forEach(e => {
                     e.table_name = tables.table_name,
