@@ -132,7 +132,7 @@ exports.getAllShapeDataService = async (search, project_name, limit) => {
 
         for (let a = 0; a < table_name.length; a++) {
             const tables = table_name[a];
-            if (project_name == "partype" || "project_na") {
+            if (project_name == "objectid" || "project_na" || "parlabel1" ) {
                 const filter_color_amountdata = await models.mas_layers_shape.findOne({where: {table_name : tables.table_name}})
                 _res = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
                 sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
@@ -299,36 +299,62 @@ exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
 
 
 /* แก้ไขข้อมูล shape */
-exports.editshapeDataService = async (remark , gid) =>{
-    const table_name = await sequelizeString(`  
-    SELECT * FROM information_schema.tables
-    WHERE table_schema = 'shape_data' `)
-    const arr_sql = []
-    var sql, _res
+exports.editshapeDataService = async (model) =>{
 
-    if (table_name.length > 0) {
-        for (const aa in table_name) {
-            if (Object.hasOwnProperty.call(table_name, aa)) {
-                const tables = table_name[aa];
-                var _model = []
+    const filter_shapedata = await models.mas_layers_shape.findOne({where: {table_name: model.table_name}})
+
+    if (!filter_shapedata) { 
+        const err = new Error('ไม่พบชั้นข้อมูล')
+        err.statusCode = 404
+        throw err
+    }
+    let str_sql = `SELECT * FROM shape_data.${filter_shapedata.table_name} SET `
+
+    let _keys = Object.keys(model)
+    _keys = _keys.splice(0,_keys.length - 2)
+
+    let _value =  Object.values(model)
+    _value = _value.splice(0,_value.length - 2)
+    console.log(_keys);
+    console.log(_value);
+    _keys.forEach(column => {
+        str_sql += ` ${column} = `
+    })
+    _value.forEach(val => {
+        str_sql += ` ${val}`
+    })
+
+
+    console.log(str_sql);
+    
+    const sql = await sequelizeString(`SELECT * FROM shape_data.${filter_shapedata.table_name}`);
+    sql.forEach(e => {
+        console.log(e);
+    })
+    // const arr_sql = []
+    // var sql = `UPDATE shape_data.${tables.table_name} SET remark `, _res_sql
+
+    // if (table_name.length > 0) {
+    //     for (const aa in table_name) {
+    //         if (Object.hasOwnProperty.call(table_name, aa)) {
+    //             const tables = table_name[aa];
+    //             var _model = []
                 
                 
-
-
-                if(remark){
+    //             if(remark){
                      
-                    sql = await sequelizeString(` UPDATE shape_data.${tables.table_name} SET remark = '${remark}'  WHERE id = '${gid}' `)
+    //                 sql = await sequelizeString(` UPDATE shape_data.${tables.table_name} SET remark = '${remark}'  WHERE id = '${gid}' `)
 
-                    sql.forEach(_remarks => {
-                        _remarks.table_name = tables.table_name
-                        arr_sql.push(_remarks)
-                    })
-                }
+    //                 sql.forEach(_remarks => {
+    //                     _remarks.table_name = tables.table_name
+    //                     arr_sql.push(_remarks)
+    //                 })
+    //             }
 
-              }
-            }
-           } 
-           return  (arr_sql.length > 0) ?  arr_sql : []
-          }
+    //           }
+    //         }
+    // } 
+    // return  (arr_sql.length > 0) ?  arr_sql : []
+}
 
 
