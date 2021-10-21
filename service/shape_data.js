@@ -5,6 +5,12 @@ const { DataTypes } = require("sequelize"); //type Database
 const { SequelizeAuto } = require('sequelize-auto');
 const sequelize = require("../config/dbConfig"); //connect database
 
+//ค้นหาชื่อตารางทั้งหมดใน shape_data
+const func_table_name = async () => {
+    return await sequelizeString(`  
+    SELECT * FROM information_schema.tables
+    WHERE table_schema = 'shape_data' `)
+}
 
 exports.shapeDataService = async (table_name, id) => {
 
@@ -118,10 +124,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
 exports.getAllShapeDataService = async (search, project_name, limit) => {
 
-    //ค้นหาชื่อตารางทั้งหมดใน shape_data
-    const table_name = await sequelizeString(`  
-    SELECT * FROM information_schema.tables
-    WHERE table_schema = 'shape_data' `)
+    const table_name = await func_table_name()
 
     //สร้างตัวแปลเพื่อเก็บข้อมูล project_na, prov, amp, tam ของแต่ละ table ที่ Select มา
     const KeepData = [], arr_sql = [], amount = []
@@ -133,13 +136,17 @@ exports.getAllShapeDataService = async (search, project_name, limit) => {
         for (let a = 0; a < table_name.length; a++) {
             const tables = table_name[a];
             if (project_name == "objectid" || "project_na" || "parlabel1" ) {
-                const filter_color_amountdata = await models.mas_layers_shape.findOne({where: {table_name : tables.table_name}})
                 _res = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
                 sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
                 amount.push(sql_count.amount_data)
                 _res.forEach(e => {
-                    e.table_name = tables.table_name,
-                    e.color = filter_color_amountdata.color_layer
+                    if (e.partype === "โฉนดที่ดิน" || "น.ส.4") e.color = "#FF0000" //แดง
+                    else if (e.partype === "น.ส.3ก.") e.color = "#049B06" //เขียว
+                    else if (e.partype === "น.ส.3" || "น.ส.3ข.") e.color = "#000000" //ดำ
+                    else if (e.partype === "สปก.4-01") e.color = "#0115C3" //ฟ้า
+                    else e.color = "#626262" //เทา
+
+                    e.table_name = tables.table_name
                     arr_sql.push(e)
                 })
                
@@ -158,13 +165,17 @@ exports.getAllShapeDataService = async (search, project_name, limit) => {
         for (const a in KeepData) {
             if (Object.hasOwnProperty.call(KeepData, a)) {
                 const e = KeepData[a]
-                const filter_color_amountdata = await models.mas_layers_shape.findOne({where: {table_name : e}})
                 _res = await sequelizeString(`SELECT * FROM shape_data.${e} `)
                 sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${e} `)
                 amount.push(sql_count.amount_data)
                 _res.forEach((x) => {
+                    if (x.partype === "โฉนดที่ดิน" || "น.ส.4") x.color = "#FF0000" //แดง
+                    else if (x.partype === "น.ส.3ก.") x.color = "#049B06" //เขียว
+                    else if (x.partype === "น.ส.3" || "น.ส.3ข.") x.color = "#000000" //ดำ
+                    else if (x.partype === "สปก.4-01") x.color = "#0115C3" //ฟ้า
+                    else x.color = "#626262" //เทา
+
                     x.table_name = e
-                    x.color = filter_color_amountdata.color_layer
                     arr_sql.push(x)
                 })
 
@@ -263,10 +274,7 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
 /* ค้นหา จังหวัด อำเภอ ตำบล */
 exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
 
-    //ค้นหาชื่อตารางทั้งหมดใน shape_data
-    const table_name = await sequelizeString(`  
-    SELECT * FROM information_schema.tables
-    WHERE table_schema = 'shape_data' `)
+    const table_name = await func_table_name()
     const KeepData = [], arr_sql = []
     var sql, _res
 
@@ -355,6 +363,61 @@ exports.editshapeDataService = async (model) =>{
     //         }
     // } 
     // return  (arr_sql.length > 0) ?  arr_sql : []
+}
+
+
+/** ส่งมอบสิทธื์โครงการ 
+ * เรียกข้อมูลสิทธิ์
+*/
+
+exports.getFromProjectService = async (search, project_name) => {
+
+    const table_name = await func_table_name()
+    const KeepData = [], arr_sql = []
+    var sql, _res
+    
+    if (table_name.length > 0) {
+        for (const a in table_name) {
+            if (Object.hasOwnProperty.call(table_name, a)) {
+                const element = table_name[a];
+                sql = await sequelizeString(`SELECT status FROM shape_data.${element.table_name} `)
+                sql.forEach(e => {
+                    arr_sql.push(e)
+                })
+                
+            }
+        }
+    }
+
+    // if (search) {
+    //     for (const i in arr_sql) {
+    //         if (Object.hasOwnProperty.call(arr_sql, i)) {
+    //             const element = arr_sql[i];
+    //             const { table_name } = element
+    //             sql = await sequelizeString(` SELECT status FROM shape_data.${table_name} WHERE ${project_name} = ${search}`)
+    //             sql.forEach(x => {
+    //                 x.table_name = table_name
+    //                 KeepData.push(x)
+    //             })
+               
+    //         }
+    //     }
+    // } else {
+    //     for (const i in arr_sql) {
+    //         if (Object.hasOwnProperty.call(arr_sql, i)) {
+    //             const element = arr_sql[i];
+    //             const { table_name } = element
+    //             sql = await sequelizeString(` SELECT status FROM shape_data.${table_name} `)
+    //             sql.forEach(x => {
+    //                 x.table_name = table_name
+    //                 KeepData.push(x)
+    //             })
+    //         }
+    //     }
+    // }
+
+    return { KeepData, arr_sql }
+
 }
 
 

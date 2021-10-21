@@ -5,7 +5,7 @@ const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
 const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService, 
-    getByidShapeMapService, editshapeDataService } = require('../service/shape_data')
+    editshapeDataService, getFromProjectService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -233,6 +233,22 @@ exports.editShapeMap = async (req, res, next) => {
         const model = req.query;
         result(res, await editshapeDataService(model));
 
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
+/** ส่งมอบสิทธื์โครงการ 
+ * เรียกข้อมูลสิทธิ์
+*/
+exports.getFromProjectDashboard = async (req, res, next) => {
+    try {
+        const { search, project_name } = req.query
+        const _res_sql = await getFromProjectService(search, project_name)
+
+        result(res, _res_sql)
     } catch (error) {
         next(error);
     }
