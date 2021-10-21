@@ -177,7 +177,7 @@ exports.getShapeData = async (req, res, next) => {
 exports.getInfoProject = async (req, res, next) => {
     try {
 
-        const { search, project_name, limit = 10 } = req.query
+        const { search, project_name, limit } = req.query
         const _res_sql = await getAllShapeDataService(search, project_name, limit)
 
         result(res, {
@@ -193,8 +193,8 @@ exports.getInfoProject = async (req, res, next) => {
 /* ----------- เรียก จังหวัด อำเภอ ตำบล  ----------------      */
 exports.getShapeProvinceMap = async (req, res, next) => {
     try {
-        const { layer_group } = req.query
-        result(res, await getShapeProvinceMapService(layer_group))
+        const { layer_group, layer_shape } = req.query
+        result(res, await getShapeProvinceMapService(layer_group, layer_shape))
 
     } catch (error) {
         next(error);
