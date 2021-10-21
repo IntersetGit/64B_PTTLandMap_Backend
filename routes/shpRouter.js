@@ -1,5 +1,5 @@
 const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, getInfoProject, getShapeProvinceMap, 
-    searchDataShapeProvAmpTamMap, getByidShapeMap } = require('../controllers/shpControllers');
+    searchDataShapeProvAmpTamMap, getByidShapeMap,editShapeMap } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -19,6 +19,8 @@ router.get('/getSearchData', [authenticateToken], getInfoProject);
 router.get('/getShapeProvince', [authenticateToken], getShapeProvinceMap);
 /* ค้นหาจังหวัด อำเภอ ตำบล map search */
 router.get('/searchDataShapeProvAumTam', [authenticateToken], searchDataShapeProvAmpTamMap);
+
+router.post('/editShapeData',[authenticateToken],editShapeMap);
 /* แก้ไขไฟล์ shape */
 router.get('/getByIdShape', [authenticateToken], getByidShapeMap);
 

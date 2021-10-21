@@ -286,4 +286,37 @@ exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
 }
 
 
+/* แก้ไขข้อมูล shape */
+exports.editshapeDataService = async (remark , gid) =>{
+    const table_name = await sequelizeString(`  
+    SELECT * FROM information_schema.tables
+    WHERE table_schema = 'shape_data' `)
+    const arr_sql = []
+    var sql, _res
+
+    if (table_name.length > 0) {
+        for (const aa in table_name) {
+            if (Object.hasOwnProperty.call(table_name, aa)) {
+                const tables = table_name[aa];
+                var _model = []
+                
+                
+
+
+                if(remark){
+                     
+                    sql = await sequelizeString(` UPDATE shape_data.${tables.table_name} SET remark = '${remark}'  WHERE id = '${gid}' `)
+
+                    sql.forEach(_remarks => {
+                        _remarks.table_name = tables.table_name
+                        arr_sql.push(_remarks)
+                    })
+                }
+
+              }
+            }
+           } 
+           return  (arr_sql.length > 0) ?  arr_sql : []
+          }
+
 
