@@ -326,6 +326,8 @@ exports.editshapeDataService = async (model) =>{
 
 
     console.log(str_sql);
+
+
     
     const sql = await sequelizeString(`SELECT * FROM shape_data.${filter_shapedata.table_name}`);
     sql.forEach(e => {
