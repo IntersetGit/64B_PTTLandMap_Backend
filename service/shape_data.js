@@ -116,7 +116,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
 /* เรียกข้อมูลทั้งหมด shape_data */
 
-exports.getAllShapeDataService = async (search, value, limit) => {
+exports.getAllShapeDataService = async (search, project_name, limit) => {
 
     //ค้นหาชื่อตารางทั้งหมดใน shape_data
     const table_name = await sequelizeString(`  
@@ -132,10 +132,10 @@ exports.getAllShapeDataService = async (search, value, limit) => {
 
         for (let a = 0; a < table_name.length; a++) {
             const tables = table_name[a];
-            if (value == "partype" || "project_na") {
+            if (project_name == "partype" || "project_na") {
                 const filter_color_amountdata = await models.mas_layers_shape.findOne({where: {table_name : tables.table_name}})
-                _res = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%' LIMIT ${limit}`)
-                sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${value} ILIKE '%${search}%' `)
+                _res = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
+                sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
                 amount.push(sql_count.amount_data)
                 _res.forEach(e => {
                     e.table_name = tables.table_name,
@@ -159,8 +159,8 @@ exports.getAllShapeDataService = async (search, value, limit) => {
             if (Object.hasOwnProperty.call(KeepData, a)) {
                 const e = KeepData[a]
                 const filter_color_amountdata = await models.mas_layers_shape.findOne({where: {table_name : e}})
-                _res = await sequelizeString(`SELECT * FROM shape_data.${e} LIMIT ${limit}`)
-                sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${e} LIMIT ${limit}`)
+                _res = await sequelizeString(`SELECT * FROM shape_data.${e} `)
+                sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${e} `)
                 amount.push(sql_count.amount_data)
                 _res.forEach((x) => {
                     x.table_name = e
@@ -177,19 +177,20 @@ exports.getAllShapeDataService = async (search, value, limit) => {
 }
 
 /* เรียกจังหวัด อำเภอตำบล ตามข้อมูลที่มีใน mas_layers_shape */
-exports.getShapeProvinceMapService = async (layer_group) => {
-    const layers_data = await models.mas_layers_shape.findAll({ where: { group_layer_id: layer_group } })
+exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
+
     const KeepData = [], arr_sql = []
     var sql, _res
-    // console.log(layers_data);
+
     if (layer_group) {
+        const layers_data = await models.mas_layers_shape.findAll({ where: { group_layer_id: layer_group } })
         if (layers_data.length > 0) {
             layers_data.forEach(e => [
                 KeepData.push(e.table_name)
             ])
-
+    
         } else []
-
+    
         for (const af in KeepData) {
             if (Object.hasOwnProperty.call(KeepData, af)) {
                 const tables_name = KeepData[af];
@@ -203,6 +204,17 @@ exports.getShapeProvinceMapService = async (layer_group) => {
                     }
                 }
             }
+        }
+    }
+
+    if (layer_shape) {
+        const layers_data_shape = await models.mas_layers_shape.findOne({ where: { id: layer_shape } })
+        _res = await sequelizeString(sql = `SELECT * FROM shape_data.${layers_data_shape.table_name} `)
+        if (_res.length > 0) {
+            _res.forEach(province => {
+                const { prov, amp, tam } = province
+                arr_sql.push({ prov, amp, tam })
+            })
         }
     }
     

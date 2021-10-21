@@ -128,7 +128,7 @@ exports.refreshTokenControllers = async (req, res, next) => {
         if (!authHeader) res.sendStatus(401)
 
         const token = authHeader && authHeader.split(" ")[1];
-        if (config.NODE_ENV == "production") if (!refreshTokens.includes(token)) res.sendStatus(403)
+        // if (config.NODE_ENV == "production") if (!refreshTokens.includes(token)) res.sendStatus(403)
 
         jwt.verify(token, config.JWT_SECRET_REFRESH, async (err, __res) => {
             if (err) res.sendStatus(403)
