@@ -183,8 +183,8 @@ exports.getShapeData = async (req, res, next) => {
 exports.getInfoProject = async (req, res, next) => {
     try {
 
-        const { search, project_name, limit } = req.query
-        const _res_sql = await getAllShapeDataService(search, project_name, limit)
+        const { search, project_name, prov, amp, tam } = req.query
+        const _res_sql = await getAllShapeDataService(search, project_name, prov, amp, tam)
 
         result(res, {
             data: _res_sql.arr_sql,
@@ -263,7 +263,7 @@ exports.getFromProjectDashboard = async (req, res, next) => {
         
         result(res, {
             plot: {status, data},
-            distance: {}
+            distance: {status: [], data: []}
         })
     } catch (error) {
         next(error);

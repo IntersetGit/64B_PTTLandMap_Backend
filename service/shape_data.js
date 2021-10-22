@@ -123,67 +123,37 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
 /* เรียกข้อมูลทั้งหมด shape_data */
 
-exports.getAllShapeDataService = async (search, project_name, limit) => {
+exports.getAllShapeDataService = async (search, project_name, prov, amp, tam) => {
 
     const table_name = await func_table_name()
 
     //สร้างตัวแปลเพื่อเก็บข้อมูล project_na, prov, amp, tam ของแต่ละ table ที่ Select มา
     const KeepData = [], arr_sql = [], amount = []
-    var sql, _res, sql_count
+    var sql, _res, sql_count, val_sql = ``
     //วนลูปเพื่อเอาข้อมูล project_na, prov, amp, tam ของแต่ละ Table มา
 
-    if (search) {
+    for (let a = 0; a < table_name.length; a++) {
+        const tables = table_name[a];
+        if (search) val_sql = ` WHERE ${project_name} ILIKE '%${search}%' `
+        if (prov) val_sql += ` AND prov = '${prov}' `
+        if (amp) val_sql += ` AND amp = '${amp}' `
+        if (tam) val_sql += ` AND prov = '${tam}' `
 
-        for (let a = 0; a < table_name.length; a++) {
-            const tables = table_name[a];
-            if (project_name == "objectid" || "project_na" || "parlabel1") {
-                _res = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
-                sql_count = await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
-                amount.push(sql_count.amount_data)
-                _res.forEach(e => {
-                    if (e.partype === "โฉนดที่ดิน" || "น.ส.4") e.color = "#FF0000" //แดง
-                    else if (e.partype === "น.ส.3ก.") e.color = "#049B06" //เขียว
-                    else if (e.partype === "น.ส.3" || "น.ส.3ข.") e.color = "#000000" //ดำ
-                    else if (e.partype === "สปก.4-01") e.color = "#0115C3" //ฟ้า
-                    else e.color = "#626262" //เทา
+        sql = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} ${val_sql} `)
+        sql_count = await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} ${val_sql} `)
+        amount.push(sql_count.amount_data)
+        sql.forEach(e => {
+            if (e.partype === "โฉนดที่ดิน" || "น.ส.4") e.color = "#FF0000" //แดง
+            else if (e.partype === "น.ส.3ก.") e.color = "#049B06" //เขียว
+            else if (e.partype === "น.ส.3" || "น.ส.3ข.") e.color = "#000000" //ดำ
+            else if (e.partype === "สปก.4-01") e.color = "#0115C3" //ฟ้า
+            else e.color = "#626262" //เทา
 
-                    e.table_name = tables.table_name
-                    arr_sql.push(e)
-                })
-
-            }
-        }
-
-    } else {
-
-        //เรียกข้อมูลทั้งหมด schema shape
-        for (const i in table_name) {
-            if (Object.hasOwnProperty.call(table_name, i)) {
-                KeepData.push(table_name[i].table_name)
-            }
-        }
-
-        for (const a in KeepData) {
-            if (Object.hasOwnProperty.call(KeepData, a)) {
-                const e = KeepData[a]
-                _res = await sequelizeString(`SELECT * FROM shape_data.${e} `)
-                sql_count = await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${e} `)
-                amount.push(sql_count.amount_data)
-                _res.forEach((x) => {
-                    if (x.partype === "โฉนดที่ดิน" || x.partype === "น.ส.4") x.color = "#FF0000" //แดง
-                    else if (x.partype === "น.ส.3ก.") x.color = "#049B06" //เขียว
-                    else if (x.partype === "น.ส.3" || x.partype === "น.ส.3ข.") x.color = "#000000" //ดำ
-                    else if (x.partype === "สปก.4-01") x.color = "#0115C3" //ฟ้า
-                    else x.color = "#626262" //เทา
-
-                    x.table_name = e
-                    arr_sql.push(x)
-                })
-
-            }
-        }
+            e.table_name = tables.table_name
+            arr_sql.push(e)
+        })
     }
-
+    
     return { arr_sql, amount }
 
 }
