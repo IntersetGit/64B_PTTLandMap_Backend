@@ -126,19 +126,16 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 exports.getAllShapeDataService = async (search, project_name, prov, amp, tam) => {
 
     const table_name = await func_table_name()
-
-    //สร้างตัวแปลเพื่อเก็บข้อมูล project_na, prov, amp, tam ของแต่ละ table ที่ Select มา
     const KeepData = [], arr_sql = [], amount = []
     var sql, _res, sql_count, val_sql = ``
-    //วนลูปเพื่อเอาข้อมูล project_na, prov, amp, tam ของแต่ละ Table มา
+
+    if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `
+    if (prov) val_sql += ` AND prov = '${prov}' `
+    if (amp) val_sql += ` AND amp = '${amp}' `
+    if (tam) val_sql += ` AND tam = '${tam}' `
 
     for (let a = 0; a < table_name.length; a++) {
         const tables = table_name[a];
-        if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `
-        if (prov) val_sql += ` AND prov = '${prov}' `
-        if (amp) val_sql += ` AND amp = '${amp}' `
-        if (tam) val_sql += ` AND tam = '${tam}' `
-
         sql = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} `)
         sql_count = await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} `)
         amount.push(sql_count.amount_data)
@@ -343,32 +340,32 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
     const KeepData = [], arr_sql = []
     var sql, _res, val_sql = ``
 
+    if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `
+    if (prov) val_sql += ` AND prov = '${prov}' `
+    if (amp) val_sql += ` AND amp = '${amp}' `
+    if (tam) val_sql += ` AND tam = '${tam}' `
 
-
-        const status_shape = await models.mas_status_project.findAll({ order: [['sort', 'ASC']] })
-        for (const i in status_shape) {
-            if (Object.hasOwnProperty.call(status_shape, i)) {
-                const statues = status_shape[i];
-                for (const a in table_name) {
-                    if (Object.hasOwnProperty.call(table_name, a)) {
-                        const element = table_name[a];
-                        if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `
-                        if (prov) val_sql += ` AND prov = '${prov}' `
-                        if (amp) val_sql += ` AND amp = '${amp}' `
-                        if (tam) val_sql += ` AND tam = '${tam}' `
-                        sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}  `)
-                        sql.forEach(({ count }) => {
-                            arr_sql.push({
-                                count,
-                                table_name: element.table_name,
-                                name: statues.name,
-                                status: statues.status_code
-                            })
+    const status_shape = await models.mas_status_project.findAll({ order: [['sort', 'ASC']] })
+    for (const i in status_shape) {
+        if (Object.hasOwnProperty.call(status_shape, i)) {
+            const statues = status_shape[i];
+            for (const a in table_name) {
+                if (Object.hasOwnProperty.call(table_name, a)) {
+                    const element = table_name[a];
+                    
+                    sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}  `)
+                    sql.forEach(({ count }) => {
+                        arr_sql.push({
+                            count,
+                            table_name: element.table_name,
+                            name: statues.name,
+                            status: statues.status_code
                         })
-                    }
+                    })
                 }
             }
         }
+    }
 
 
     const _temp = []
