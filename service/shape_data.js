@@ -308,7 +308,7 @@ exports.editshapeDataService = async (model) =>{
         err.statusCode = 404
         throw err
     }
-    let str_sql = `SELECT * FROM shape_data.${filter_shapedata.table_name} SET `
+    let str_sql = `UPDATE shape_data.${filter_shapedata.table_name} SET `
 
     let _keys = Object.keys(model)
     _keys = _keys.splice(0,_keys.length - 2)
@@ -317,22 +317,48 @@ exports.editshapeDataService = async (model) =>{
     _value = _value.splice(0,_value.length - 2)
     console.log(_keys);
     console.log(_value);
-    _keys.forEach(column => {
-        str_sql += ` ${column} = `
-    })
-    _value.forEach(val => {
-        str_sql += ` ${val}`
-    })
 
-
-    console.log(str_sql);
-
+        for (const i in _keys) {
+            if (Object.hasOwnProperty.call(_keys, i)) {
+                const keys = _keys[i];
+                const value = _value[i];
+               if (keys != 'table_name' && i<2) {
+                str_sql += ` ${keys} = '${value}' `
+            }else if (keys != 'table_name'){
+                str_sql += ` ,${keys} = '${value}' `
+            }
+            }
+        }
+    
+         str_sql += ` WHERE gid = 1`
+    // _keys.forEach(column => {
+    //     if (column != 'table_name') {
+    //         str_sql += ` ${column} = `
+    //     }
+        
+    // })
+    // _value.forEach(val => {
+    //     str_sql += ` ${val}`
+    // })
 
     
-    const sql = await sequelizeString(`SELECT * FROM shape_data.${filter_shapedata.table_name}`);
-    sql.forEach(e => {
-        console.log(e);
-    })
+    console.log(str_sql);
+    
+  return await sequelizeString(str_sql)
+    // const _sqlll = await sequelizeString(str_sql);
+    // console.log(_sqlll);
+    // return _sqlll
+   
+    
+
+    
+    // const sql = await sequelizeString(`SELECT * FROM shape_data.${filter_shapedata.table_name}` );
+    // sql.forEach(e => {
+    //     console.log(e);
+    // })
+
+
+
     // const arr_sql = []
     // var sql = `UPDATE shape_data.${tables.table_name} SET remark `, _res_sql
 
