@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const { DataTypes } = require("sequelize"); //type Database
 const { SequelizeAuto } = require('sequelize-auto');
 const sequelize = require("../config/dbConfig"); //connect database
+const lodash = require('lodash')
 
 //ค้นหาชื่อตารางทั้งหมดใน shape_data
 const func_table_name = async () => {
@@ -169,9 +170,9 @@ exports.getAllShapeDataService = async (search, project_name, limit) => {
                 sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${e} `)
                 amount.push(sql_count.amount_data)
                 _res.forEach((x) => {
-                    if (x.partype === "โฉนดที่ดิน" || "น.ส.4") x.color = "#FF0000" //แดง
+                    if (x.partype === "โฉนดที่ดิน" || x.partype === "น.ส.4") x.color = "#FF0000" //แดง
                     else if (x.partype === "น.ส.3ก.") x.color = "#049B06" //เขียว
-                    else if (x.partype === "น.ส.3" || "น.ส.3ข.") x.color = "#000000" //ดำ
+                    else if (x.partype === "น.ส.3" || x.partype === "น.ส.3ข.") x.color = "#000000" //ดำ
                     else if (x.partype === "สปก.4-01") x.color = "#0115C3" //ฟ้า
                     else x.color = "#626262" //เทา
 
@@ -373,50 +374,83 @@ exports.editshapeDataService = async (model) =>{
 exports.getFromProjectService = async (search, project_name) => {
 
     const table_name = await func_table_name()
-    const KeepData = [], arr_sql = []
+    const KeepData = [], arr_sql = [], status = [], data = []
     var sql, _res
     
-    if (table_name.length > 0) {
-        for (const a in table_name) {
-            if (Object.hasOwnProperty.call(table_name, a)) {
-                const element = table_name[a];
-                sql = await sequelizeString(`SELECT status FROM shape_data.${element.table_name} `)
-                sql.forEach(e => {
-                    arr_sql.push(e)
-                })
-                
+    if (search) {
+
+        const status_shape = await models.mas_status_project.findAll({order: [['sort', 'ASC']]})
+        for (const i in status_shape) {
+            if (Object.hasOwnProperty.call(status_shape, i)) {
+                const statues = status_shape[i];
+                for (const a in table_name) {
+                    if (Object.hasOwnProperty.call(table_name, a)) {
+                        const element = table_name[a];
+                        sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' AND ${project_name} ILIKE '%${search}%' `)
+                        sql.forEach(({count}) => {
+                            arr_sql.push({
+                                count,
+                                table_name: element.table_name,
+                                name: statues.name,
+                                status: statues.status_code
+                            })
+                        })
+                    }
+                }
             }
         }
+
+    } else {
+
+        if (table_name.length > 0) {
+
+            const status_shape = await models.mas_status_project.findAll({order: [['sort', 'ASC']]})
+                for (const i in status_shape) {
+                    if (Object.hasOwnProperty.call(status_shape, i)) {
+                        const statues = status_shape[i];
+                        for (const a in table_name) {
+                            if (Object.hasOwnProperty.call(table_name, a)) {
+                                const element = table_name[a];
+                                sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' `)
+                                sql.forEach(({count}) => {
+                                    arr_sql.push({
+                                        count,
+                                        table_name: element.table_name,
+                                        name: statues.name,
+                                        status: statues.status_code
+                                    })
+                                })
+                            }
+                        }
+                    }
+                }
+        }
     }
+    
 
-    // if (search) {
-    //     for (const i in arr_sql) {
-    //         if (Object.hasOwnProperty.call(arr_sql, i)) {
-    //             const element = arr_sql[i];
-    //             const { table_name } = element
-    //             sql = await sequelizeString(` SELECT status FROM shape_data.${table_name} WHERE ${project_name} = ${search}`)
-    //             sql.forEach(x => {
-    //                 x.table_name = table_name
-    //                 KeepData.push(x)
-    //             })
-               
-    //         }
-    //     }
-    // } else {
-    //     for (const i in arr_sql) {
-    //         if (Object.hasOwnProperty.call(arr_sql, i)) {
-    //             const element = arr_sql[i];
-    //             const { table_name } = element
-    //             sql = await sequelizeString(` SELECT status FROM shape_data.${table_name} `)
-    //             sql.forEach(x => {
-    //                 x.table_name = table_name
-    //                 KeepData.push(x)
-    //             })
-    //         }
-    //     }
-    // }
+    arr_sql.forEach(e => {
+        KeepData.push(e.count)
+        const int1 = status.findIndex(p => (p == e.name))
+        if(int1 == -1) {
+            status.push(e.name)
+            const _sum = arr_sql.reduce((sum, num) => {
+                if(e.name == num.name) {
+                    return {
+                        count: Number(sum.count) + Number(num.count)
+                    }
+                } else return sum
+                
+            })
+            // console.log(_sum.count);
+            data.push(_sum.count)
+        }
+    })
 
-    return { KeepData, arr_sql }
+
+    return {
+        plot: {status, sum},
+        disten: {}
+    }
 
 }
 
