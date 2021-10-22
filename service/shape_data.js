@@ -15,7 +15,7 @@ const func_table_name = async () => {
 
 exports.shapeDataService = async (table_name, id) => {
 
-    const filter_table_name = await models.mas_layers_shape.findOne({where: { table_name }})
+    const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
     if (filter_table_name || filter_table_name.table_name != '' && filter_table_name.table_name != null) {
 
         let sql = `  
@@ -32,8 +32,8 @@ exports.shapeDataService = async (table_name, id) => {
         else sql += ` FROM  (SELECT * FROM shape_data.${table_name}) row `
         return await sequelizeStringFindOne(sql)
 
-    } else []
-    
+    } else[]
+
 }
 
 exports.findIdLayersShape = async (id) => {
@@ -136,9 +136,9 @@ exports.getAllShapeDataService = async (search, project_name, limit) => {
 
         for (let a = 0; a < table_name.length; a++) {
             const tables = table_name[a];
-            if (project_name == "objectid" || "project_na" || "parlabel1" ) {
+            if (project_name == "objectid" || "project_na" || "parlabel1") {
                 _res = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
-                sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
+                sql_count = await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE ${project_name} ILIKE '%${search}%' `)
                 amount.push(sql_count.amount_data)
                 _res.forEach(e => {
                     if (e.partype === "โฉนดที่ดิน" || "น.ส.4") e.color = "#FF0000" //แดง
@@ -150,7 +150,7 @@ exports.getAllShapeDataService = async (search, project_name, limit) => {
                     e.table_name = tables.table_name
                     arr_sql.push(e)
                 })
-               
+
             }
         }
 
@@ -167,7 +167,7 @@ exports.getAllShapeDataService = async (search, project_name, limit) => {
             if (Object.hasOwnProperty.call(KeepData, a)) {
                 const e = KeepData[a]
                 _res = await sequelizeString(`SELECT * FROM shape_data.${e} `)
-                sql_count =  await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${e} `)
+                sql_count = await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${e} `)
                 amount.push(sql_count.amount_data)
                 _res.forEach((x) => {
                     if (x.partype === "โฉนดที่ดิน" || x.partype === "น.ส.4") x.color = "#FF0000" //แดง
@@ -200,9 +200,9 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
             layers_data.forEach(e => [
                 KeepData.push(e.table_name)
             ])
-    
-        } else []
-    
+
+        } else[]
+
         for (const af in KeepData) {
             if (Object.hasOwnProperty.call(KeepData, af)) {
                 const tables_name = KeepData[af];
@@ -229,14 +229,14 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
             })
         }
     }
-    
+
     // [...new Set(arr_sql.map(({prov}) => prov.replace(/\n/g, '') ))], 
     // [...new Set(arr_sql.map(({amp}) => amp.replace(/\n/g, '') ))], 
     // [...new Set(arr_sql.map(({tam}) => tam.replace(/\n/g, '') ))] 
 
     const prov = [], amp = [], tam = []
     arr_sql.forEach((e, i) => {
-        const i1 = prov.findIndex(x =>  x.name === e.prov.replace(/\n/g, ''))
+        const i1 = prov.findIndex(x => x.name === e.prov.replace(/\n/g, ''))
         if (i1 === -1 && e.prov) {
             prov.push({
                 id: i + 1,
@@ -264,7 +264,7 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
     });
 
 
-    return { 
+    return {
         prov,
         amp,
         tam
@@ -292,25 +292,25 @@ exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
                         wheresql += ` and tam = '${tam}' `
                     }
                     sql = await sequelizeString(` SELECT * FROM shape_data.${tables.table_name} WHERE prov = '${prov}' ${wheresql} `)
-                    
+
                     sql.forEach(provs => {
                         provs.table_name = tables.table_name
                         arr_sql.push(provs)
                     })
-                } 
+                }
             }
         }
-    } 
-    
-    return  (arr_sql.length > 0) ?  arr_sql : []
+    }
+
+    return (arr_sql.length > 0) ? arr_sql : []
 
 }
 
 
 /* แก้ไขข้อมูล shape */
-exports.editshapeDataService = async (model) =>{
+exports.editshapeDataService = async (model) => {
 
-    const filter_shapedata = await models.mas_layers_shape.findOne({where: {table_name: model.table_name}})
+    const filter_shapedata = await models.mas_layers_shape.findOne({ where: { table_name: model.table_name } })
 
     if (!filter_shapedata) { 
         const err = new Error('ไม่พบชั้นข้อมูล')
@@ -324,74 +324,22 @@ exports.editshapeDataService = async (model) =>{
 
     let _value =  Object.values(model)
     _value = _value.splice(0,_value.length - 2)
-    console.log(_keys);
-    console.log(_value);
 
         for (const i in _keys) {
             if (Object.hasOwnProperty.call(_keys, i)) {
                 const keys = _keys[i];
                 const value = _value[i];
-               if (keys != 'table_name' && i<2) {
+               if (keys != 'table_name' && keys != 'gid' &&  i<3) {
                 str_sql += ` ${keys} = '${value}' `
-            }else if (keys != 'table_name'){
+            }else if (keys != 'table_name' && keys != 'gid' ){
                 str_sql += ` ,${keys} = '${value}' `
             }
             }
         }
     
-         str_sql += ` WHERE gid = 1`
-    // _keys.forEach(column => {
-    //     if (column != 'table_name') {
-    //         str_sql += ` ${column} = `
-    //     }
-        
-    // })
-    // _value.forEach(val => {
-    //     str_sql += ` ${val}`
-    // })
-
+        str_sql += ` WHERE gid = ${gid}`
     
-    console.log(str_sql);
-    
-  return await sequelizeString(str_sql)
-    // const _sqlll = await sequelizeString(str_sql);
-    // console.log(_sqlll);
-    // return _sqlll
-   
-    
-
-    
-    // const sql = await sequelizeString(`SELECT * FROM shape_data.${filter_shapedata.table_name}` );
-    // sql.forEach(e => {
-    //     console.log(e);
-    // })
-
-
-
-    // const arr_sql = []
-    // var sql = `UPDATE shape_data.${tables.table_name} SET remark `, _res_sql
-
-    // if (table_name.length > 0) {
-    //     for (const aa in table_name) {
-    //         if (Object.hasOwnProperty.call(table_name, aa)) {
-    //             const tables = table_name[aa];
-    //             var _model = []
-                
-                
-    //             if(remark){
-                     
-    //                 sql = await sequelizeString(` UPDATE shape_data.${tables.table_name} SET remark = '${remark}'  WHERE id = '${gid}' `)
-
-    //                 sql.forEach(_remarks => {
-    //                     _remarks.table_name = tables.table_name
-    //                     arr_sql.push(_remarks)
-    //                 })
-    //             }
-
-    //           }
-    //         }
-    // } 
-    // return  (arr_sql.length > 0) ?  arr_sql : []
+    return await sequelizeString(str_sql)
 }
 
 
@@ -399,15 +347,15 @@ exports.editshapeDataService = async (model) =>{
  * เรียกข้อมูลสิทธิ์
 */
 
-exports.getFromProjectService = async (search, project_name) => {
+exports.getFromProjectService = async (search, project_name, prov, amp, tam) => {
 
     const table_name = await func_table_name()
-    const KeepData = [], arr_sql = [], status = [], data = []
+    const KeepData = [], arr_sql = []
     var sql, _res
-    
+
     if (search) {
 
-        const status_shape = await models.mas_status_project.findAll({order: [['sort', 'ASC']]})
+        const status_shape = await models.mas_status_project.findAll({ order: [['sort', 'ASC']] })
         for (const i in status_shape) {
             if (Object.hasOwnProperty.call(status_shape, i)) {
                 const statues = status_shape[i];
@@ -415,7 +363,7 @@ exports.getFromProjectService = async (search, project_name) => {
                     if (Object.hasOwnProperty.call(table_name, a)) {
                         const element = table_name[a];
                         sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' AND ${project_name} ILIKE '%${search}%' `)
-                        sql.forEach(({count}) => {
+                        sql.forEach(({ count }) => {
                             arr_sql.push({
                                 count,
                                 table_name: element.table_name,
@@ -432,53 +380,85 @@ exports.getFromProjectService = async (search, project_name) => {
 
         if (table_name.length > 0) {
 
-            const status_shape = await models.mas_status_project.findAll({order: [['sort', 'ASC']]})
-                for (const i in status_shape) {
-                    if (Object.hasOwnProperty.call(status_shape, i)) {
-                        const statues = status_shape[i];
-                        for (const a in table_name) {
-                            if (Object.hasOwnProperty.call(table_name, a)) {
-                                const element = table_name[a];
-                                sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' `)
-                                sql.forEach(({count}) => {
-                                    arr_sql.push({
-                                        count,
-                                        table_name: element.table_name,
-                                        name: statues.name,
-                                        status: statues.status_code
-                                    })
+            const status_shape = await models.mas_status_project.findAll({ order: [['sort', 'ASC']] })
+            for (const i in status_shape) {
+                if (Object.hasOwnProperty.call(status_shape, i)) {
+                    const statues = status_shape[i];
+                    for (const a in table_name) {
+                        if (Object.hasOwnProperty.call(table_name, a)) {
+                            const element = table_name[a];
+                            if (amp) val_sql += ` AND amp = ${amp}`
+                            if (tam) val_sql += ` AND tam = ${tam}`
+                            sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}'  `)
+                            sql.forEach(({ count }) => {
+                                arr_sql.push({
+                                    count,
+                                    table_name: element.table_name,
+                                    name: statues.name,
+                                    status: statues.status_code
                                 })
-                            }
+                            })
                         }
                     }
                 }
+            }
         }
     }
-    
+
+    const _temp = []
+    arr_sql.forEach(e => {
+        e.count = Number(e.count);
+        const index = _temp.findIndex(x => x.name === e.name)
+        if (index === -1) {
+            _temp.push(e)
+        } else {
+            _temp[index].count += e.count
+        }
+    });
+
+
+    return _temp
+
+}
+
+exports.getProvAmpTamService = async (prov, amp, tam) => {
+    const table_name = await func_table_name()
+    const KeepData = [], arr_sql = []
+    var val_sql = ``, sql
+
+    const status_shape = await models.mas_status_project.findAll({ order: [['sort', 'ASC']] })
+    for (const i in status_shape) {
+        if (Object.hasOwnProperty.call(status_shape, i)) {
+            const statues = status_shape[i];
+            for (const a in table_name) {
+                if (Object.hasOwnProperty.call(table_name, a)) {
+                    const element = table_name[a];
+                    if (amp) val_sql += ` AND amp = ${amp}`
+                    if (tam) val_sql += ` AND tam = ${tam}`
+                    sql = await sequelizeString(`SELECT COUNT(*) FROM shape_data.${element.table_name} WHERE prov = '${prov}' AND status = '${statues.status_code}' ${val_sql} `)
+                    sql.forEach(({ count }) => {
+                        arr_sql.push({
+                            count,
+                            table_name: element.table_name,
+                            name: statues.name,
+                            status: statues.status_code
+                        })
+                    })
+                }
+            }
+        }
+    }
+   
 
     arr_sql.forEach(e => {
-        KeepData.push(e.count)
-        const int1 = status.findIndex(p => (p == e.name))
-        if(int1 == -1) {
-            status.push(e.name)
-            const _sum = arr_sql.reduce((sum, num) => {
-                if(e.name == num.name) {
-                    return {
-                        count: Number(sum.count) + Number(num.count)
-                    }
-                } else return sum
-                
-            })
-            // console.log(_sum.count);
-            data.push(_sum.count)
-        }
+        e.count = Number(e.count)
+        const ind = KeepData.findIndex(a => a.name == e.name)
+        if (ind == -1) KeepData.push(e)
+        else  KeepData[ind].count += e.count
     })
 
+    return KeepData
 
-    return {
-        plot: {status, sum},
-        disten: {}
-    }
 
 }
 

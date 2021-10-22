@@ -5,7 +5,7 @@ const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
 const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService,
-    editshapeDataService, getFromProjectService } = require('../service/shape_data')
+    editshapeDataService, getFromProjectService, getProvAmpTamService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -32,7 +32,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             const { sysm_id } = req.user
             const id = uuid.v4();
 
-            if(!type) {
+            if(!type && type == null && type == "") {
                 const err = new Error('ไม่สามารถระบุประเภทไฟล์ได้')
                 err.startusCode = 400
                 throw err
@@ -236,7 +236,7 @@ exports.getByidShapeMap = async (req, res, next) => {
 
 exports.editShapeMap = async (req, res, next) => {
     try {
-        const model = req.query;
+        const model = req.body;
         result(res, await editshapeDataService(model));
 
     } catch (error) {
@@ -248,20 +248,41 @@ exports.editShapeMap = async (req, res, next) => {
 
 /** ส่งมอบสิทธื์โครงการ 
  * เรียกข้อมูลสิทธิ์
-*/
+ * Dashboard
+**/
 exports.getFromProjectDashboard = async (req, res, next) => {
     try {
-        const { search, project_name } = req.query
-        const _res_sql = await getFromProjectService(search, project_name);
+        const { search, project_name, prov, amp, tam } = req.query
+        const _res_sql = await getFromProjectService(search, project_name, prov, amp, tam);
+        const status = [], data = []
 
+        _res_sql.forEach(e => {
+            status.push(e.name)
+            data.push(e.count)
+        })
         
-        result(res, _res_sql)
+        result(res, {
+            plot: {status, data},
+            distance: {}
+        })
     } catch (error) {
         next(error);
     }
 }
 
+exports.getFromProjectProvAmpTamDashboard = async (req, res, next) => {
+    try {
+        const {prov, amp, tam} = req.query
+        const _res = await getProvAmpTamService(prov, amp, tam);
+        // const 
 
+
+        // result(res, )
+        
+    } catch (error) {
+        next(error);
+    }
+}
 
 
 
