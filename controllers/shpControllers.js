@@ -231,7 +231,8 @@ exports.getByidShapeMap = async (req, res, next) => {
 exports.editShapeMap = async (req, res, next) => {
     try {
         const model = req.query;
-        result(res, await editshapeDataService(model));
+        const {gid} = req.query;
+        result(res, await editshapeDataService(model, gid));
 
     } catch (error) {
         next(error);
