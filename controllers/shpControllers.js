@@ -4,7 +4,7 @@ const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
-const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService, 
+const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService,
     editshapeDataService, getFromProjectService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
@@ -31,6 +31,12 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             const { color, group_layer_id, name_layer, type } = req.query
             const { sysm_id } = req.user
             const id = uuid.v4();
+
+            if(!type) {
+                const err = new Error('ไม่สามารถระบุประเภทไฟล์ได้')
+                err.startusCode = 400
+                throw err
+            }
 
             if (type == "shape file") {
                 const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
@@ -217,7 +223,7 @@ exports.searchDataShapeProvAmpTamMap = async (req, res, next) => {
 exports.getByidShapeMap = async (req, res, next) => {
     try {
         const { table_name, id } = req.query;
-        
+
         result(res, await shapeDataService(table_name, id));
 
     } catch (error) {
@@ -247,8 +253,9 @@ exports.editShapeMap = async (req, res, next) => {
 exports.getFromProjectDashboard = async (req, res, next) => {
     try {
         const { search, project_name } = req.query
-        const _res_sql = await getFromProjectService(search, project_name)
+        const _res_sql = await getFromProjectService(search, project_name);
 
+        
         result(res, _res_sql)
     } catch (error) {
         next(error);
