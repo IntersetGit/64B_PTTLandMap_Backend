@@ -308,7 +308,7 @@ exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
 
 
 /* แก้ไขข้อมูล shape */
-exports.editshapeDataService = async (model, gid) =>{
+exports.editshapeDataService = async (model) =>{
 
     const filter_shapedata = await models.mas_layers_shape.findOne({ where: { table_name: model.table_name } })
 
@@ -337,7 +337,7 @@ exports.editshapeDataService = async (model, gid) =>{
             }
         }
     
-         str_sql += ` WHERE gid = ${gid}`
+         str_sql += ` WHERE gid = ${model.gid}`
     // _keys.forEach(column => {
     //     if (column != 'table_name') {
     //         str_sql += ` ${column} = `
@@ -371,9 +371,9 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
 
     const table_name = await func_table_name()
     const KeepData = [], arr_sql = []
-    var sql, _res
+    var sql, _res, val_sql = ``
 
-    if (search) {
+
 
         const status_shape = await models.mas_status_project.findAll({ order: [['sort', 'ASC']] })
         for (const i in status_shape) {
@@ -382,7 +382,11 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
                 for (const a in table_name) {
                     if (Object.hasOwnProperty.call(table_name, a)) {
                         const element = table_name[a];
-                        sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' AND ${project_name} ILIKE '%${search}%' `)
+                        if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `
+                        if (prov) val_sql += ` AND prov = '${prov}' `
+                        if (amp) val_sql += ` AND amp = '${amp}' `
+                        if (tam) val_sql += ` AND tam = '${tam}' `
+                        sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}  `)
                         sql.forEach(({ count }) => {
                             arr_sql.push({
                                 count,
@@ -396,34 +400,6 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
             }
         }
 
-    } else {
-
-        if (table_name.length > 0) {
-
-            const status_shape = await models.mas_status_project.findAll({ order: [['sort', 'ASC']] })
-            for (const i in status_shape) {
-                if (Object.hasOwnProperty.call(status_shape, i)) {
-                    const statues = status_shape[i];
-                    for (const a in table_name) {
-                        if (Object.hasOwnProperty.call(table_name, a)) {
-                            const element = table_name[a];
-                            if (amp) val_sql += ` AND amp = ${amp}`
-                            if (tam) val_sql += ` AND tam = ${tam}`
-                            sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}'  `)
-                            sql.forEach(({ count }) => {
-                                arr_sql.push({
-                                    count,
-                                    table_name: element.table_name,
-                                    name: statues.name,
-                                    status: statues.status_code
-                                })
-                            })
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     const _temp = []
     arr_sql.forEach(e => {

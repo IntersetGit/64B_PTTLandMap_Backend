@@ -236,9 +236,8 @@ exports.getByidShapeMap = async (req, res, next) => {
 
 exports.editShapeMap = async (req, res, next) => {
     try {
-        const model = req.query;
-        const {gid} = req.query;
-        result(res, await editshapeDataService(model, gid));
+        const model = req.body;
+        result(res, await editshapeDataService(model));
 
     } catch (error) {
         next(error);
@@ -266,20 +265,6 @@ exports.getFromProjectDashboard = async (req, res, next) => {
             plot: {status, data},
             distance: {}
         })
-    } catch (error) {
-        next(error);
-    }
-}
-
-exports.getFromProjectProvAmpTamDashboard = async (req, res, next) => {
-    try {
-        const {prov, amp, tam} = req.query
-        const _res = await getProvAmpTamService(prov, amp, tam);
-        // const 
-
-
-        // result(res, )
-        
     } catch (error) {
         next(error);
     }

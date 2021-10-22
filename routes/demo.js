@@ -34,7 +34,7 @@ router.get("/demoShape", async (req, res) => {
 
 });
 
-router.get('/resTrue', (req, res) => {
+router.post('/resTrue', (req, res) => {
   res.send(true)
 })
 
