@@ -1,5 +1,5 @@
 const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, getInfoProject, getShapeProvinceMap, 
-    searchDataShapeProvAmpTamMap, getByidShapeMap,editShapeMap, getFromProjectDashboard, getFromProjectProvAmpTamDashboard } = require('../controllers/shpControllers');
+    searchDataShapeProvAmpTamMap, getByidShapeMap,editShapeMap, getFromProjectDashboard } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -31,6 +31,5 @@ router.get('/getByIdShape', [authenticateToken], getByidShapeMap);
  * Dashboard
 **/
 router.get('/getFromProjectMap', [authenticateToken], getFromProjectDashboard);
-router.get('/getFromProjectProvAmpTamMap', [authenticateToken], getFromProjectProvAmpTamDashboard);
 
 module.exports = router;
