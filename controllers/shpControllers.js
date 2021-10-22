@@ -207,17 +207,6 @@ exports.getShapeProvinceMap = async (req, res, next) => {
     }
 }
 
-/* -------------- ค้นหา จังหวัด  อำเภอ ตำบล  ------------ */
-exports.searchDataShapeProvAmpTamMap = async (req, res, next) => {
-    try {
-        const { prov, amp, tam } = req.query
-        result(res, await searchDataShapeProvAmpTamMapService(prov, amp, tam))
-
-
-    } catch (error) {
-        next(error);
-    }
-}
 
 /* ------------ เรียกข้อมูล shape ด้วย id----------------- */
 exports.getByidShapeMap = async (req, res, next) => {

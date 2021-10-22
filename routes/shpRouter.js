@@ -1,5 +1,5 @@
 const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, getInfoProject, getShapeProvinceMap, 
-    searchDataShapeProvAmpTamMap, getByidShapeMap,editShapeMap, getFromProjectDashboard } = require('../controllers/shpControllers');
+     getByidShapeMap,editShapeMap, getFromProjectDashboard } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -17,11 +17,9 @@ router.post('/convertGeoToShp', [authenticateToken], convertGeoToShp);
 router.get('/getSearchData', [authenticateToken], getInfoProject);
 /* เรียกจังหวัง อำเภอ ตำบล map */
 router.get('/getShapeProvince', [authenticateToken], getShapeProvinceMap);
-/* ค้นหาจังหวัด อำเภอ ตำบล map search */
-router.get('/searchDataShapeProvAumTam', [authenticateToken], searchDataShapeProvAmpTamMap);
-
-router.post('/editShapeData',[authenticateToken],editShapeMap);
 /* แก้ไขไฟล์ shape */
+router.post('/editShapeData',[authenticateToken],editShapeMap);
+
 router.get('/getByIdShape', [authenticateToken], getByidShapeMap);
 
 
