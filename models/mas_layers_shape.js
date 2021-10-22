@@ -30,6 +30,22 @@ module.exports = function(sequelize, DataTypes) {
         model: 'mas_layer_groups',
         key: 'id'
       }
+    },
+    url: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    wms_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    type_server: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
     }
   }, {
     sequelize,

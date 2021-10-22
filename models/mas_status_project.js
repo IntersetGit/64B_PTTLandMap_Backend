@@ -4,10 +4,11 @@ module.exports = function(sequelize, DataTypes) {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
     status_code: {
-      type: DataTypes.SMALLINT,
+      type: DataTypes.STRING,
       allowNull: true
     },
     name: {
