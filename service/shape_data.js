@@ -308,7 +308,7 @@ exports.searchDataShapeProvAmpTamMapService = async (prov, amp, tam) => {
 
 
 /* แก้ไขข้อมูล shape */
-exports.editshapeDataService = async (model) => {
+exports.editshapeDataService = async (model, gid) =>{
 
     const filter_shapedata = await models.mas_layers_shape.findOne({ where: { table_name: model.table_name } })
 
@@ -337,7 +337,27 @@ exports.editshapeDataService = async (model) => {
             }
         }
     
-        str_sql += ` WHERE gid = ${gid}`
+         str_sql += ` WHERE gid = ${gid}`
+    // _keys.forEach(column => {
+    //     if (column != 'table_name') {
+    //         str_sql += ` ${column} = `
+    //     }
+        
+    // })
+    // _value.forEach(val => {
+    //     str_sql += ` ${val}`
+    // })
+
+    
+     console.log(str_sql);
+    
+     return await sequelizeString(str_sql)
+    // const _sqlll = await sequelizeString(str_sql);
+    // console.log(_sqlll);
+    // return _sqlll
+   
+    
+
     
     return await sequelizeString(str_sql)
 }
