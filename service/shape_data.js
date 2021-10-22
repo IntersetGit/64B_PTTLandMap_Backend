@@ -331,9 +331,9 @@ exports.editshapeDataService = async (model, gid) =>{
             if (Object.hasOwnProperty.call(_keys, i)) {
                 const keys = _keys[i];
                 const value = _value[i];
-               if (keys != 'table_name' && i<2) {
+               if (keys != 'table_name' && keys != 'gid' &&  i<3) {
                 str_sql += ` ${keys} = '${value}' `
-            }else if (keys != 'table_name'){
+            }else if (keys != 'table_name' && keys != 'gid' ){
                 str_sql += ` ,${keys} = '${value}' `
             }
             }
@@ -351,7 +351,7 @@ exports.editshapeDataService = async (model, gid) =>{
     // })
 
     
-    console.log(str_sql);
+     console.log(str_sql);
     
      return await sequelizeString(str_sql)
     // const _sqlll = await sequelizeString(str_sql);
