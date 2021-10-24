@@ -36,17 +36,45 @@ exports.addShapeService = async (table, geojson) => {
             // console.log(geo);
             for (let x = 0; x < geo.length; x++) {
                 const _geo = geo[x];
-                arr.push(`[${_geo}]`)
+                if (_geo.length > 2) {
+                    const temp = []
+                    _geo.forEach(z => {
+                        z.forEach(x => {
+                            temp.push(x)
+                        })
+                    })
+
+                    let i = 1
+                    let tempArr = [], _data = []
+                    temp.forEach(z => {
+                        if (i == 2) {
+                            tempArr.push(z)
+                            _data.push(tempArr)
+                            i = 1, tempArr = []
+                        }
+                        else {
+                            tempArr.push(z), i++
+                        }
+                    })
+
+                    _data.forEach(z => {
+                        arr.push(`[${z}]`)
+                    })
+
+                } else {
+                    arr.push(`[${_geo}]`)
+                }
             }
             // console.log(data.properties);
-            arrSql.push(`('{
+            arrSql.push(`(ST_GeomFromGeoJSON('{
                 "type":"MultiPolygon",
                 "coordinates":[[[ ${arr} ]]]
-                }',${data.properties}) `)
+                }'),${data.properties}) `)
 
         }
     }
     sql += arrSql.toString()
+    console.log(sql);
     await sequelizeString(sql);
 
 }

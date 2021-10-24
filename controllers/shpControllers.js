@@ -54,6 +54,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 }, transaction)
 
                 await addShapeService(_createTableShape, geojson);
+                
             }
 
             if (type == "kml") {

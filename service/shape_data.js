@@ -86,7 +86,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
             allowNull: true,
         },
         obj1.geom = {
-            type: DataTypes.GEOMETRY('MultiPolygon', 0),
+            type: DataTypes.GEOMETRY('MULTIPOLYGON', 0),
             allowNull: true,
         }
         newArrPropertie.forEach(colomn => {
