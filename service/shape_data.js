@@ -316,49 +316,18 @@ exports.editshapeDataService = async (model) =>{
         err.statusCode = 404
         throw err
     }
-    let str_sql = `UPDATE shape_data.${filter_shapedata.table_name} SET `
+    var str_sql = `UPDATE shape_data.${filter_shapedata.table_name} SET `
+    var _format = ``, newKey = []
 
-    let _keys = Object.keys(model)
-    _keys = _keys.splice(0,_keys.length - 2)
-
-    let _value =  Object.values(model)
-    _value = _value.splice(0,_value.length - 2)
-
-        for (const i in _keys) {
-            if (Object.hasOwnProperty.call(_keys, i)) {
-                const keys = _keys[i];
-                const value = _value[i];
-               if (keys != 'table_name' && keys != 'gid' &&  i<3) {
-                str_sql += ` ${keys} = '${value}' `
-            }else if (keys != 'table_name' && keys != 'gid' ){
-                str_sql += ` ,${keys} = '${value}' `
-            }
-            }
+    for (const key in model) {
+        if (key !== "table_name" && key !== "id") {
+            newKey.push(` ${key} = '${model[key]}' `)
         }
-    
-         str_sql += ` WHERE gid = ${model.gid}`
-    // _keys.forEach(column => {
-    //     if (column != 'table_name') {
-    //         str_sql += ` ${column} = `
-    //     }
-        
-    // })
-    // _value.forEach(val => {
-    //     str_sql += ` ${val}`
-    // })
-
-    
-     console.log(str_sql);
-    
-     return await sequelizeString(str_sql)
-    // const _sqlll = await sequelizeString(str_sql);
-    // console.log(_sqlll);
-    // return _sqlll
-   
-    
-
-    
+    }
+    str_sql += newKey.toString()
+    str_sql += ` WHERE gid = ${model.gid}`
     return await sequelizeString(str_sql)
+    
 }
 
 
