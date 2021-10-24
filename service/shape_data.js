@@ -91,11 +91,43 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
         }
         newArrPropertie.forEach(colomn => {
             /* loop ใส่ type*/
-            obj1[colomn] = {
-                type: DataTypes.STRING,
-                allowNull: true
+            // เช็ค ฟิว ใน shape ถ้าไม่มีลง if
+            if (colomn !== "prov" && colomn !== "amp" && colomn !== "tam" && colomn !== "project_na" && colomn !== "parlabel1") {
+                obj1[colomn] = {
+                    type: DataTypes.STRING,
+                    allowNull: true
+                },
+                obj1.prov = {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+        
+                },
+                obj1.amp = {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+                },
+                obj1.tam = {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+                },
+                obj1.project_na = {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+                },
+                obj1.parlabel1 = {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+                },
+                obj1.status = {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+                }
+            } else {
+                obj1[colomn] = {
+                    type: DataTypes.STRING,
+                    allowNull: true
+                }
             }
-
         })
 
     } else {
