@@ -258,3 +258,11 @@ exports.deleteMasStatusProjectService = async (data, user) => {
   })
   return true
 }
+
+//----------- ค้นหาโดย startdate, enddate time silder--------------------------//
+exports._getdatefromWms = async (startdate, enddate) => {
+  let sql = ` select id, layer_name, url, type_server, isuse,  date, image_type, wms 
+  from ptt_data.dat_layers where date between  '${startdate}' and Date  '${enddate}' 
+  order by date ASC`
+  return sequelizeString(sql)
+}

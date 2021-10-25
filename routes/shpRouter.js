@@ -1,5 +1,5 @@
 const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, getInfoProject, getShapeProvinceMap, 
-     getByidShapeMap,editShapeMap, getFromProjectDashboard } = require('../controllers/shpControllers');
+     getByidShapeMap,editShapeMap, getFromProjectDashboard,  } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -21,6 +21,8 @@ router.get('/getShapeProvince', [authenticateToken], getShapeProvinceMap);
 router.post('/editShapeData',[authenticateToken],editShapeMap);
 
 router.get('/getByIdShape', [authenticateToken], getByidShapeMap);
+
+
 
 
 
