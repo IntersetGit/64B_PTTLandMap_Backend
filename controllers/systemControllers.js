@@ -1,6 +1,6 @@
 const ActiveDirectory = require("activedirectory");
 const config = require("../config");
-const { filterUsernameSysmUsersService, updateSysmUsersService, updateConfigAdService } = require("../service/sysmUsersService");
+const { filterUsernameSysmUsersService, updateSysmUsersService, updateConfigAdService, createConfigAdService } = require("../service/sysmUsersService");
 const { createSysmUsersService } = require("../service/sysmUsersService");
 const { createDatProfileUsersService } = require("../service/datProfileUsersService");
 const sequelize = require("../config/dbConfig"); //connect db  query string
@@ -163,7 +163,10 @@ exports.delUserAd = async (req, res, next) => {
 exports.updateConfigAd = async (req, res, next) => {
   try {
     const model = req.body;
-    result(res, await updateConfigAdService(model))
+    
+    if (model.id) result(res, await updateConfigAdService(model));
+    else result(res, await createConfigAdService(model));
+   
     
   } catch (error) {
     next(error);

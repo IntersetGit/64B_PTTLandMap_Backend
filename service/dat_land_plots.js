@@ -32,37 +32,42 @@ exports.addShapeService = async (table, geojson) => {
         for (let a = 0; a < data.geometry.coordinates.length; a++) {
             const geo = data.geometry.coordinates[a];
             const arr = []
-
-            // console.log(geo);
-            for (let x = 0; x < geo.length; x++) {
-                const _geo = geo[x];
-                if (_geo.length > 2) {
-                    const temp = []
-                    _geo.forEach(z => {
-                        z.forEach(x => {
-                            temp.push(x)
+            if (data.geometry.coordinates.length >= 2) {
+                data.geometry.coordinates.forEach(p => {
+                    arr.push(`[${p}]`)
+                })
+            } else {
+                // console.log(geo);
+                for (let x = 0; x < geo.length; x++) {
+                    const _geo = geo[x];
+                    if (_geo.length > 2) {
+                        const temp = []
+                        _geo.forEach(z => {
+                            z.forEach(x => {
+                                temp.push(x)
+                            })
                         })
-                    })
 
-                    let i = 1
-                    let tempArr = [], _data = []
-                    temp.forEach(z => {
-                        if (i == 2) {
-                            tempArr.push(z)
-                            _data.push(tempArr)
-                            i = 1, tempArr = []
-                        }
-                        else {
-                            tempArr.push(z), i++
-                        }
-                    })
+                        let i = 1
+                        let tempArr = [], _data = []
+                        temp.forEach(z => {
+                            if (i == 2) {
+                                tempArr.push(z)
+                                _data.push(tempArr)
+                                i = 1, tempArr = []
+                            }
+                            else {
+                                tempArr.push(z), i++
+                            }
+                        })
 
-                    _data.forEach(z => {
-                        arr.push(`[${z}]`)
-                    })
+                        _data.forEach(z => {
+                            arr.push(`[${z}]`)
+                        })
 
-                } else {
-                    arr.push(`[${_geo}]`)
+                    } else {
+                        arr.push(`[${_geo}]`)
+                    }
                 }
             }
             // console.log(data.properties);

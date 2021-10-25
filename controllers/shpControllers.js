@@ -42,7 +42,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-                console.log(_createTableShape);
+                // console.log(_createTableShape);
 
                 await addShapeLayersService({
                     id,
@@ -93,9 +93,18 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                                 })
                             }
                         })
-                    } else {
-                        _coordinates.pop()
-                    }
+                        
+                    } else if (_coordinates.length > 1) {
+                        _coordinates.forEach(e => {
+                            if (e.length > 0) {
+                                e.forEach(val => {
+                                    val.length > 0 ? val.pop() : val
+                                    console.log(val);
+                                })
+                            }
+                        })
+                        
+                    } else _coordinates.pop()
                 })
 
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
