@@ -1,6 +1,6 @@
 const ActiveDirectory = require("activedirectory");
 const config = require("../config");
-const { filterUsernameSysmUsersService, updateSysmUsersService } = require("../service/sysmUsersService");
+const { filterUsernameSysmUsersService, updateSysmUsersService, updateConfigAdService } = require("../service/sysmUsersService");
 const { createSysmUsersService } = require("../service/sysmUsersService");
 const { createDatProfileUsersService } = require("../service/datProfileUsersService");
 const sequelize = require("../config/dbConfig"); //connect db  query string
@@ -160,6 +160,16 @@ exports.delUserAd = async (req, res, next) => {
   }
 }
 
+exports.updateConfigAd = async (req, res, next) => {
+  try {
+    const model = req.body;
+    result(res, await updateConfigAdService(model))
+    
+  } catch (error) {
+    next(error);
+  }
+}
+
 /* funcion connect ADPTT */
 const connectPttAD_ = async (username) => {
   const myPromise = new Promise((resolve, reject) => {
@@ -176,7 +186,7 @@ const connectPttAD_ = async (username) => {
     ad.findUser(username, (err, user) => {
       if (err) {
         const _err = { message: "การเชื่อมต่อผิดพลาด" };
-        reject(_err);
+        resolve(_err);
       }
       if (!user) {
         console.log(user);

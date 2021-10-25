@@ -30,7 +30,7 @@ exports.filterUsernameSysmUsersService = async (user_name) => {
     INNER JOIN system.sysm_roles AS c ON a.roles_id = c.id
     
     WHERE a.isuse = 1 AND UPPER(user_name)  = UPPER($1) `
-        
+
     return await sequelizeStringFindOne(sql, [user_name])
 }
 
@@ -80,9 +80,20 @@ exports.findCodeLdapSysmUsersService = async (code_ldap) => {
 }
 
 
-exports.getUserService = async ()=>{
+exports.getUserService = async () => {
     const user = await models.sysm_users.findAll()
     return user
+}
+
+
+exports.updateConfigAdService = async (model) => {
+
+    await models.sysm_config.update({
+        note: model.node,
+        info_form: model.info
+    }, { where: { id: model.id } })
+
+    return model.id
 }
 
 

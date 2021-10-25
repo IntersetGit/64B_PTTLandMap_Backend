@@ -65,15 +65,18 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
         obj.nameTable = `ptt_kmz_number${Number(countTable.tables) + 1}`
     }
 
-    const arrPropertie = []
+    const arrPropertie = [], typeData = [] , table_key = ["prov", "amp", "tam", "project_na", "parlabel1"]
 
     for (let i = 0; i < geojson.features.length; i++) {
         const e = geojson.features[i];
-        // console.log(e.properties);
+        console.log(e.properties);
         obj.newObject = Object.keys(e.properties) //เอาชื่อตัวแปรมาใช้
         obj.newObject = obj.newObject.map(e => e.toLowerCase())
         obj.newObject = obj.newObject.map(str => stringToSnakeCase(str)) //แปลงเป็น SnakeCase
         arrPropertie.push(obj.newObject)
+        Object.values(e.properties).forEach(x => {
+            typeData.push(typeof x)
+        })
 
     }
     const newArrPropertie = arrPropertie.length > 0 ? arrPropertie[arrPropertie.length - 1] : []
@@ -94,13 +97,13 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
             // เช็ค ฟิว ใน shape ถ้าไม่มีลง if
             if (colomn !== "prov" && colomn !== "amp" && colomn !== "tam" && colomn !== "project_na" && colomn !== "parlabel1") {
                 obj1[colomn] = {
-                    type: DataTypes.STRING,
+                    type: DataTypes.STRING ,
                     allowNull: true
-                },
+                }
+            } else {
                 obj1.prov = {
                     type: DataTypes.STRING,
                     allowNull: true,
-        
                 },
                 obj1.amp = {
                     type: DataTypes.STRING,
@@ -119,13 +122,8 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
                     allowNull: true,
                 },
                 obj1.status = {
-                    type: DataTypes.STRING,
+                    type: DataTypes.INTEGER,
                     allowNull: true,
-                }
-            } else {
-                obj1[colomn] = {
-                    type: DataTypes.STRING,
-                    allowNull: true
                 }
             }
         })
@@ -168,7 +166,7 @@ exports.getAllShapeDataService = async (search, project_name, prov, amp, tam) =>
 
     for (let a = 0; a < table_name.length; a++) {
         const tables = table_name[a];
-        sql = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} `)
+        sql = await sequelizeString(`SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`)
         sql_count = await sequelizeStringFindOne(`SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} `)
         amount.push(sql_count.amount_data)
         sql.forEach(e => {
