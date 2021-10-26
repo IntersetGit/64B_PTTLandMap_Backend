@@ -44,7 +44,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
     var obj = {};
     var obj1 = {}
-    var schema = ``
+    var schema = ``, type_geo
 
     if (type.toLowerCase() == "shape file".toLowerCase()) schema += `shape_data`
     if (type.toLowerCase() == "kml".toLowerCase()) schema += `kml_data`
@@ -66,6 +66,9 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     }
 
     const arrPropertie = [], typeData = [] , table_key = ["prov", "amp", "tam", "project_na", "parlabel1"]
+
+    //ตรวจสอบประเภท type geo
+    geojson.features.forEach(e => {type_geo = (e.geometry.type == 'Polygon') ? true : false })
 
     for (let i = 0; i < geojson.features.length; i++) {
         const e = geojson.features[i];
@@ -89,18 +92,22 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
             allowNull: true,
         },
         obj1.geom = {
-            type: DataTypes.GEOMETRY('MULTIPOLYGON', 0),
+            type: ((type_geo) ? DataTypes.GEOMETRY('MULTIPOLYGON', 0) : DataTypes.GEOMETRY) ,
             allowNull: true,
         }
         newArrPropertie.forEach(colomn => {
             /* loop ใส่ type*/
-            // เช็ค ฟิว ใน shape ถ้าไม่มีลง if
-            if (colomn !== "prov" && colomn !== "amp" && colomn !== "tam" && colomn !== "project_na" && colomn !== "parlabel1") {
+            const keys = table_key.find(key => key == colomn)
+            if (keys) {
                 obj1[colomn] = {
                     type: DataTypes.STRING ,
                     allowNull: true
                 }
             } else {
+                obj1[colomn] = {
+                    type: DataTypes.STRING ,
+                    allowNull: true
+                },
                 obj1.prov = {
                     type: DataTypes.STRING,
                     allowNull: true,
@@ -147,7 +154,8 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
     return {
         obj,
-        schema
+        schema,
+        type_geo
     }
 }
 

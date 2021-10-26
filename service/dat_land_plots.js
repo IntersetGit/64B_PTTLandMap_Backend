@@ -22,64 +22,68 @@ exports.addShapeService = async (table, geojson) => {
     INSERT INTO shape_data.ptt_shape_number3(gid,geom) VALUES (1, ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[[[[99.557856126,14.277867442],[99.637387048,14.297762334],[99.633280354,14.232705561],[99.555778959,14.230984626],[99.557856126,14.277867442]]]]}')) 
     */
 
+
+
     var sql = `INSERT INTO ${table.schema}.${table.obj.nameTable}(geom,${table.obj.newObject}) VALUES `
     const arrSql = []
     for (let i = 0; i < geojson.features.length; i++) {
         const data = geojson.features[i];
         data.properties = Object.values(data.properties)
+        data.properties = data.properties.map(e => String(e).replace(/'/g, ''))
         data.properties = data.properties.map(e => `'${e}'`)
 
         for (let a = 0; a < data.geometry.coordinates.length; a++) {
             const geo = data.geometry.coordinates[a];
             const arr = []
-            if (data.geometry.coordinates.length >= 2) {
-                data.geometry.coordinates.forEach(p => {
-                    arr.push(`[${p}]`)
-                })
-            } else {
-                // console.log(geo);
-                for (let x = 0; x < geo.length; x++) {
-                    const _geo = geo[x];
-                    if (_geo.length > 2) {
-                        const temp = []
-                        _geo.forEach(z => {
-                            z.forEach(x => {
-                                temp.push(x)
-                            })
-                        })
 
-                        let i = 1
-                        let tempArr = [], _data = []
-                        temp.forEach(z => {
-                            if (i == 2) {
-                                tempArr.push(z)
-                                _data.push(tempArr)
-                                i = 1, tempArr = []
-                            }
-                            else {
-                                tempArr.push(z), i++
-                            }
+            // console.log(geo);
+            for (let x = 0; x < geo.length; x++) {
+                const _geo = geo[x];
+                if (_geo.length > 2) {
+                    const temp = []
+                    _geo.forEach(z => {
+                        z.forEach(x => {
+                            temp.push(x)
                         })
+                    })
 
-                        _data.forEach(z => {
-                            arr.push(`[${z}]`)
-                        })
+                    let i = 1
+                    let tempArr = [], _data = []
+                    temp.forEach(z => {
+                        if (i == 2) {
+                            tempArr.push(z)
+                            _data.push(tempArr)
+                            i = 1, tempArr = []
+                        }
+                        else {
+                            tempArr.push(z), i++
+                        }
+                    })
 
-                    } else {
-                        arr.push(`[${_geo}]`)
-                    }
+                    _data.forEach(z => {
+                        arr.push(`[${z}]`)
+                    })
+
+                } else {
+                    arr.push(`[${_geo}]`)
                 }
             }
-            // console.log(data.properties);
-            arrSql.push(`(ST_GeomFromGeoJSON('{
-                "type":"MultiPolygon",
-                "coordinates":[[[ ${arr} ]]]
-                }'),${data.properties}) `)
 
+            if (table.type_geo) {
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"MultiPolygon",
+                    "coordinates":[[[ ${arr} ]]]
+                    }'),${data.properties}) `)
+            } else {
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"Point",
+                    "coordinates":[[[ ${arr} ]]]
+                    }'),${data.properties}) `)
+            }
         }
     }
     sql += arrSql.toString()
-    console.log(sql);
+    // console.log(sql);
     await sequelizeString(sql);
 
 }
