@@ -22,20 +22,20 @@ exports.loginControllers = async (req, res, next) => {
         }
         
         const _res = (username.toUpperCase()) !== ('superadmin'.toUpperCase()) && (username.toUpperCase()) !== ('editor'.toUpperCase()) && (username.toUpperCase()) !== ('viewer'.toUpperCase()) ? await ldap({ user_name: username, password }) :  await filterUsernameSysmUsersService(username)
-        if (!_res) {
-            const error = new Error("ไม่มีผู้ใช้ในระบบฐานข้อมูล");
-            error.statusCode = 500;
+        if (!_res || !_res.password) {
+            const error = new Error("เช้าสู่ระบบครั้งแรก!!");
+            error.statusCode = 400;
             throw error; 
         }
-        if( username ==  "superadmin" || username == "editor" || username == "viewer" ) {
-            const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
-            console.log(passwordecrypt);
-            if (!passwordecrypt) {
-                const error = new Error("รหัสผ่านไม่ถูกต้อง !");
-                error.statusCode = 500;
-                throw error;
-            }
+    
+        const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
+        // console.log(passwordecrypt);
+        if (!passwordecrypt) {
+            const error = new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง !");
+            error.statusCode = 400;
+            throw error;
         }
+        
         
         const model = {
             sysm_id: _res.id,
@@ -44,19 +44,19 @@ exports.loginControllers = async (req, res, next) => {
             roles_name: _res.roles_name,
             note: _res.note,
             user_name: _res.user_name,
-            e_mail: _res.e_mail,
+            e_mail: _res.email,
             note: _res.note,
             first_name: _res.first_name,
             last_name: _res.last_name,
             initials: _res.initials,
-            company: _res.company,
-            department: _res.department,
-            job_title: _res.job_title,
-            office: _res.office,
-            web_page: _res.web_page,
-            phone: _res.phone,
-            address: _res.address,
-            description: _res.description
+            // company: _res.company,
+            // department: _res.department,
+            // job_title: _res.job_title,
+            // office: _res.office,
+            // web_page: _res.web_page,
+            // phone: _res.phone,
+            // address: _res.address,
+            // description: _res.description
         }
 
         //สร้าง token
@@ -128,7 +128,7 @@ exports.refreshTokenControllers = async (req, res, next) => {
         if (!authHeader) res.sendStatus(401)
 
         const token = authHeader && authHeader.split(" ")[1];
-        if (config.NODE_ENV == "production") if (!refreshTokens.includes(token)) res.sendStatus(403)
+        // if (config.NODE_ENV == "production") if (!refreshTokens.includes(token)) res.sendStatus(403)
 
         jwt.verify(token, config.JWT_SECRET_REFRESH, async (err, __res) => {
             if (err) res.sendStatus(403)

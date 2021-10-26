@@ -55,18 +55,17 @@ const connect = {
 exports.ldap = async ({ user_name, password }) => {
     // const _res = await ConnectLdap({ username: user_name, password })
     const _res = await connectPttAD({ username: user_name, password })
+    const _user = await filterUsernameSysmUsersService(user_name);
     // console.log('_res :>> ', _res);
-    if (!_res) {
-        const error = new Error("ไม่พบชื่อผู้ใช้ AD");
-        error.statusCode = 404;
-        throw error;
+    if (_res.message == "เชื่อมต่อผิดพลาด") {
+        return _user
     }
 
-    const _user = await filterUsernameSysmUsersService(user_name);
     if (_user) {
         await updateSysmUsersService({
             id: _user.id,
             user_name,
+            password: await encryptPassword(password),
             e_mail: _res.mail,
             update_by: _user.id,
         })
@@ -235,11 +234,12 @@ const connectPttAD = async ({ username, password }) => {
         ad.findUser(username, (err, user) => {
             if (err) {
                 const _err = { message: 'เชื่อมต่อผิดพลาด'}
-                reject(_err);
+                resolve(_err);
             }
             if (!user) {
                 console.log(user);
                 const _err = { message: "ชื่อผู้ใช้และรหัสผ่านไม่ถูกต้อง" }
+                _err.statusCode = 404
                 reject(_err)
             }
             resolve(user);

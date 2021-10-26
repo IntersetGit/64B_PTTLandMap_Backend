@@ -34,5 +34,9 @@ router.get("/demoShape", async (req, res) => {
 
 });
 
+router.post('/resTrue', (req, res) => {
+  res.send(true)
+})
+
 
 module.exports = router;

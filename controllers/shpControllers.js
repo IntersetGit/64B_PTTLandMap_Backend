@@ -4,7 +4,8 @@ const shp = require('shpjs');
 const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
-const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService } = require('../service/shape_data')
+const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService,
+    editshapeDataService, getFromProjectService, getProvAmpTamService  } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -18,45 +19,54 @@ const KMZGeoJSON = require('parse2-kmz');
 
 exports.shapeKmlKmzAdd = async (req, res, next) => {
     const queryInterface = await sequelize.getQueryInterface();
-    const transaction  = await sequelize.transaction ();
+    const transaction = await sequelize.transaction();
     try {
 
         if (!req.files) {
             const err = new Error('ต้องการไฟล์เพื่ออัพโหลด')
-            err.statusCode = 302
+            err.statusCode = 400
             throw err
         } else {
             const { file } = req.files
             const { color, group_layer_id, name_layer, type } = req.query
             const { sysm_id } = req.user
             const id = uuid.v4();
+            const mimetype = `.${file.mimetype.substring(12)}` == '.zip' ? true : false
 
-            if(type == "shape file") {
-                const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
-                // console.log(geojson);
-                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-                console.log(_createTableShape);
-                
-                await addShapeLayersService({
-                    id,
-                    name_layer,
-                    table_name: _createTableShape.obj.nameTable,
-                    type,
-                    group_layer_id,
-                    color_layer: color
-                }, transaction )
+            if (type == "shape file") {
+                if (mimetype) {
+                    const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
+                    // console.log(geojson);
+                    const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+                    // console.log(_createTableShape);
 
-                await addShapeService(_createTableShape, geojson);
+                    await addShapeLayersService({
+                        id,
+                        name_layer,
+                        table_name: _createTableShape.obj.nameTable,
+                        type,
+                        group_layer_id,
+                        color_layer: color,
+                        type_geo: _createTableShape.type_geo
+                    }, transaction)
+
+                    await addShapeService(_createTableShape, geojson);
+
+                } else {
+                    const err = new Error('Please file .zip only')
+                    err.statusCode = 400
+                    throw err
+                }
             }
 
-            if(type == "kml") {
+            if (type == "kml") {
 
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
                 const geojson = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
                 // console.log(_createTableShape);
-                
+
                 await addShapeLayersService({
                     id,
                     name_layer,
@@ -67,45 +77,57 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 }, transaction)
 
                 await addShapeService(_createTableShape, geojson);
-            }
 
-            if(type == "kmz") {
-                const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
-                const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
-                // console.log(geojson);
 
-                geojson.features.forEach(a => {
-                    const _coordinates = a.geometry.coordinates
-                    if (_coordinates.length <= 1) {
-                        _coordinates.forEach(e => {
-                            if(e.length > 0) {
-                                e.forEach(val => {
-                                    val.length > 0 ? val.pop() : val
-                                    console.log(val);
-                                })
-                            }
-                        })
-                    } else {
-                        _coordinates.pop()
-                    }
-                })
-                
-                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-                // console.log(_createTableShape);
-                
-                await addShapeLayersService({
-                    id,
-                    name_layer,
-                    table_name: _createTableShape.obj.nameTable,
-                    type,
-                    group_layer_id,
-                    color_layer: color
-                }, transaction )
+                if (type == "kmz") {
+                    const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
+                    const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
+                    // console.log(geojson);
 
-                await addShapeService(_createTableShape, geojson);
+                    geojson.features.forEach(a => {
+                        const _coordinates = a.geometry.coordinates
+                        if (_coordinates.length <= 1) {
+                            _coordinates.forEach(e => {
+                                if (e.length > 0) {
+                                    e.forEach(val => {
+                                        val.length > 0 ? val.pop() : val
+                                        console.log(val);
+                                    })
+                                }
+                            })
+
+                        } else if (_coordinates.length > 1) {
+                            _coordinates.forEach(e => {
+                                if (e.length > 0) {
+                                    e.forEach(val => {
+                                        val.length > 0 ? val.pop() : val
+                                        console.log(val);
+                                    })
+                                }
+                            })
+
+                        } else _coordinates.pop()
+                    })
+
+                    const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+                    // console.log(_createTableShape);
+
+                    await addShapeLayersService({
+                        id,
+                        name_layer,
+                        table_name: _createTableShape.obj.nameTable,
+                        type,
+                        group_layer_id,
+                        color_layer: color
+                    }, transaction)
+
+                    await addShapeService(_createTableShape, geojson);
+                }
+
+
             }
             await transaction.commit();
-            result(res, {id, "file_type": type}, 201);
+            result(res, { id, "file_type": type }, 201);
         }
     } catch (error) {
         if (transaction) await transaction.rollback();
@@ -176,10 +198,13 @@ exports.getShapeData = async (req, res, next) => {
 exports.getInfoProject = async (req, res, next) => {
     try {
 
-        const { search, value, limit = 10 } = req.query
-        const _res_sql = await getAllShapeDataService(search, value, limit)
-        
-        result(res, _res_sql)
+        const { search, project_name, prov, amp, tam } = req.query
+        const _res_sql = await getAllShapeDataService(search, project_name, prov, amp, tam)
+
+        result(res, {
+            data: _res_sql.arr_sql,
+            amount_data: _res_sql.amount.reduce((sum, num) => Number(sum) + Number(num))
+        })
 
     } catch (error) {
         next(error);
@@ -189,19 +214,34 @@ exports.getInfoProject = async (req, res, next) => {
 /* ----------- เรียก จังหวัด อำเภอ ตำบล  ----------------      */
 exports.getShapeProvinceMap = async (req, res, next) => {
     try {
-        const { layer_group } = req.query
-        result(res, await getShapeProvinceMapService(layer_group))
-        
+        const { layer_group, layer_shape } = req.query
+        result(res, await getShapeProvinceMapService(layer_group, layer_shape))
+
     } catch (error) {
         next(error);
     }
 }
-/* -------------- ค้นหา จังหวัด  อำเภอ ตำบล  ------------ */
-exports.searchDataShapeProvAmpTamMap = async (req, res, next) => {
+
+
+/* ------------ เรียกข้อมูล shape ด้วย id----------------- */
+exports.getByidShapeMap = async (req, res, next) => {
     try {
-        const { prov, amp, tam } = req.query
-        result(res, await searchDataShapeProvAmpTamMapService(prov, amp, tam))
+        const { table_name, id } = req.query;
 
+        result(res, await shapeDataService(table_name, id));
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+/* แก้ไขข้อมูล shape */
+
+exports.editShapeMap = async (req, res, next) => {
+    try {
+        const model = req.body;
+        result(res, await editshapeDataService(model));
 
     } catch (error) {
         next(error);
@@ -210,6 +250,29 @@ exports.searchDataShapeProvAmpTamMap = async (req, res, next) => {
 
 
 
+/** ส่งมอบสิทธื์โครงการ 
+ * เรียกข้อมูลสิทธิ์
+ * Dashboard
+**/
+exports.getFromProjectDashboard = async (req, res, next) => {
+    try {
+        const { search, project_name, prov, amp, tam } = req.query
+        const _res_sql = await getFromProjectService(search, project_name, prov, amp, tam);
+        const status = [], data = []
+
+        _res_sql.forEach(e => {
+            status.push(e.name)
+            data.push(e.count)
+        })
+
+        result(res, {
+            plot: { status, data },
+            distance: { status: [], data: [] }
+        })
+    } catch (error) {
+        next(error);
+    }
+}
 
 
 
@@ -233,7 +296,5 @@ const updataKmlKmz = (files) => {
     return _file
 
 }
-
-
 
 

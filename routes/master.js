@@ -43,6 +43,9 @@ router.get('/masStatusProject/:id', [authenticateToken], masterControllers.getBy
 router.post('/masStatusProject', [authenticateToken], masterControllers.createAndEditMasStatusProject);
 router.delete('/masStatusProject', [authenticateToken], masterControllers.deleteMasStatusProject);
 
+//-------------แสดงข้อมูลตามวันที่ time slider ----------------------------------//
+router.get('/getdateWms',[authenticateToken],masterControllers.getByDateFromWms);
+
 
 
 

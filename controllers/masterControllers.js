@@ -1,7 +1,7 @@
 const { sequelizeString } = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService, getMasLayersService, getDatLayersService, getMasProviceService, getMasSubdistrictService, getMasDistrictService, getAllMasterLayers, getSysmRoleService, editMasLayersShapeService } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService, getMasLayersService, getDatLayersService, getMasProviceService, getMasSubdistrictService, getMasDistrictService, getAllMasterLayers, getSysmRoleService, editMasLayersShapeService, _getdatefromWms } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 const models = require("../models/index");
 const { checkImgById } = require('../util')
@@ -241,4 +241,15 @@ exports.deleteMasStatusProject = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+}
+
+//----------- ค้นหาโดย startdate, enddate time silder--------------------------//
+exports.getByDateFromWms = async (req, res, next) => {
+    try {
+        const { startdate, enddate } = req.query;
+        result(res, await _getdatefromWms(startdate, enddate));
+
+    } catch (error) {
+        next(error);
+    }
 }
