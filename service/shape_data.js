@@ -185,6 +185,7 @@ exports.getAllShapeDataService = async (search, project_name, prov, amp, tam) =>
             else e.color = "#626262" //เทา
 
             e.table_name = tables.table_name
+            e.geom = undefined
             arr_sql.push(e)
         })
     }
