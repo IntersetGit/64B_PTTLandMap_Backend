@@ -36,48 +36,52 @@ exports.addShapeService = async (table, geojson) => {
             const geo = data.geometry.coordinates[a];
             const arr = []
 
-            // console.log(geo);
-            for (let x = 0; x < geo.length; x++) {
-                const _geo = geo[x];
-                if (_geo.length > 2) {
-                    const temp = []
-                    _geo.forEach(z => {
-                        z.forEach(x => {
-                            temp.push(x)
+            if (table.type_geo) { // polygon
+                for (let x = 0; x < geo.length; x++) {
+                    const _geo = geo[x];
+                    if (_geo.length > 2) {
+                        const temp = []
+                        _geo.forEach(z => {
+                            z.forEach(x => {
+                                temp.push(x)
+                            })
                         })
-                    })
 
-                    let i = 1
-                    let tempArr = [], _data = []
-                    temp.forEach(z => {
-                        if (i == 2) {
-                            tempArr.push(z)
-                            _data.push(tempArr)
-                            i = 1, tempArr = []
-                        }
-                        else {
-                            tempArr.push(z), i++
-                        }
-                    })
+                        let i = 1
+                        let tempArr = [], _data = []
+                        temp.forEach(z => {
+                            if (i == 2) {
+                                tempArr.push(z)
+                                _data.push(tempArr)
+                                i = 1, tempArr = []
+                            }
+                            else {
+                                tempArr.push(z), i++
+                            }
+                        })
 
-                    _data.forEach(z => {
-                        arr.push(`[${z}]`)
-                    })
+                        _data.forEach(z => {
+                            arr.push(`[${z}]`)
+                        })
 
-                } else {
-                    arr.push(`[${_geo}]`)
+                    } else {
+                        arr.push(`[${_geo}]`)
+                    }
                 }
-            }
 
-            if (table.type_geo) {
                 arrSql.push(`(ST_GeomFromGeoJSON('{
                     "type":"MultiPolygon",
                     "coordinates":[[[ ${arr} ]]]
                     }'),${data.properties}) `)
-            } else {
+
+            } else { // point
+                if (data.geometry.coordinates.length <= 2) {
+                    arr.push(`[${data.geometry.coordinates}]`) 
+                }
+
                 arrSql.push(`(ST_GeomFromGeoJSON('{
                     "type":"Point",
-                    "coordinates":[[[ ${arr} ]]]
+                    "coordinates": ${arr} 
                     }'),${data.properties}) `)
             }
         }

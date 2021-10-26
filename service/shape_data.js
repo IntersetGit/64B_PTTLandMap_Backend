@@ -92,7 +92,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
             allowNull: true,
         },
         obj1.geom = {
-            type: ((type_geo) ? DataTypes.GEOMETRY('MULTIPOLYGON', 0) : DataTypes.GEOMETRY) ,
+            type: ((type_geo) ? DataTypes.GEOMETRY('MultiPolygon', 0) : DataTypes.GEOMETRY('Point', 0)) ,
             allowNull: true,
         }
         newArrPropertie.forEach(colomn => {
@@ -241,31 +241,34 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
 
     const prov = [], amp = [], tam = []
     arr_sql.forEach((e, i) => {
-        const i1 = prov.findIndex(x => x.name === e.prov.replace(/\n/g, ''))
-        if (i1 === -1 && e.prov) {
-            prov.push({
-                id: i + 1,
-                name: e.prov.replace(/\n/g, '')
-            })
-        }
-
-        const i2 = amp.findIndex(x => x.name === e.amp.replace(/\n/g, ''))
-        if (i2 === -1 && e.amp) {
-            amp.push({
-                id: i + 1,
-                prov_id: prov[prov.findIndex(x => x.name === e.prov.replace(/\n/g, ''))].id,
-                name: e.amp.replace(/\n/g, '')
-            })
-        }
-
-        const i3 = tam.findIndex(x => x.name === e.tam.replace(/\n/g, ''))
-        if (i3 === -1 && e.tam) {
-            tam.push(({
-                id: i + 1,
-                amp_id: amp[amp.findIndex(x => x.name === e.amp.replace(/\n/g, ''))].id,
-                name: e.tam.replace(/\n/g, '')
-            }))
-        }
+        if (e.prov || e.amp || e.tam) {
+            const i1 = prov.findIndex(x => x.name === e.prov.replace(/\n/g, ''))
+            if (i1 === -1 && e.prov) {
+                prov.push({
+                    id: i + 1,
+                    name: e.prov.replace(/\n/g, '')
+                })
+            }
+    
+            const i2 = amp.findIndex(x => x.name === e.amp.replace(/\n/g, ''))
+            if (i2 === -1 && e.amp) {
+                amp.push({
+                    id: i + 1,
+                    prov_id: prov[prov.findIndex(x => x.name === e.prov.replace(/\n/g, ''))].id,
+                    name: e.amp.replace(/\n/g, '')
+                })
+            }
+    
+            const i3 = tam.findIndex(x => x.name === e.tam.replace(/\n/g, ''))
+            if (i3 === -1 && e.tam) {
+                tam.push(({
+                    id: i + 1,
+                    amp_id: amp[amp.findIndex(x => x.name === e.amp.replace(/\n/g, ''))].id,
+                    name: e.tam.replace(/\n/g, '')
+                }))
+            }
+        } else []
+        
     });
 
 

@@ -46,6 +46,18 @@ module.exports = function(sequelize, DataTypes) {
     date: {
       type: DataTypes.DATEONLY,
       allowNull: true
+    },
+    option_layer: {
+      type: DataTypes.JSON,
+      allowNull: true
+    },
+    symbol_point: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    type_geo: {
+      type: DataTypes.STRING(10),
+      allowNull: true
     }
   }, {
     sequelize,

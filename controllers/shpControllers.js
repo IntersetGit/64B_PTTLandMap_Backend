@@ -33,51 +33,57 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             const id = uuid.v4();
             const mimetype = `.${file.mimetype.substring(12)}` == '.zip' ? true : false
 
-            if (mimetype) {
-                if (type == "shape file") {
+            if (type == "shape file") {
+                if (mimetype) {
                     const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
                     // console.log(geojson);
                     const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
                     // console.log(_createTableShape);
-    
+
                     await addShapeLayersService({
                         id,
                         name_layer,
                         table_name: _createTableShape.obj.nameTable,
                         type,
                         group_layer_id,
-                        color_layer: color
+                        color_layer: color,
+                        type_geo: _createTableShape.type_geo
                     }, transaction)
-    
+
                     await addShapeService(_createTableShape, geojson);
-                    
+
+                } else {
+                    const err = new Error('Please file .zip only')
+                    err.statusCode = 400
+                    throw err
                 }
-    
-                if (type == "kml") {
-    
-                    const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
-                    const geojson = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
-                    // console.log(geojson);
-                    const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-                    // console.log(_createTableShape);
-    
-                    await addShapeLayersService({
-                        id,
-                        name_layer,
-                        table_name: _createTableShape.obj.nameTable,
-                        type,
-                        group_layer_id,
-                        color_layer: color
-                    }, transaction)
-    
-                    await addShapeService(_createTableShape, geojson);
-                }
-    
+            }
+
+            if (type == "kml") {
+
+                const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
+                const geojson = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
+                // console.log(geojson);
+                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+                // console.log(_createTableShape);
+
+                await addShapeLayersService({
+                    id,
+                    name_layer,
+                    table_name: _createTableShape.obj.nameTable,
+                    type,
+                    group_layer_id,
+                    color_layer: color
+                }, transaction)
+
+                await addShapeService(_createTableShape, geojson);
+
+
                 if (type == "kmz") {
                     const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
                     const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
                     // console.log(geojson);
-    
+
                     geojson.features.forEach(a => {
                         const _coordinates = a.geometry.coordinates
                         if (_coordinates.length <= 1) {
@@ -89,7 +95,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                                     })
                                 }
                             })
-                            
+
                         } else if (_coordinates.length > 1) {
                             _coordinates.forEach(e => {
                                 if (e.length > 0) {
@@ -99,13 +105,13 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                                     })
                                 }
                             })
-                            
+
                         } else _coordinates.pop()
                     })
-    
+
                     const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
                     // console.log(_createTableShape);
-    
+
                     await addShapeLayersService({
                         id,
                         name_layer,
@@ -114,16 +120,12 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                         group_layer_id,
                         color_layer: color
                     }, transaction)
-    
+
                     await addShapeService(_createTableShape, geojson);
                 }
 
-            } else {
-                const err = new Error('Please file .zip only')
-                err.statusCode = 400
-                throw err
+
             }
-            
             await transaction.commit();
             result(res, { id, "file_type": type }, 201);
         }
@@ -262,10 +264,10 @@ exports.getFromProjectDashboard = async (req, res, next) => {
             status.push(e.name)
             data.push(e.count)
         })
-        
+
         result(res, {
-            plot: {status, data},
-            distance: {status: [], data: []}
+            plot: { status, data },
+            distance: { status: [], data: [] }
         })
     } catch (error) {
         next(error);
