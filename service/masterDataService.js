@@ -266,3 +266,4 @@ exports._getdatefromWms = async (startdate, enddate) => {
   order by date ASC`
   return sequelizeString(sql)
 }
+
