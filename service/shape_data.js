@@ -13,7 +13,12 @@ const func_table_name = async () => {
     WHERE table_schema = 'shape_data' `)
 }
 
-exports.shapeDataService = async (table_name, id) => {
+exports.shapeDataService = async (table_name, id, type) => {
+    
+    let str_type = ``
+    if (type == 'shape file') str_type = `shape_data`
+    if (type == 'kml') str_type = `kml_data`
+    if (type == 'kmz') str_type = `kmz_data`
 
     const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
     if (filter_table_name || filter_table_name.table_name != '' && filter_table_name.table_name != null) {
@@ -28,8 +33,8 @@ exports.shapeDataService = async (table_name, id) => {
                     'geometry',   ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom,4326), 4326))::json,
                     'properties', to_jsonb(row) - 'gid' - 'geom'))) AS shape `
 
-        if (id) sql += ` FROM  (SELECT * FROM shape_data.${table_name} WHERE gid = ${id}) row`
-        else sql += ` FROM  (SELECT * FROM shape_data.${table_name}) row `
+        if (id) sql += ` FROM  (SELECT * FROM ${str_type}.${table_name} WHERE gid = ${id}) row`
+        else sql += ` FROM  (SELECT * FROM ${str_type}.${table_name}) row `
         return await sequelizeStringFindOne(sql)
 
     } else[]

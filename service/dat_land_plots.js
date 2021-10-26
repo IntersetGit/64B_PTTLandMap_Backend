@@ -32,57 +32,81 @@ exports.addShapeService = async (table, geojson) => {
         data.properties = data.properties.map(e => String(e).replace(/'/g, ''))
         data.properties = data.properties.map(e => `'${e}'`)
 
-        for (let a = 0; a < data.geometry.coordinates.length; a++) {
-            const geo = data.geometry.coordinates[a];
-            const arr = []
+        if (table.schema === 'kml_data'){
+            data.geometry.coordinates.forEach(a => {
+                const arr_kml = []
 
-            if (table.type_geo) { // polygon
-                for (let x = 0; x < geo.length; x++) {
-                    const _geo = geo[x];
-                    if (_geo.length > 2) {
-                        const temp = []
-                        _geo.forEach(z => {
-                            z.forEach(x => {
-                                temp.push(x)
-                            })
+                if (table.type_geo) {
+                    if (a.length > 1) {
+                        a.forEach(val => {
+                            if (val.length >= 3 && val[val.length - 1] == 0) val.pop() // ค่ามันมี 0 ตัด 0 ออก
+                            arr_kml.push(`[${val}]`)
                         })
-
-                        let i = 1
-                        let tempArr = [], _data = []
-                        temp.forEach(z => {
-                            if (i == 2) {
-                                tempArr.push(z)
-                                _data.push(tempArr)
-                                i = 1, tempArr = []
-                            }
-                            else {
-                                tempArr.push(z), i++
-                            }
-                        })
-
-                        _data.forEach(z => {
-                            arr.push(`[${z}]`)
-                        })
-
-                    } else {
-                        arr.push(`[${_geo}]`)
                     }
+                    arrSql.push(`(ST_GeomFromGeoJSON('{
+                        "type":"MultiPolygon",
+                        "coordinates":[[[ ${arr_kml} ]]]
+                        }'),${data.properties}) `)
+                } else {
+                    //ยังไม่มีนะจ๊ะ
                 }
+                
+            })
+        }
 
-                arrSql.push(`(ST_GeomFromGeoJSON('{
-                    "type":"MultiPolygon",
-                    "coordinates":[[[ ${arr} ]]]
-                    }'),${data.properties}) `)
-
-            } else { // point
-                if (data.geometry.coordinates.length <= 2) {
-                    arr.push(`[${data.geometry.coordinates}]`) 
+        if (table.schema === 'shape_data') {
+            for (let a = 0; a < data.geometry.coordinates.length; a++) {
+                const geo = data.geometry.coordinates[a];
+                const arr = []
+    
+                if (table.type_geo) { // polygon
+                    for (let x = 0; x < geo.length; x++) {
+                        const _geo = geo[x];
+                        if (_geo.length > 2) {
+                            const temp = []
+                            _geo.forEach(z => {
+                                z.forEach(x => {
+                                    temp.push(x)
+                                })
+                            })
+    
+                            let i = 1
+                            let tempArr = [], _data = []
+                            temp.forEach(z => {
+                                if (i == 2) {
+                                    tempArr.push(z)
+                                    _data.push(tempArr)
+                                    i = 1, tempArr = []
+                                }
+                                else {
+                                    tempArr.push(z), i++
+                                }
+                            })
+    
+                            _data.forEach(z => {
+                                arr.push(`[${z}]`)
+                            })
+    
+                        } else {
+                            arr.push(`[${_geo}]`)
+                        }
+                    }
+    
+                    arrSql.push(`(ST_GeomFromGeoJSON('{
+                        "type":"MultiPolygon",
+                        "coordinates":[[[ ${arr} ]]]
+                        }'),${data.properties}) `)
+    
+                } else { // point
+                    if (data.geometry.coordinates.length <= 2) {
+                        arr.push(`[${data.geometry.coordinates}]`) 
+                    }
+    
+                    arrSql.push(`(ST_GeomFromGeoJSON('{
+                        "type":"Point",
+                        "coordinates": ${arr} 
+                        }'),${data.properties}) `)
                 }
-
-                arrSql.push(`(ST_GeomFromGeoJSON('{
-                    "type":"Point",
-                    "coordinates": ${arr} 
-                    }'),${data.properties}) `)
             }
         }
     }

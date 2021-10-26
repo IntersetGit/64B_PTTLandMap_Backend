@@ -3,6 +3,8 @@ const { demoLdap, demoShap , gatKmlTest } = require("../controllers/demoControll
 const { authenticateToken } = require("../middleware/authenticateToken");
 const shapefile = require("shapefile");
 const { convert } = require("geojson2shp");
+const shp = require('shpjs');
+
 router.post("/demoLdap", [authenticateToken], demoLdap);
 
 router.get("/demoGoJson", (req, res) => {
@@ -34,8 +36,32 @@ router.get("/demoShape", async (req, res) => {
 
 });
 
-router.post('/resTrue', (req, res) => {
-  res.send(true)
+router.post('/resTrue', async (req, res) => {
+
+  const { file } = req.files
+  const mimetype = `.${file.mimetype.substring(12)}` == '.zip' ? true : false
+  const mimetype_ = `.${file.mimetype.substring(32, 29)}` == '.kml' ? true : false
+  var typeGeo
+
+  if (mimetype) {
+    const geojson = await shp(file.data); // แปลงไฟล์ shape
+    geojson.features.forEach(e => {
+      typeGeo = e.geometry.type
+    });
+  } else if (mimetype_) {
+
+  } else {
+    
+  }
+
+  
+  
+  res.json({
+    item: {
+      file_type: typeGeo
+    }
+  }).status(200)
+
 })
 
 
