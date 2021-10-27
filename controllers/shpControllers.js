@@ -73,7 +73,8 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     table_name: _createTableShape.obj.nameTable,
                     type,
                     group_layer_id,
-                    color_layer: color
+                    color_layer: color,
+                    type_geo: _createTableShape.type_geo
                 }, transaction)
 
                 await addShapeService(_createTableShape, geojson);
@@ -118,7 +119,8 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                         table_name: _createTableShape.obj.nameTable,
                         type,
                         group_layer_id,
-                        color_layer: color
+                        color_layer: color,
+                        type_geo: _createTableShape.type_geo
                     }, transaction)
 
                     await addShapeService(_createTableShape, geojson);
@@ -186,7 +188,7 @@ exports.getShapeData = async (req, res, next) => {
     try {
         const { id } = req.query
         const _res = await findIdLayersShape(id)
-        result(res, await shapeDataService(_res.table_name))
+        result(res, await shapeDataService(_res.table_name, null, _res.type))
 
     } catch (error) {
         next(error);
