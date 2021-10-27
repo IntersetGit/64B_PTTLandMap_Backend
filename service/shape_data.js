@@ -19,18 +19,12 @@ const func_table_name = async () => {
 
 exports.shapeDataService = async (table_name, id, type) => {
 
-  const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
   let str_type = ``
   if (type == 'shape file') str_type = `shape_data`
   if (type == 'kml') str_type = `kml_data`
   if (type == 'kmz') str_type = `kmz_data`
-  if (type == null  || type == '') {
-    if (filter_table_name.type == 'shape file') str_type = `shape_data`
-    if (filter_table_name.type == 'kml') str_type = `kml_data`
-    if (filter_table_name.type == 'kmz') str_type = `kmz_data`
-  }
 
-  
+  const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
   if (filter_table_name || filter_table_name.table_name != '' && filter_table_name.table_name != null) {
 
     let sql = `  
@@ -385,36 +379,23 @@ exports.editshapeDataService = async (model) => {
  * เรียกข้อมูลสิทธิ์
  */
 
-exports.getFromProjectService = async (
-  search,
-  project_name,
-  prov,
-  amp,
-  tam
-) => {
+exports.getFromProjectService = async (search, project_name, prov, amp, tam) => {
   const table_name = await func_table_name();
   const KeepData = [], arr_sql = [], araea_all = [];
-  var sql,
-    _res,
-    val_sql = ``;
+  var sql, sql1, _res, val_sql = ``
 
   if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
   if (prov) val_sql += ` AND prov = '${prov}' `;
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;
 
-  const status_shape = await models.mas_status_project.findAll({
-    order: [["sort", "ASC"]],
-  });
+  const status_shape = await models.mas_status_project.findAll({ order: [["sort", "ASC"]] });
   for (const i in status_shape) {
     if (Object.hasOwnProperty.call(status_shape, i)) {
       const statues = status_shape[i];
       for (const a in table_name) {
         if (Object.hasOwnProperty.call(table_name, a)) {
           const element = table_name[a];
-          // area_rai area_ngan area_wa
-          console.log("asasasas");
-
           sql = await sequelizeString(
             `SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}  `
           );
@@ -426,47 +407,34 @@ exports.getFromProjectService = async (
               status: statues.status_code,
             });
           });
-          aasql = await sequelizeString(
-            `SELECT  area_rai, area_ngan, area_wa FROM shape_data.ptt_shape_number2 WHERE status = '${statues.status_code}' ${val_sql} `
+
+          //หาระยะทาง
+          sql1 = await sequelizeString(
+            `SELECT row_distan, status FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}  `
           );
-          var sumarea_rai = 0;
-          var sumaarea_ngan = 0;
-          var sumaarea_wa = 0;
-          if (aasql) {
-            for (const ii in aasql) {
-              if (Object.hasOwnProperty.call(aasql, ii)) {
-                const arearai_one = aasql[ii].area_rai;
-                const areangan_one = aasql[ii].area_ngan;
-                const areanwa_one = aasql[ii].area_wa;
-                // area_rai area_ngan area_wa
-                // console.log('areaonce');
-                let area_raiInt = parseInt(arearai_one);
-                let area_nganInt = parseInt(areangan_one);
-                let area_waInt = parseInt(areanwa_one);
 
-                var sumaarea_ngan = sumaarea_ngan + area_nganInt;
-                var sumaarea_wa = sumaarea_wa + area_waInt;
-                var sumarea_rai = sumarea_rai + area_raiInt;
-                //  + area_nganInt/4 + area_waInt/400
-              }
-            }
-          }
+          sql1.forEach(({ row_distan }) => {
+            console.log(row_distan);
+            if (sql1.length === 0) row_distan = 0
+              row_distan = Math.round(Number(row_distan))
+              araea_all.push({
+                row_distan,
+                table_name: element.table_name,
+                name: statues.name,
+                status: statues.status_code})
+            })
+          
 
-          var nganTorai = sumaarea_ngan / 4;
-          var waTorai = sumaarea_wa / 400;
-          var sumallrai = sumarea_rai + nganTorai + waTorai;
-          var raiPerKM = sumallrai * 0.0016;
-          // 1 ไร่ = 0.0016 ตารางกิโลเมจร
-          // 1ไร่มี 4 งาน = 400 ตารางวา
+          // let _sum = araea_all.reduce((sum, num) => sum + num)
+          // console.log("_sum:>>", _sum);
+          // KeepData.push({
+          //   _sum,
+          //   table_name: element.table_name,
+          //   name: statues.name,
+          //   status: statues.status_code
+          // })
 
-          araea_all.push({
-            table_name: element.table_name,
-            status: statues.status_code,
-            name: statues.name,
-            raiPerKM: raiPerKM,
-          });
-          console.log(sumallrai + " ไร่ = " + raiPerKM + " ตารางกิโลเมตร");
-          console.log(aasql);
+
         }
       }
     }
@@ -475,7 +443,7 @@ exports.getFromProjectService = async (
   console.log(araea_all);
 
 
-  const _temp = [];
+  const _temp = [], ___temp = []
   arr_sql.forEach((e) => {
     e.count = Number(e.count);
     const index = _temp.findIndex((x) => x.name === e.name);
@@ -486,7 +454,17 @@ exports.getFromProjectService = async (
     }
   });
 
-  return _temp;
+  araea_all.forEach((e) => {
+    e.row_distan = Number(e.row_distan)
+    const int = ___temp.findIndex((n) => n.name === e.name)
+    if (int === -1) {
+      ___temp.push(e);
+    } else{ 
+      ___temp[int].row_distan += e.row_distan;
+    }
+  })
+
+  return _temp, ___temp
 };
 
 exports.getProvAmpTamService = async (prov, amp, tam) => {
