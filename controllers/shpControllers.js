@@ -260,16 +260,21 @@ exports.getFromProjectDashboard = async (req, res, next) => {
     try {
         const { search, project_name, prov, amp, tam } = req.query
         const _res_sql = await getFromProjectService(search, project_name, prov, amp, tam);
-        const status = [], data = []
+        const {_temp, ___temp} = _res_sql 
+        const status = [], data = [], _status = [], _data= []
 
-        _res_sql.forEach(e => {
+        _temp.forEach(e => {
             status.push(e.name)
             data.push(e.count)
+        })
+        ___temp.forEach(e => {
+            _status.push(e.name)
+            _data.push(e.row_distan)
         })
 
         result(res, {
             plot: { status, data },
-            distance: { status: [], data: [] }
+            distance: { status: _status, data: _data  }
         })
     } catch (error) {
         next(error);

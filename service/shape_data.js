@@ -19,12 +19,17 @@ const func_table_name = async () => {
 
 exports.shapeDataService = async (table_name, id, type) => {
 
+  const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
   let str_type = ``
   if (type == 'shape file') str_type = `shape_data`
   if (type == 'kml') str_type = `kml_data`
   if (type == 'kmz') str_type = `kmz_data`
+  if (type == null || type == '') {
+    if (filter_table_name.type == 'shape file') str_type = `shape_data`
+    if (filter_table_name.type == 'kml') str_type = `kml_data`
+    if (filter_table_name.type == 'kmz') str_type = `kmz_data`
+  }
 
-  const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
   if (filter_table_name || filter_table_name.table_name != '' && filter_table_name.table_name != null) {
 
     let sql = `  
@@ -396,9 +401,7 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
       for (const a in table_name) {
         if (Object.hasOwnProperty.call(table_name, a)) {
           const element = table_name[a];
-          sql = await sequelizeString(
-            `SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}  `
-          );
+          sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql} `);
           sql.forEach(({ count }) => {
             arr_sql.push({
               count,
@@ -409,40 +412,29 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
           });
 
           //หาระยะทาง
-          sql1 = await sequelizeString(
-            `SELECT row_distan, status FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}  `
-          );
-
-          sql1.forEach(({ row_distan }) => {
-            console.log(row_distan);
-            if (sql1.length === 0) row_distan = 0
-              row_distan = Math.round(Number(row_distan))
+          sql1 = await sequelizeString(`SELECT row_distan, status FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
+          if (sql1.length > 0) {
+            sql1.forEach(({ row_distan }) => {
+              row_distan = (Math.round(Number(row_distan) * 100.0) / 100.0)
               araea_all.push({
                 row_distan,
                 table_name: element.table_name,
                 name: statues.name,
-                status: statues.status_code})
+                status: statues.status_code
+              })
             })
-          
-
-          // let _sum = araea_all.reduce((sum, num) => sum + num)
-          // console.log("_sum:>>", _sum);
-          // KeepData.push({
-          //   _sum,
-          //   table_name: element.table_name,
-          //   name: statues.name,
-          //   status: statues.status_code
-          // })
-
-
+          } else {
+            araea_all.push({
+              row_distan: 0,
+              table_name: element.table_name,
+              name: statues.name,
+              status: statues.status_code
+            })
+          }
         }
       }
     }
   }
-  console.log('araea_all==');
-  console.log(araea_all);
-
-
   const _temp = [], ___temp = []
   arr_sql.forEach((e) => {
     e.count = Number(e.count);
@@ -459,12 +451,12 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
     const int = ___temp.findIndex((n) => n.name === e.name)
     if (int === -1) {
       ___temp.push(e);
-    } else{ 
+    } else {
       ___temp[int].row_distan += e.row_distan;
     }
   })
 
-  return _temp, ___temp
+  return { _temp, ___temp }
 };
 
 exports.getProvAmpTamService = async (prov, amp, tam) => {
