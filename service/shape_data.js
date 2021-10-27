@@ -415,8 +415,10 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
           //หาระยะทาง
           sql1 = await sequelizeString(`SELECT row_distan, status FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
           if (sql1.length > 0) {
+
             sql1.forEach(({ row_distan }) => {
               row_distan = (Math.round(Number(row_distan) * 100.0) / 100.0)
+  
               araea_all.push({
                 row_distan,
                 table_name: element.table_name,
@@ -453,7 +455,7 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
     if (int === -1) {
       ___temp.push(e);
     } else {
-      ___temp[int].row_distan += e.row_distan;
+      ___temp[int].row_distan + e.row_distan;
     }
   })
 
