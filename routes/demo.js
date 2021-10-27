@@ -37,7 +37,7 @@ router.get("/demoShape", async (req, res) => {
 
 });
 
-router.post('/resTrue', async (req, res) => {
+router.post('/check', async (req, res) => {
 
   const { file } = req.files
   // const mimetype = `.${file.name.substring(12)}` == '.zip' ? true : false
@@ -67,6 +67,14 @@ router.post('/resTrue', async (req, res) => {
     throw err
   }
 
+})
+
+router.post('/resTrue', async (req, res) => {
+  result(res, true, 200);
+})
+
+router.post('/resFalse', async (req, res) => {
+  result(res, false, 400);
 })
 
 
