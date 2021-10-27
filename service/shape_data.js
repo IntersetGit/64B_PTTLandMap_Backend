@@ -99,8 +99,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     //     typeData.push(typeof x)
     // })
   }
-  const newArrPropertie =
-    arrPropertie.length > 0 ? arrPropertie[arrPropertie.length - 1] : [];
+  const newArrPropertie = arrPropertie.length > 0 ? arrPropertie[arrPropertie.length - 1] : [];
   if (newArrPropertie.length > 0) {
     (obj1.gid = {
       type: DataTypes.INTEGER,
