@@ -1,9 +1,10 @@
 const router = require("express").Router();
-const { demoLdap, demoShap , gatKmlTest } = require("../controllers/demoControllers");
+const { demoLdap, demoShap, gatKmlTest } = require("../controllers/demoControllers");
 const { authenticateToken } = require("../middleware/authenticateToken");
 const shapefile = require("shapefile");
 const { convert } = require("geojson2shp");
 const shp = require('shpjs');
+const result = require("../middleware/result");
 
 router.post("/demoLdap", [authenticateToken], demoLdap);
 
@@ -36,32 +37,44 @@ router.get("/demoShape", async (req, res) => {
 
 });
 
-router.post('/resTrue', async (req, res) => {
+router.post('/check', async (req, res) => {
 
   const { file } = req.files
-  const mimetype = `.${file.mimetype.substring(12)}` == '.zip' ? true : false
-  const mimetype_ = `.${file.mimetype.substring(32, 29)}` == '.kml' ? true : false
-  var typeGeo
+  // const mimetype = `.${file.name.substring(12)}` == '.zip' ? true : false
+  // const mimetype_ = `.${file.name.substring(32, 29)}` == '.kml' ? true : false
 
-  if (mimetype) {
-    const geojson = await shp(file.data); // แปลงไฟล์ shape
-    geojson.features.forEach(e => {
-      typeGeo = e.geometry.type
-    });
-  } else if (mimetype_) {
+  const type = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
+  const _check = ['zip', 'kml', 'kmz']
+  if (_check.find(e => e == type)) {
+    let _type
+    switch (type) {
+      case "zip":
+        _type = "shape file"
+        break;
+      case "zip":
+        _type = "shape file"
+        break;
 
+      default:
+        break;
+    }
+    result(res, {
+      type: _type
+    }, 200);
   } else {
-    
+    const err = new Error(`เลือกไฟล์ให้ถูกต้อง ${_check.toString()}`)
+    err.statusCode = 400
+    throw err
   }
 
-  
-  
-  res.json({
-    item: {
-      file_type: typeGeo
-    }
-  }).status(200)
+})
 
+router.post('/resTrue', async (req, res) => {
+  result(res, true, 200);
+})
+
+router.post('/resFalse', async (req, res) => {
+  result(res, false, 400);
 })
 
 
