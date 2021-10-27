@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('ptt_shape_number3', {
+  return sequelize.define('ptt_shape_number4', {
     gid: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
@@ -8,10 +8,10 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     geom: {
-      type: DataTypes.GEOMETRY('MULTIPOLYGON', 0),
+      type: DataTypes.GEOMETRY('POINT', 0),
       allowNull: true
     },
-    symbol: {
+    osm_id: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -39,11 +39,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    ptype: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    namt: {
+    timestamp: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -51,26 +47,18 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    level: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    scale: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    v1_2004: {
+    type: {
       type: DataTypes.STRING(255),
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'ptt_shape_number3',
+    tableName: 'ptt_shape_number4',
     schema: 'shape_data',
     timestamps: false,
     indexes: [
       {
-        name: "ptt_shape_number3_pkey1",
+        name: "ptt_shape_number5_pkey",
         unique: true,
         fields: [
           { name: "gid" },

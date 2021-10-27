@@ -10,7 +10,6 @@ const { DecryptCryptoJS } = require("../util");
 const models = require("../models/index");
 const { getSysmRoleService } = require("../service/masterDataService");
 
-
 const connect = {
   development: {
     host: config.LDAP_HOST_DEV,
@@ -176,16 +175,14 @@ exports.updateConfigAd = async (req, res, next) => {
 
 /* funcion connect ADPTT */
 const connectPttAD_ = async (username) => {
-  const { info_form } = await models.sysm_config.findByPk(1)
   const myPromise = new Promise((resolve, reject) => {
     const { url, search } = connect[config.NODE_ENV];
-    
-    
+
     const config_ad = {
       url,
       baseDN: `${search}`,
-      username: `${info_form.username}@ptt.corp`,
-      password: info_form.password,
+      username: `${config.USER_NAME_AD}@ptt.corp`,
+      password: config.PASSWORD_AD,
     };
 
     const ad = new ActiveDirectory(config_ad);

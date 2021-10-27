@@ -143,8 +143,8 @@ exports.getAllMasLayersShapeService = async (search) => {
   FROM master_lookup.mas_layers_shape AS sh
   INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id `
 
-  if (search) sql += ` WHERE sh.name_layer ILIKE '%${search}%' OR gr.group_name ILIKE '%${search}%' `
-
+  if(search) sql+= ` WHERE sh.name_layer ILIKE '%${search}%' OR gr.group_name ILIKE '%${search}%' `
+  
   return await sequelizeString(sql)
 }
 
@@ -164,11 +164,7 @@ exports.createMasLayersShapeService = async (data, user) => {
     table_name: data.table_name,
     color_layer: data.color_layer,
     type: data.type,
-    group_layer_id: data.group_layer_id,
-    url: data.url,
-    wms_name: data.wms_name,
-    type_server: data.type_server,
-    date: data.date
+    group_layer_id: data.group_layer_id
   })
   return id
 }
@@ -187,11 +183,7 @@ exports.editMasLayersShapeService = async (data, user) => {
     table_name: data.table_name,
     color_layer: data.color_layer,
     type: data.type,
-    group_layer_id: data.group_layer_id,
-    url: data.url,
-    wms_name: data.wms_name,
-    type_server: data.type_server,
-    date: data.date
+    group_layer_id: data.group_layer_id
   }, {
     where: { id: data.id }
   })
@@ -209,11 +201,11 @@ exports.deleteMasLayersShapeService = async (data, user) => {
 exports.getAllMasStatusProjectService = async (search, order, sort) => {
   let sql = ` SELECT * FROM master_lookup.mas_status_project AS st `
 
-  if (search) sql += ` WHERE st.name ILIKE '%${search}%' `
+  if(search) sql+= ` WHERE st.name ILIKE '%${search}%' `
 
   sql += ` ORDER BY ${order} ${sort} `
   // sql += ` LIMIT ${limit} `
-
+  
   return await sequelizeString(sql)
   // const allMasStatus = await models.mas_status_project.findAll()
   // return allMasStatus;

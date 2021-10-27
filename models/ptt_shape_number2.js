@@ -126,7 +126,7 @@ module.exports = function(sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: "ptt_shape_number3_pkey1",
+        name: "ptt_shape_number3_pkey2",
         unique: true,
         fields: [
           { name: "gid" },
