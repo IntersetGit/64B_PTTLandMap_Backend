@@ -19,12 +19,18 @@ const func_table_name = async () => {
 
 exports.shapeDataService = async (table_name, id, type) => {
 
+  const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
   let str_type = ``
   if (type == 'shape file') str_type = `shape_data`
   if (type == 'kml') str_type = `kml_data`
   if (type == 'kmz') str_type = `kmz_data`
+  if (type == null  || type == '') {
+    if (filter_table_name.type == 'shape file') str_type = `shape_data`
+    if (filter_table_name.type == 'kml') str_type = `kml_data`
+    if (filter_table_name.type == 'kmz') str_type = `kmz_data`
+  }
 
-  const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
+  
   if (filter_table_name || filter_table_name.table_name != '' && filter_table_name.table_name != null) {
 
     let sql = `  
@@ -152,8 +158,6 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     err.statusCode = 400;
     throw err;
   }
-
-  // console.log(typeof new Date());
 
   await queryInterface.createTable(`${obj.nameTable}`, obj1, { schema });
 
