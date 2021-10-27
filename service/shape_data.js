@@ -87,7 +87,8 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     // console.log(e.properties);
     obj.newObject = Object.keys(e.properties); //เอาชื่อตัวแปรมาใช้
     obj.newObject = obj.newObject.map((e) => e.toLowerCase());
-    obj.newObject = obj.newObject.map((str) => stringToSnakeCase(str)); //แปลงเป็น SnakeCase
+    obj.newObject = obj.newObject.map((str) => stringToSnakeCase(str)); 
+    //แปลงเป็น SnakeCase
     arrPropertie.push(obj.newObject);
     // Object.values(e.properties).forEach(x => {
     //     typeData.push(typeof x)
