@@ -54,10 +54,9 @@ exports.findIdLayersShape = async (id) => {
 };
 
 exports.createTableShapeService = async (geojson, queryInterface, type) => {
-  var obj = {};
-  var obj1 = {};
-  var schema = ``,
-    type_geo;
+  var obj = {}
+  var obj1 = {}
+  var schema = ``, type_geo
 
   if (type.toLowerCase() == "shape file".toLowerCase()) schema += `shape_data`;
   if (type.toLowerCase() == "kml".toLowerCase()) schema += `kml_data`;
@@ -80,11 +79,14 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
   const arrPropertie = [],
     typeData = [],
-    table_key = ["prov", "amp", "tam", "project_na", "parlabel1"];
+    table_key = ["prov", "amp", "tam", "project_na", "parlabel1"],
+    _type_geo = ["Polygon", "Point", "LineString"]
+    // type_geo = ["Polygon", "Point", ""]
 
   //ตรวจสอบประเภท type geo
   geojson.features.forEach((e) => {
-    type_geo = e.geometry.type == "Polygon" ? true : false;
+    const geometryType = _type_geo.find(ty => ty === e.geometry.type)
+    if(geometryType) type_geo = geometryType
   });
 
   for (let i = 0; i < geojson.features.length; i++) {
@@ -98,7 +100,13 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     //     typeData.push(typeof x)
     // })
   }
-  const newArrPropertie = arrPropertie.length > 0 ? arrPropertie[arrPropertie.length - 1] : [];
+  const newArrPropertie = arrPropertie.length > 0 ? arrPropertie[arrPropertie.length - 1] : []
+  let _dataType 
+
+  if(type_geo === 'Polygon') _dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
+  else if (type_geo === 'Point') _dataType = DataTypes.GEOMETRY("Point", 0)
+  else _dataType = DataTypes.GEOMETRY("LineStringZ", 4326)
+
   if (newArrPropertie.length > 0) {
     (obj1.gid = {
       type: DataTypes.INTEGER,
@@ -107,9 +115,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
       allowNull: true,
     }),
       (obj1.geom = {
-        type: type_geo
-          ? DataTypes.GEOMETRY("MultiPolygon", 0)
-          : DataTypes.GEOMETRY("Point", 0),
+        type: _dataType,
         allowNull: true,
       });
     newArrPropertie.forEach((colomn) => {

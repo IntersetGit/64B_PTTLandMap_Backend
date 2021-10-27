@@ -5,7 +5,7 @@ const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
 const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService,
-    editshapeDataService, getFromProjectService, getProvAmpTamService  } = require('../service/shape_data')
+    editshapeDataService, getFromProjectService, getProvAmpTamService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -78,56 +78,27 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 }, transaction)
 
                 await addShapeService(_createTableShape, geojson);
-
-
-                if (type == "kmz") {
-                    const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
-                    const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
-                    // console.log(geojson);
-
-                    geojson.features.forEach(a => {
-                        const _coordinates = a.geometry.coordinates
-                        if (_coordinates.length <= 1) {
-                            _coordinates.forEach(e => {
-                                if (e.length > 0) {
-                                    e.forEach(val => {
-                                        val.length > 0 ? val.pop() : val
-                                        console.log(val);
-                                    })
-                                }
-                            })
-
-                        } else if (_coordinates.length > 1) {
-                            _coordinates.forEach(e => {
-                                if (e.length > 0) {
-                                    e.forEach(val => {
-                                        val.length > 0 ? val.pop() : val
-                                        console.log(val);
-                                    })
-                                }
-                            })
-
-                        } else _coordinates.pop()
-                    })
-
-                    const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-                    // console.log(_createTableShape);
-
-                    await addShapeLayersService({
-                        id,
-                        name_layer,
-                        table_name: _createTableShape.obj.nameTable,
-                        type,
-                        group_layer_id,
-                        color_layer: color,
-                        type_geo: _createTableShape.type_geo
-                    }, transaction)
-
-                    await addShapeService(_createTableShape, geojson);
-                }
-
-
             }
+
+            if (type == "kmz") {
+                const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
+                const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
+                // console.log(geojson);
+                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+                // console.log(_createTableShape);
+                await addShapeLayersService({
+                    id,
+                    name_layer,
+                    table_name: _createTableShape.obj.nameTable,
+                    type,
+                    group_layer_id,
+                    color_layer: color,
+                    type_geo: _createTableShape.type_geo
+                }, transaction)
+
+                await addShapeService(_createTableShape, geojson);
+            }
+
             await transaction.commit();
             result(res, { id, "file_type": type }, 201);
         }
@@ -173,6 +144,13 @@ exports.getAllDataLayer = async (req, res, next) => {
 
         for (let i = 0; i < get_shp.length; i++) {
             const e = get_shp[i];
+            if (e.children != null && e.children != '') {
+                e.children.forEach(chd => {
+                    chd.option_layer = chd.option_layer ?? {}
+                    chd.type_geo = chd.type_geo ?? {}
+                    chd.symbol_point = chd.symbol_point ?? {}
+                })
+            } else []
             e.symbol = await checkImgById(e.id, 'symbol_group')
         }
 
@@ -260,8 +238,8 @@ exports.getFromProjectDashboard = async (req, res, next) => {
     try {
         const { search, project_name, prov, amp, tam } = req.query
         const _res_sql = await getFromProjectService(search, project_name, prov, amp, tam);
-        const {_temp, ___temp} = _res_sql 
-        const status = [], data = [], _status = [], _data= []
+        const { _temp, ___temp } = _res_sql
+        const status = [], data = [], _status = [], _data = []
 
         _temp.forEach(e => {
             status.push(e.name)
@@ -274,7 +252,7 @@ exports.getFromProjectDashboard = async (req, res, next) => {
 
         result(res, {
             plot: { status, data },
-            distance: { status: _status, data: _data  }
+            distance: { status: _status, data: _data }
         })
     } catch (error) {
         next(error);

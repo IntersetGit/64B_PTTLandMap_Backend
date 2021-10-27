@@ -32,34 +32,12 @@ exports.addShapeService = async (table, geojson) => {
         data.properties = data.properties.map(e => String(e).replace(/'/g, ''))
         data.properties = data.properties.map(e => `'${e}'`)
 
-        if (table.schema === 'kml_data'){
-            data.geometry.coordinates.forEach(a => {
-                const arr_kml = []
-
-                if (table.type_geo) {
-                    if (a.length > 1) {
-                        a.forEach(val => {
-                            if (val.length >= 3 && val[val.length - 1] == 0) val.pop() // ค่ามันมี 0 ตัด 0 ออก
-                            arr_kml.push(`[${val}]`)
-                        })
-                    }
-                    arrSql.push(`(ST_GeomFromGeoJSON('{
-                        "type":"MultiPolygon",
-                        "coordinates":[[[ ${arr_kml} ]]]
-                        }'),${data.properties}) `)
-                } else {
-                    //ยังไม่มีนะจ๊ะ
-                }
-                
-            })
-        }
-
         if (table.schema === 'shape_data') {
             for (let a = 0; a < data.geometry.coordinates.length; a++) {
                 const geo = data.geometry.coordinates[a];
                 const arr = []
     
-                if (table.type_geo) { // polygon
+                if (table.type_geo === 'Polygon') { // polygon
                     for (let x = 0; x < geo.length; x++) {
                         const _geo = geo[x];
                         if (_geo.length > 2) {
@@ -108,6 +86,45 @@ exports.addShapeService = async (table, geojson) => {
                         }'),${data.properties}) `)
                 }
             }
+        }
+
+        if (table.schema === 'kml_data'){
+            data.geometry.coordinates.forEach(a => {
+                const arr_kml = []
+
+                if (table.type_geo) {
+                    if (a.length > 1) {
+                        a.forEach(val => {
+                            if (val.length >= 3 && val[val.length - 1] == 0) val.pop() // ค่ามันมี 0 ตัด 0 ออก
+                            arr_kml.push(`[${val}]`)
+                        })
+                    }
+                    arrSql.push(`(ST_GeomFromGeoJSON('{
+                        "type":"MultiPolygon",
+                        "coordinates":[[[ ${arr_kml} ]]]
+                        }'),${data.properties}) `)
+                } else {
+                    //ยังไม่มีนะจ๊ะ
+                }
+                
+            })
+        }
+
+        if (table.schema === 'kmz_data') {
+            data.geometry.coordinates.forEach(a => { 
+                const arr_kmz = []
+
+                if (table.type_geo === 'LineString') {
+                    if(a.length > 0) {
+                       arr_kmz.push(`[${a}]`)
+                    }
+                }
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"LineString",
+                    "coordinates":[ ${arr_kmz} ]
+                    }'),${data.properties}) `)
+            })
+            
         }
     }
     sql += arrSql.toString()
