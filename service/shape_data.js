@@ -153,8 +153,6 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     throw err;
   }
 
-  // console.log(typeof new Date());
-
   await queryInterface.createTable(`${obj.nameTable}`, obj1, { schema });
 
   // const auto = new SequelizeAuto(sequelize, null, null, {
@@ -442,6 +440,9 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
       }
     }
   }
+  console.log('araea_all==');
+  console.log(araea_all);
+
 
   const _temp = [], ___temp = []
   arr_sql.forEach((e) => {

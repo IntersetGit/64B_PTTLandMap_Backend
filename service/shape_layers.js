@@ -8,7 +8,7 @@ exports.addShapeLayersService = async (model, transaction) => {
         id,
         name_layer: model.name_layer ?? "test"
     }
-    
+
     if (model.type) _model.type = model.type
     if (model.table_name) _model.table_name = model.table_name
     if (model.group_layer_id) _model.group_layer_id = model.group_layer_id
@@ -39,7 +39,10 @@ exports.getDataShapService = async () => {
 						  ,'name_layer',mls.name_layer
 						  ,'table_name',mls.table_name
 						  ,'color_layer',mls.color_layer
-						  ,'type',mls.type))
+						  ,'type',mls.type
+							,'option_layer', mls.option_layer
+							,'symbol_point', mls.symbol_point
+							,'type_geo', mls.type_geo))
   FROM master_lookup.mas_layers_shape mls 
   WHERE mls.group_layer_id = mlg.id) AS children
 	FROM master_lookup.mas_layer_groups mlg
@@ -56,7 +59,7 @@ exports.getDataShapService = async () => {
 
 exports.addkmlLayersService = async (model, transaction) => {
     console.log("model+++++++++++++++++++++++++++++++++++++++++++++++++e");
-        console.log(model);
+    console.log(model);
 
 
     const id = model.id ?? uuid.v4()
@@ -76,7 +79,7 @@ exports.addkmlLayersService = async (model, transaction) => {
 
 
 exports.getAlldataShapeKmlKmz = () => {
-    
+
 }
 
 
