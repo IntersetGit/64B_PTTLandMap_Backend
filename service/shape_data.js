@@ -202,30 +202,37 @@ exports.getAllShapeDataService = async (search, project_name, prov, amp, tam) =>
 /* เรียกจังหวัด อำเภอตำบล ตามข้อมูลที่มีใน mas_layers_shape */
 exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
 
+    const table_name = await func_table_name()
     const KeepData = [], arr_sql = []
     var sql, _res
 
     if (layer_group) {
         const layers_data = await models.mas_layers_shape.findAll({ where: { group_layer_id: layer_group } })
         if (layers_data.length > 0) {
-            layers_data.forEach(e => [
+            layers_data.forEach(e => {
                 KeepData.push(e.table_name)
-            ])
+            })
 
         } else[]
 
+        KeepData.sort()
         for (const af in KeepData) {
             if (Object.hasOwnProperty.call(KeepData, af)) {
                 const tables_name = KeepData[af];
-                if (tables_name != '' && tables_name != null) {
-                    _res = await sequelizeString(sql = `SELECT * FROM shape_data.${tables_name} `)
-                    if (_res.length > 0) {
-                        _res.forEach(province => {
-                            const { prov, amp, tam } = province
-                            arr_sql.push({ prov, amp, tam })
-                        })
+                const _table_name = table_name.filter(tbl => tbl.table_name != tables_name)
+                for (let i = 0; i < _table_name.length; i++) {
+                    const e = _table_name[i];
+                    if (e.table_name != '' && e.table_name != null) {
+                        _res = await sequelizeString(sql = `SELECT * FROM shape_data.${e.table_name} `)
+                        if (_res.length > 0) {
+                            _res.forEach(province => {
+                                const { prov, amp, tam } = province
+                                arr_sql.push({ prov, amp, tam })
+                            })
+                        }
                     }
                 }
+                
             }
         }
     }
