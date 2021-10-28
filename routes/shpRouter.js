@@ -1,5 +1,5 @@
 const { shapeKmlKmzAdd, getAllDataLayer, convertGeoToShp, getShapeData, getInfoProject, getShapeProvinceMap, 
-     getByidShapeMap,editShapeMap, getFromProjectDashboard, checkUploadFile,  } = require('../controllers/shpControllers');
+     getByidShapeMap,editShapeMap, getFromProjectDashboard, checkUploadFile, getFromReportDashbord,  } = require('../controllers/shpControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -22,7 +22,7 @@ router.post('/editShapeData',[authenticateToken],editShapeMap);
 /* เรียก polygon แบบ id */
 router.get('/getByIdShape', [authenticateToken], getByidShapeMap);
 /* เช็คไฟล์อัพโหลด shape */
-router.post('/checkUploadFile', checkUploadFile)
+router.post('/checkUploadFile', [authenticateToken], checkUploadFile)
 
 
 
@@ -32,5 +32,6 @@ router.post('/checkUploadFile', checkUploadFile)
  * Dashboard
 **/
 router.get('/getFromProjectMap', [authenticateToken], getFromProjectDashboard);
+router.get('/getFromReportBackOffice', [authenticateToken], getFromReportDashbord);
 
 module.exports = router;
