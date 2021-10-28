@@ -79,7 +79,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
   const arrPropertie = [],
     typeData = [],
-    table_key = ["prov", "amp", "tam", "project_na", "parlabel1"],
+    table_key = ["prov", "amp", "tam", "project_na", "parlabel1", "row_distan"],
     _type_geo = ["Polygon", "Point", "LineString"]
     // type_geo = ["Polygon", "Point", ""]
 
@@ -149,6 +149,10 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
             allowNull: true,
           }),
           (obj1.parlabel1 = {
+            type: DataTypes.STRING,
+            allowNull: true,
+          }),
+          (obj1.row_distan = {
             type: DataTypes.STRING,
             allowNull: true,
           }),

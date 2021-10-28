@@ -150,7 +150,7 @@ exports.getAllDataLayer = async (req, res, next) => {
                     chd.type_geo = chd.type_geo ?? {}
                     chd.symbol_point = chd.symbol_point ?? {}
                 })
-            } else []
+            } else[]
             e.symbol = await checkImgById(e.id, 'symbol_group')
         }
 
@@ -256,6 +256,73 @@ exports.getFromProjectDashboard = async (req, res, next) => {
         })
     } catch (error) {
         next(error);
+    }
+}
+
+exports.checkUploadFile = async (req, res, next) => {
+    var _type
+    try {
+        
+        const { file } = req.files
+
+        const type = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
+        const _check = ['zip', 'kml', 'kmz']
+        if (_check.find(e => e == type)) {
+            
+            switch (type) {
+                case "zip":
+                    _type = "shape file"
+                    break;
+                case "kml":
+                    _type = "kml"
+                    break;
+                case "kmz":
+                    _type = "kmz"
+                    break;
+                default:
+                    break;
+            }
+
+            if (_type === "shape file") {
+                const geojson = await shp(file.data)
+                geojson.features.forEach(e => {
+                    _type = e.geometry.type == "Polygon" ? "shape file" : e.geometry.type
+                })
+            }
+
+            if (_type === "kml") {
+                const _pathfile = await updataKmlKmz(file);
+                const geojson = await parseKML.toJson(_pathfile);
+                geojson.features.forEach(e => {
+                    _type = e.geometry.type == "Polygon" ? "shape file" : e.geometry.type
+                })
+            }
+
+            if (_type === "kmz") {
+                const _pathfile = await updataKmlKmz(file)
+                const geojson = await KMZGeoJSON.toJson(_pathfile)
+                geojson.features.forEach(e => {
+                    _type = e.geometry.type == "Polygon" ? "shape file" : e.geometry.type
+                })
+            }
+
+            result(res, {
+                type: _type
+            }, 200);
+
+        } else {
+            const err = new Error(`เลือกไฟล์ให้ถูกต้อง ${_check.toString()}`)
+            err.statusCode = 400
+            throw err
+        }
+
+    } catch (error) {
+        if(_type === "shape file" || _type === "kml" || _type === "kmz") {
+            const msg = {message: "อัพโหลดไฟล์ไม่ถูกต้อง"}
+            msg.statusCode = 400
+            next(msg)
+        }
+        next(error)
     }
 }
 
