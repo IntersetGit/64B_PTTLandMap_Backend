@@ -28,7 +28,9 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             throw err
         } else {
             const { file } = req.files
+            const option_layer = req.body.option_layer ? JSON.parse(req.body.option_layer) : {}
             const { color, group_layer_id, name_layer, type } = req.query
+
             const { sysm_id } = req.user
             const id = uuid.v4();
             const mimetype = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
@@ -262,13 +264,13 @@ exports.getFromProjectDashboard = async (req, res, next) => {
 exports.checkUploadFile = async (req, res, next) => {
     var _type
     try {
-        
+
         const { file } = req.files
 
         const type = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
         const _check = ['zip', 'kml', 'kmz']
         if (_check.find(e => e == type)) {
-            
+
             switch (type) {
                 case "zip":
                     _type = "shape file"
@@ -317,8 +319,8 @@ exports.checkUploadFile = async (req, res, next) => {
         }
 
     } catch (error) {
-        if(_type === "shape file" || _type === "kml" || _type === "kmz") {
-            const msg = {message: "อัพโหลดไฟล์ไม่ถูกต้อง"}
+        if (_type === "shape file" || _type === "kml" || _type === "kmz") {
+            const msg = { message: "อัพโหลดไฟล์ไม่ถูกต้อง" }
             msg.statusCode = 400
             next(msg)
         }
