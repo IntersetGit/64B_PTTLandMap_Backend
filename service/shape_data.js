@@ -94,7 +94,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     // console.log(e.properties);
     obj.newObject = Object.keys(e.properties); //เอาชื่อตัวแปรมาใช้
     obj.newObject = obj.newObject.map((e) => e.toLowerCase());
-    obj.newObject = obj.newObject.map((str) => stringToSnakeCase(str)); 
+    obj.newObject = obj.newObject.map((str) => stringToSnakeCase(str));
     //แปลงเป็น SnakeCase
     arrPropertie.push(obj.newObject);
     // Object.values(e.properties).forEach(x => {
@@ -391,6 +391,8 @@ exports.editshapeDataService = async (model) => {
  * เรียกข้อมูลสิทธิ์
  */
 
+
+
 exports.getFromProjectService = async (search, project_name, prov, amp, tam) => {
   const table_name = await func_table_name();
   const KeepData = [], arr_sql = [], araea_all = [];
@@ -423,8 +425,8 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
           if (sql1.length > 0) {
 
             sql1.forEach(({ row_distan }) => {
-              row_distan = (Math.round(Number(row_distan) * 100.0) / 100.0)
-  
+              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0) )
+              
               araea_all.push({
                 row_distan,
                 table_name: element.table_name,
@@ -461,12 +463,18 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
     if (int === -1) {
       ___temp.push(e);
     } else {
-      ___temp[int].row_distan + e.row_distan;
+      ___temp[int].row_distan += e.row_distan;
     }
   })
-
+  // แปลงเป็นกิโลเมตร ทศนิยม 2 ตำแหน่ง //
+  ___temp.forEach((e) => {
+    e.row_distan = Math.round((e.row_distan/1000) * 100) / 100 
+  });
+ 
   return { _temp, ___temp }
 };
+
+
 
 exports.getProvAmpTamService = async (prov, amp, tam) => {
   const table_name = await func_table_name();
