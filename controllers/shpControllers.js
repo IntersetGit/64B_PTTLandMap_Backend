@@ -31,10 +31,10 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             const { color, group_layer_id, name_layer, type } = req.query
             const { sysm_id } = req.user
             const id = uuid.v4();
-            const mimetype = `.${file.mimetype.substring(12)}` == '.zip' ? true : false
+            const mimetype = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
 
             if (type == "shape file") {
-                if (mimetype) {
+                if (mimetype == 'zip') {
                     const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
                     // console.log(geojson);
                     const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
