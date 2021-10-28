@@ -28,10 +28,11 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             throw err
         } else {
             const { file } = req.files
-            const { color, group_layer_id, name_layer, type } = req.query
+            const { color, group_layer_id, name_layer, type , option_layer } = req.query
             const { sysm_id } = req.user
             const id = uuid.v4();
             const mimetype = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
+            
 
             if (type == "shape file") {
                 if (mimetype == 'zip') {
@@ -47,6 +48,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                         type,
                         group_layer_id,
                         color_layer: color,
+                        option_layer : JSON.parse(option_layer) ,
                         type_geo: _createTableShape.type_geo
                     }, transaction)
 
@@ -79,6 +81,8 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
 
                 await addShapeService(_createTableShape, geojson);
             }
+
+            
 
             if (type == "kmz") {
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
