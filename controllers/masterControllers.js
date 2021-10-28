@@ -190,6 +190,7 @@ exports.deleteMasLayersShape = async (req, res, next) => {
   try {
     const data = req.query
     const users = req.user
+  
     if (users.roles_id != '8a97ac7b-01dc-4e06-81c2-8422dffa0ca2' || req.user.roles_id != 'cec6617f-b593-4ebc-9604-3059dfee0ac4') throw new Error("คุณไม่ใช่ Administratorc และ Editor ไม่สามารถลบข้อมูลได้")
     result(res, await deleteMasLayersShapeService(data))
   } catch (error) {
