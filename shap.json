@@ -1,0 +1,39 @@
+
+
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 1,
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [100.559229584, 13.623280155, 0],
+          [100.647514707, 13.622783465, 0],
+          [100.66460016, 13.617425018, 0],
+          [100.672268652, 13.616641073, 0],
+          [100.685318548, 13.612326744, 0],
+          [100.683435093, 13.598859579, 0],
+          [100.758001775, 13.581182172, 0]
+        ]
+      },
+      "properties": {
+        "id": 1,
+        "end": null,
+        "Name": "เส้นทาง ไม่มีชื่อ",
+        "icon": null,
+        "begin": null,
+        "extrude": 0,
+        "drawOrder": null,
+        "timestamp": null,
+        "tessellate": 1,
+        "visibility": -1,
+        "description": null,
+        "altitudeMode": null
+      }
+    }
+  ]
+}
+
+{"type" : "FeatureCollection", "features" : [{"type" : "Feature", "id" : 1, "geometry" : {"type":"LineString","coordinates":[[14.3975456,52.3969851],[14.397542,52.39723]]}, "properties" : {"id": 1, "end": null, "Name": "Trepliner Graben", "icon": null, "type": "stream", "begin": null, "width": null, "osm_id": "46242433", "extrude": 0, "drawOrder": null, "timestamp": null, "tessellate": -1, "visibility": -1, "description": null, "altitudeMode": null}}, {"type" : "Feature", "id" : 2, "geometry" : {"type":"LineString","coordinates":[[14.397678,52.397694],[14.397669,52.397932],[14.397656,52.398139],[14.397397,52.398617],[14.397395,52.398639],[14.397393,52.398658],[14.39724,52.399042],[14.397104,52.399483],[14.397066,52.399571],[14.397045,52.399622]]}, "properties" : {"id": 2, "end": null, "Name": "Trepliner Graben", "icon": null, "type": "stream", "begin": null, "width": null, "osm_id": "46242437", "extrude": 0, "drawOrder": null, "timestamp": null, "tessellate": -1, "visibility": -1, "description": null, "altitudeMode": null}}, {"type" : "Feature", "id" : 3, "geometry" : {"type":"LineString","coordinates":[[14.397542,52.39723],[14.397674,52.397386],[14.397678,52.397694]]}, "properties" : {"id": 3, "end": null, "Name": "Trepliner Graben", "icon": null, "type": "stream", "begin": null, "width": null, "osm_id": "46242636", "extrude": 0, "drawOrder": null, "timestamp": null, "tessellate": -1, "visibility": -1, "description": null, "altitudeMode": null}}, {"type" : "Feature", "id" : 4, "geometry" : {"type":"LineString","coordinates":[[14.39749,52.395472],[14.397031,52.39568],[14.396933,52.395735],[14.396923,52.395815],[14.396881,52.396262],[14.396942,52.396535],[14.396975,52.396697],[14.397012,52.396751],[14.3975456,52.3969851]]}, "properties" : {"id": 4, "end": null, "Name": "Trepliner Graben", "icon": null, "type": "stream", "begin": null, "width": null, "osm_id": "46242687", "extrude": 0, "drawOrder": null, "timestamp": null, "tessellate": -1, "visibility": -1, "description": null, "altitudeMode": null}}, {"type" : "Feature", "id" : 5, "geometry" : {"type":"LineString","coordinates":[[14.4020727,52.399901],[14.4027517,52.3997589]]}, "properties" : {"id": 5, "end": null, "Name": "Trepliner Graben", "icon": null, "type": "stream", "begin": null, "width": null, "osm_id": "99414169", "extrude": 0, "drawOrder": null, "timestamp": null, "tessellate": -1, "visibility": -1, "description": null, "altitudeMode": null}}]}
