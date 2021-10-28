@@ -5,7 +5,7 @@ const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
 const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService,
-    editshapeDataService, getFromProjectService, getProvAmpTamService } = require('../service/shape_data')
+    editshapeDataService, getFromProjectService, getFromReportDashbordService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -254,6 +254,17 @@ exports.getFromProjectDashboard = async (req, res, next) => {
             plot: { status, data },
             distance: { status: _status, data: _data }
         })
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.getFromReportDashbord = async (req, res, next) => {
+    try {
+        const { search, project_name, prov, amp, tam } = req.query
+        result(res, await getFromReportDashbordService())
+        
+        
     } catch (error) {
         next(error);
     }
