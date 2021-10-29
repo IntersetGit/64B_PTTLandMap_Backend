@@ -118,6 +118,8 @@ exports.updateDatLayersService = async (data, users) => {
 };
 
 exports.deleteDatLayersService = async (data) => {
+  
+
   const deleteDataLayers = await models.dat_layers.destroy({ where: { id: data.id } })
   return deleteDataLayers;
 };
@@ -164,7 +166,14 @@ exports.createMasLayersShapeService = async (data, user) => {
     table_name: data.table_name,
     color_layer: data.color_layer,
     type: data.type,
-    group_layer_id: data.group_layer_id
+    group_layer_id: data.group_layer_id,
+    url: data.url,
+    wms_name: data.wms_name,
+    type_server: data.type_server,
+    date: data.date,
+    option_layer: data.option_layer,
+    symbol_point: data.symbol_point,
+    type_geo: data.type_geo
   })
   return id
 }
@@ -183,7 +192,14 @@ exports.editMasLayersShapeService = async (data, user) => {
     table_name: data.table_name,
     color_layer: data.color_layer,
     type: data.type,
-    group_layer_id: data.group_layer_id
+    group_layer_id: data.group_layer_id,
+    url: data.url,
+    wms_name: data.wms_name,
+    type_server: data.type_server,
+    date: data.date,
+    option_layer: data.option_layer,
+    symbol_point: data.symbol_point,
+    type_geo: data.type_geo
   }, {
     where: { id: data.id }
   })
