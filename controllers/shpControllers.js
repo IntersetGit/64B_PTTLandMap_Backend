@@ -28,7 +28,6 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             throw err
         } else {
             const { file } = req.files
-
             const option_layer = req.body.option_layer ? JSON.parse(req.body.option_layer) : {}
             const { color, group_layer_id, name_layer, type } = req.query
             const { sysm_id } = req.user
