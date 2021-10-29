@@ -9,12 +9,14 @@ exports.addShapeLayersService = async (model, transaction) => {
         name_layer: model.name_layer ?? "test"
     }
 
-    if (model.type) _model.type = model.type
+    if (model.type === "Point") _model.type = model.type = "shape file"
+    else _model.type = model.type
     if (model.table_name) _model.table_name = model.table_name
     if (model.group_layer_id) _model.group_layer_id = model.group_layer_id
     if (model.color_layer) _model.color_layer = model.color_layer
-    if (model.type_geo) _model.type_geo = "Polygon"
-    else _model.type_geo = "Point"
+    if (model.type_geo === "Polygon") _model.type_geo = model.type_geo
+    else if (model.type_geo === "Point") _model.type_geo = model.type_geo
+    else _model.type_geo = model.type_geo
     if (model.url) _model.url = model.url
     if (model.wms_name) _model.wms_name = model.wms_name
     if (model.type_server) _model.type_server = model.type_server

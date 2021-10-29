@@ -36,7 +36,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             const mimetype = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
             
 
-            if (type == "shape file") {
+            if (type == "shape file" || type == "Point") {
                 if (mimetype == 'zip') {
                     const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
                     // console.log(geojson);
@@ -270,7 +270,42 @@ exports.getFromProjectDashboard = async (req, res, next) => {
 exports.getFromReportDashbord = async (req, res, next) => {
     try {
         const { search, project_name, prov, amp, tam } = req.query
-        result(res, await getFromReportDashbordService())
+        const _res = await getFromReportDashbordService()
+
+        let PATM = _res._prov.map(e => {
+            // const _find = _res._temp.find(x => x.)
+                return {
+                    id: e.id,
+                    prov_name:  e.name,
+                    amp: []
+                }
+            
+            
+        })
+        PATM.forEach(e => {
+            _res._amp.forEach(a => {
+                if (e.id == a.prov_id) {
+                    e.amp.push({
+                        id: a.id,
+                        amp_name: a.name,
+                        tam: []
+                    })
+                } 
+            })
+        })
+        PATM.forEach(e => {
+            _res._tam.forEach(t => {
+                const _find = e.amp.find(m => m.id == t.amp_id)
+                if(_find){
+                    _find.tam.push({
+                        id: t.id,
+                        tam_name: t.name
+                    })
+                }
+            })
+        })
+        
+        result(res, {PATM, count: _res.___temp, pot: _res._temp})
         
         
     } catch (error) {
