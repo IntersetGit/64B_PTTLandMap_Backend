@@ -58,7 +58,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
   var obj1 = {}
   var schema = ``, type_geo
 
-  if (type.toLowerCase() == "shape file".toLowerCase()) schema += `shape_data`;
+  if (type.toLowerCase() == "shape file".toLowerCase() || type.toLowerCase() == "point".toLowerCase()) schema += `shape_data`;
   if (type.toLowerCase() == "kml".toLowerCase()) schema += `kml_data`;
   if (type.toLowerCase() == "kmz".toLowerCase()) schema += `kmz_data`;
 
@@ -69,7 +69,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
         WHERE table_schema  = '${schema}'
     `);
 
-  if (type.toLowerCase() == "shape file".toLowerCase()) {
+  if (type.toLowerCase() == "shape file".toLowerCase() || type.toLowerCase() == "point".toLowerCase()) {
     obj.nameTable = `ptt_shape_number${Number(countTable.tables) + 1}`;
   } else if (type.toLowerCase() == "kml".toLowerCase()) {
     obj.nameTable = `ptt_kml_number${Number(countTable.tables) + 1}`;
@@ -79,7 +79,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
   const arrPropertie = [],
     typeData = [],
-    table_key = ["prov", "amp", "tam", "project_na", "parlabel1", "row_distan"],
+    table_key = ["prov", "amp", "tam", "project_na", "parlabel1", "row_distan", "objectid"],
     _type_geo = ["Polygon", "Point", "LineString"]
     // type_geo = ["Polygon", "Point", ""]
 
@@ -132,6 +132,10 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
           type: DataTypes.STRING,
           allowNull: true,
         }),
+        (obj1.objectid = {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+        }),
           (obj1.prov = {
             type: DataTypes.STRING,
             allowNull: true,
@@ -159,7 +163,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
           (obj1.status = {
             type: DataTypes.INTEGER,
             allowNull: true,
-          });
+          })
       }
     });
   } else {
@@ -395,8 +399,6 @@ exports.editshapeDataService = async (model) => {
  * เรียกข้อมูลสิทธิ์
  */
 
-
-
 exports.getFromProjectService = async (search, project_name, prov, amp, tam) => {
   const table_name = await func_table_name();
   const KeepData = [], arr_sql = [], araea_all = [];
@@ -480,20 +482,124 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
 
 
 
-exports.getProvAmpTamService = async (prov, amp, tam) => {
+exports.getFromReportDashbordService = async (search, project_name, prov, amp, tam) => {
+
   const table_name = await func_table_name();
-  const KeepData = [],
-    arr_sql = [];
-  var val_sql = ``,
-    sql;
+  const arr_sql = [], araea_all = [], array_prov = [], _prov = [], _amp = [], _tam = []
+  var sql, sql1, sql2, _res, val_sql = ``
 
+  if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
+  if (prov) val_sql += ` AND prov = '${prov}' `;
+  if (amp) val_sql += ` AND amp = '${amp}' `;
+  if (tam) val_sql += ` AND tam = '${tam}' `;
+  
+  const status_shape = await models.mas_status_project.findAll({ order: [["sort", "ASC"]] });
+  for (const i in status_shape) {
+    if (Object.hasOwnProperty.call(status_shape, i)) {
+      const statues = status_shape[i];
+      for (const a in table_name) {
+        if (Object.hasOwnProperty.call(table_name, a)) {
+          const element = table_name[a];
+          sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql} `);
+          sql.forEach(({ count }) => {
+            arr_sql.push({
+              count,
+              table_name: element.table_name,
+              name: statues.name,
+              status: statues.status_code,
+            });
+          });
 
+          //หาระยะทาง
+          sql1 = await sequelizeString(`SELECT row_distan, status FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
+          if (sql1.length > 0) {
+
+            sql1.forEach(({ row_distan }) => {
+              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0) )
+              
+              araea_all.push({
+                row_distan,
+                table_name: element.table_name,
+                name: statues.name,
+                status: statues.status_code
+              })
+            })
+          } else {
+            araea_all.push({
+              row_distan: 0,
+              table_name: element.table_name,
+              name: statues.name,
+              status: statues.status_code
+            })
+          }
+          // เรียกจังหวัด อำเภอตำบล
+          sql2 = await sequelizeString(`SELECT prov, amp, tam FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
+          sql2.forEach(({prov, amp, tam}) => {
+            array_prov.push({prov, amp, tam})
+          })
+        }
+      }
+    }
+  }
+  // ทำข้อมูลแปลงทั้งหมดใน shape
+  const _temp = [], ___temp = []
   arr_sql.forEach((e) => {
     e.count = Number(e.count);
-    const ind = KeepData.findIndex((a) => a.name == e.name);
-    if (ind == -1) KeepData.push(e);
-    else KeepData[ind].count += e.count;
+    const index = _temp.findIndex((x) => x.name === e.name);
+    if (index === -1) {
+      _temp.push(e);
+    } else {
+      _temp[index].count += e.count;
+    }
   });
 
-  return KeepData;
+  // คำนวณระยะทาง
+  araea_all.forEach((e) => {
+    e.row_distan = Number(e.row_distan)
+    const int = ___temp.findIndex((n) => n.name === e.name)
+    if (int === -1) {
+      ___temp.push(e);
+    } else {
+      ___temp[int].row_distan += e.row_distan;
+    }
+  })
+  // แปลงเป็นกิโลเมตร ทศนิยม 2 ตำแหน่ง //
+  ___temp.forEach((e) => {
+    e.row_distan = Math.round((e.row_distan/1000) * 100) / 100 
+  });
+
+  //ทำจังหวัดไม่ให้ซ้ำกัน และใส่ค่า pk fk
+  array_prov.forEach((e, i) => {
+    if (e.prov || e.amp || e.tam) {
+      const i1 = _prov.findIndex((x) => x.name === e.prov.replace(/\n/g, ""));
+      if (i1 === -1 && e.prov) {
+        _prov.push({
+          id: i + 1,
+          name: e.prov.replace(/\n/g, ""),
+        });
+      }
+
+      const i2 = _amp.findIndex((x) => x.name === e.amp.replace(/\n/g, ""));
+      if (i2 === -1 && e.amp) {
+        _amp.push({
+          id: i + 1,
+          prov_id: _prov[_prov.findIndex((x) => x.name === e.prov.replace(/\n/g, ""))]
+              .id,
+          name: e.amp.replace(/\n/g, ""),
+        });
+      }
+
+      const i3 = _tam.findIndex((x) => x.name === e.tam.replace(/\n/g, ""));
+      if (i3 === -1 && e.tam) {
+        _tam.push({
+          id: i + 1,
+          amp_id: _amp[_amp.findIndex((x) => x.name === e.amp.replace(/\n/g, ""))].id,
+          name: e.tam.replace(/\n/g, ""),
+        });
+      }
+    } else[];
+  });
+ 
+  return { _temp, ___temp, _prov, _amp, _tam }
+
 };
