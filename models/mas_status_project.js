@@ -22,6 +22,10 @@ module.exports = function(sequelize, DataTypes) {
     sort: {
       type: DataTypes.SMALLINT,
       allowNull: true
+    },
+    status_color: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,

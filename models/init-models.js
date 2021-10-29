@@ -10,7 +10,6 @@ var _mas_status_project = require("./mas_status_project");
 var _mas_subdistrict = require("./mas_subdistrict");
 var _ptt_kmz_number1 = require("./ptt_kmz_number1");
 var _ptt_shape_number1 = require("./ptt_shape_number1");
-var _ptt_shape_number2 = require("./ptt_shape_number2");
 var _sysm_config = require("./sysm_config");
 var _sysm_roles = require("./sysm_roles");
 var _sysm_users = require("./sysm_users");
@@ -27,7 +26,6 @@ function initModels(sequelize) {
   var mas_subdistrict = _mas_subdistrict(sequelize, DataTypes);
   var ptt_kmz_number1 = _ptt_kmz_number1(sequelize, DataTypes);
   var ptt_shape_number1 = _ptt_shape_number1(sequelize, DataTypes);
-  var ptt_shape_number2 = _ptt_shape_number2(sequelize, DataTypes);
   var sysm_config = _sysm_config(sequelize, DataTypes);
   var sysm_roles = _sysm_roles(sequelize, DataTypes);
   var sysm_users = _sysm_users(sequelize, DataTypes);
@@ -73,7 +71,6 @@ function initModels(sequelize) {
     mas_subdistrict,
     ptt_kmz_number1,
     ptt_shape_number1,
-    ptt_shape_number2,
     sysm_config,
     sysm_roles,
     sysm_users,

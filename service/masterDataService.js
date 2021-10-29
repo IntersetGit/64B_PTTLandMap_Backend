@@ -242,6 +242,7 @@ exports.createMasStatusProjectService = async (data, user) => {
     id,
     status_code: data.status_code,
     name: data.name,
+    status_color: data.status_color,
     isuse: data.isuse ?? 1,
     sort: sql.sort
   })
@@ -260,6 +261,7 @@ exports.editMasStatusProjectService = async (data, user) => {
   await models.mas_status_project.update({
     status_code: data.status_code,
     name: data.name,
+    status_color: data.status_color,
     isuse: data.isuse ?? 1,
     sort: data.sort
   }, {

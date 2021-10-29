@@ -8,14 +8,46 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     geom: {
-      type: DataTypes.GEOMETRY('MULTIPOLYGON', 0),
-      allowNull: true
-    },
-    name: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.GEOMETRY('POINT', 0),
       allowNull: true
     },
     osm_id: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    prov: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    amp: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    tam: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    project_na: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    parlabel1: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    row_distan: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    timestamp: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    name: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -26,7 +58,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     sequelize,
     tableName: 'ptt_kmz_number1',
-    schema: 'kmz_data',
+    schema: 'public',
     timestamps: false,
     indexes: [
       {

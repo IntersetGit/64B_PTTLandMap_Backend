@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     objectid: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     project_na: {
@@ -23,15 +23,35 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
+    prov: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    amp: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    tam: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    parlabel1: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    row_distan: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     kp: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
     partype: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    parlabel1: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -48,18 +68,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     parlabel5: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    prov: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    amp: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    tam: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -99,14 +107,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    row_distan: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    status: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
     remark: {
       type: DataTypes.STRING(255),
       allowNull: true
@@ -126,7 +126,7 @@ module.exports = function(sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: "ptt_shape_number3_pkey",
+        name: "ptt_shape_number1_pkey",
         unique: true,
         fields: [
           { name: "gid" },
