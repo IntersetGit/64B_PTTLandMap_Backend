@@ -187,10 +187,11 @@ exports.getInfoProject = async (req, res, next) => {
 
         const { search, project_name, prov, amp, tam } = req.query
         const _res_sql = await getAllShapeDataService(search, project_name, prov, amp, tam)
+        _res_sql.arr_sql.forEach(e => {e.geom =  undefined})
 
         result(res, {
             data: _res_sql.arr_sql,
-            amount_data: _res_sql.amount.reduce((sum, num) => Number(sum) + Number(num))
+            amount_data: (_res_sql.amount > 0 ) ? _res_sql.amount.reduce((sum, num) => Number(sum) + Number(num)) : 0
         })
 
     } catch (error) {

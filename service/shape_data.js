@@ -44,7 +44,20 @@ exports.shapeDataService = async (table_name, id, type) => {
 
     if (id) sql += ` FROM  (SELECT * FROM ${str_type}.${table_name} WHERE gid = ${id}) row`
     else sql += ` FROM  (SELECT * FROM ${str_type}.${table_name}) row `
-    return await sequelizeStringFindOne(sql)
+
+    let result_sql = await sequelizeStringFindOne(sql);
+    /* ค้นหาสีตาม status ใน shpae*/
+    for (let i = 0; i < result_sql.shape.features.length; i++) {
+      const e = result_sql.shape.features[i];
+      if(e.properties.status){
+        const _status_shape = String(e.properties.status)
+        const { status_color } = await models.mas_status_project.findOne({where: {status_code: _status_shape}})
+        e.properties.status_color = status_color ?? undefined
+      } else undefined
+      
+    }
+  
+    return result_sql
 
   } else[];
 };
