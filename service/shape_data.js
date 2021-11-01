@@ -502,7 +502,7 @@ exports.getFromReportDashbordService = async (search, project_name, prov, amp, t
   var sql, sql1, sql2, _res, val_sql = ``
 
   if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
-  if (prov) val_sql += ` AND prov = '${prov}' `;
+if (prov) val_sql += ` AND prov = '${prov}' `;
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;
   
