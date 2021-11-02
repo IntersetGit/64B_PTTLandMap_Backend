@@ -270,8 +270,7 @@ exports.getFromProjectDashboard = async (req, res, next) => {
 exports.getFromReportDashbord = async (req, res, next) => {
     try {
         const { search, project_name, prov, amp, tam } = req.query
-        const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam)
-
+        const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam)   
         let PATM = _res._prov.map(e => {
             // const _find = _res._temp.find(x => x.)
                 return {
@@ -279,8 +278,6 @@ exports.getFromReportDashbord = async (req, res, next) => {
                     prov_name:  e.name,
                     amp: []
                 }
-            
-            
         })
         PATM.forEach(e => {
             _res._temp.forEach(({count, name}) => {
@@ -308,6 +305,9 @@ exports.getFromReportDashbord = async (req, res, next) => {
         //     })
         // })
         
+
+
+
         result(res, {PATM, count: _res.___temp, pot: _res._temp})
         
         
