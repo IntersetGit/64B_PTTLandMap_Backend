@@ -219,7 +219,7 @@ exports.getAllShapeDataService = async (
     sql_count,
     val_sql = ``;
 
-  if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
+  if (search) project_name == "objectid" ? val_sql = ` AND ${project_name} = ${search} ` : val_sql = ` AND ${project_name} ILIKE '%${search}%' `
   if (prov) val_sql += ` AND prov = '${prov}' `;
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;
@@ -417,7 +417,7 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
   const KeepData = [], arr_sql = [], araea_all = [];
   var sql, sql1, _res, val_sql = ``
 
-  if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
+  if (search) project_name == "objectid" ? val_sql = ` AND ${project_name} = ${search} ` : val_sql = ` AND ${project_name} ILIKE '%${search}%' `
   if (prov) val_sql += ` AND prov = '${prov}' `;
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;

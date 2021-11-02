@@ -143,14 +143,14 @@ exports.addShapeService = async (table, geojson) => {
                 }
 
                 if (table.type_geo === 'LineString') { // LineString
-                    data.properties.forEach(q => {
+                    // data.properties.forEach(q => {
                         
-                    })
+                    // })
                     
-                    arrSql.push(`(ST_GeomFromGeoJSON('{
-                        "type":"${table.type_geo}",
-                        "coordinates":[ ${_arr_kmz} ]
-                        }'),${data.properties}) `)
+                    // arrSql.push(`(ST_GeomFromGeoJSON('{
+                    //     "type":"${table.type_geo}",
+                    //     "coordinates":[ ${_arr_kmz} ]
+                    //     }'),${data.properties}) `)
                 }
             })
         }
