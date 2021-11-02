@@ -35,7 +35,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             const mimetype = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
             
 
-            if (type == "shape file" || type == "Point") {
+            if (type == "shape file" || type.toLowerCase() == "point") {
                 if (mimetype == 'zip') {
                     const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
                     // console.log(geojson);
@@ -270,7 +270,7 @@ exports.getFromProjectDashboard = async (req, res, next) => {
 exports.getFromReportDashbord = async (req, res, next) => {
     try {
         const { search, project_name, prov, amp, tam } = req.query
-        const _res = await getFromReportDashbordService()
+        const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam)
 
         let PATM = _res._prov.map(e => {
             // const _find = _res._temp.find(x => x.)
@@ -283,27 +283,30 @@ exports.getFromReportDashbord = async (req, res, next) => {
             
         })
         PATM.forEach(e => {
-            _res._amp.forEach(a => {
-                if (e.id == a.prov_id) {
+            _res._temp.forEach(({count, name}) => {
+                const _find =  _res._amp.find(a => a.prov_id == e.id)
+                if(_find){
+                    e.count = count,
+                    status_name = name,
                     e.amp.push({
-                        id: a.id,
-                        amp_name: a.name,
+                        id: _find.id,
+                        amp_name: _find.name,
                         tam: []
                     })
                 } 
             })
         })
-        PATM.forEach(e => {
-            _res._tam.forEach(t => {
-                const _find = e.amp.find(m => m.id == t.amp_id)
-                if(_find){
-                    _find.tam.push({
-                        id: t.id,
-                        tam_name: t.name
-                    })
-                }
-            })
-        })
+        // PATM.forEach(e => {
+        //     _res._tam.forEach(t => {
+        //         const _find = e.amp.find(m => m.id == t.amp_id)
+        //         if(_find){
+        //             _find.tam.push({
+        //                 id: t.id,
+        //                 tam_name: t.name
+        //             })
+        //         }
+        //     })
+        // })
         
         result(res, {PATM, count: _res.___temp, pot: _res._temp})
         

@@ -562,7 +562,7 @@ exports.getFromReportDashbordService = async (search, project_name, prov, amp, t
     if (index === -1) {
       _temp.push(e);
     } else {
-      _temp[index].count += e.count;
+      _temp[index].count + e.count;
     }
   });
 
