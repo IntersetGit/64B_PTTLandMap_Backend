@@ -616,3 +616,133 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
   return { _temp, ___temp, _prov, _amp, _tam }
 
 };
+
+exports.getFromReportDashbordServiceEach = async (search, project_name, prov, amp, tam) => {
+
+  const table_name = await func_table_name();
+  const arr_sql = [], araea_all = [], array_prov = [], _prov = [], _amp = [], _tam = []
+  var sql, sql1, sql2, _res, val_sql = ``
+
+  if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
+if (prov) val_sql += ` AND prov = '${prov}' `;
+  if (amp) val_sql += ` AND amp = '${amp}' `;
+  if (tam) val_sql += ` AND tam = '${tam}' `;
+  
+  const status_shape = await models.mas_status_project.findAll({ order: [["sort", "ASC"]] });
+  for (const i in status_shape) {
+    if (Object.hasOwnProperty.call(status_shape, i)) {
+      const statues = status_shape[i];
+      for (const a in table_name) {
+        if (Object.hasOwnProperty.call(table_name, a)) {
+          const element = table_name[a];
+          sql = await sequelizeString(`SELECT COUNT(*), prov, amp, tam  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql} group by (prov,amp,tam) `);
+          sql.forEach(({ count, prov,amp,tam }) => {
+            arr_sql.push({
+              count,
+              table_name: element.table_name,
+              name: statues.name,
+              status: statues.status_code,
+              prov,
+              amp,
+              tam
+            });
+          });
+
+          //หาระยะทาง
+          sql1 = await sequelizeString(`SELECT row_distan, status, prov, amp, tam FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
+          if (sql1.length > 0) {
+            sql1.forEach(({ row_distan, prov,amp,tam }) => {
+              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0) )
+              
+              araea_all.push({
+                row_distan,
+                table_name: element.table_name,
+                name: statues.name,
+                status: statues.status_code,
+                prov,
+                amp,
+                tam
+              })
+            })
+          } else {
+            araea_all.push({
+              row_distan: 0,
+              table_name: element.table_name,
+              name: statues.name,
+              status: statues.status_code,
+              prov,
+              amp,
+              tam
+            })
+          }
+          // เรียกจังหวัด อำเภอตำบล
+          sql2 = await sequelizeString(`SELECT prov, amp, tam FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
+          sql2.forEach(({prov, amp, tam}) => {
+            array_prov.push({prov, amp, tam})
+          })
+        }
+      }
+    }
+  }
+  // ทำข้อมูลแปลงทั้งหมดใน shape
+  const Sumpottam = [], Sumareatam = []
+  arr_sql.forEach((e) => {
+    e.count = Number(e.count);
+    const index = Sumpottam.findIndex((x) => x.tam === e.tam);
+    if (index === -1) {
+      Sumpottam.push(e);
+    } else {
+      Sumpottam[index].count += e.count;
+    }
+  });
+
+  // คำนวณระยะทาง
+  araea_all.forEach((e) => {
+    e.row_distan = Number(e.row_distan)
+    const int = Sumareatam.findIndex((n) => n.tam === e.tam)
+    if (int === -1) {
+      Sumareatam.push(e);
+    } else {
+      Sumareatam[int].row_distan += e.row_distan;
+    }
+  })
+  // แปลงเป็นกิโลเมตร ทศนิยม 2 ตำแหน่ง //
+  Sumareatam.forEach((e) => {
+    e.row_distan = Math.round((e.row_distan/1000) * 100) / 100 
+  });
+
+  //ทำจังหวัดไม่ให้ซ้ำกัน และใส่ค่า pk fk
+  array_prov.forEach((e, i) => {
+    if (e.prov || e.amp || e.tam) {
+      const i1 = _prov.findIndex((x) => x.name === e.prov.replace(/\n/g, ""));
+      if (i1 === -1 && e.prov) {
+        _prov.push({
+          id: i + 1,
+          name: e.prov.replace(/\n/g, ""),
+        });
+      }
+
+      const i2 = _amp.findIndex((x) => x.name === e.amp.replace(/\n/g, ""));
+      if (i2 === -1 && e.amp) {
+        _amp.push({
+          id: i + 1,
+          prov_id: _prov[_prov.findIndex((x) => x.name === e.prov.replace(/\n/g, ""))]
+              .id,
+          name: e.amp.replace(/\n/g, ""),
+        });
+      }
+
+      const i3 = _tam.findIndex((x) => x.name === e.tam.replace(/\n/g, ""));
+      if (i3 === -1 && e.tam) {
+        _tam.push({
+          id: i + 1,
+          amp_id: _amp[_amp.findIndex((x) => x.name === e.amp.replace(/\n/g, ""))].id,
+          name: e.tam.replace(/\n/g, ""),
+        });
+      }
+    } else[];
+  });
+ 
+  return { Sumpottam,  Sumareatam }
+
+};

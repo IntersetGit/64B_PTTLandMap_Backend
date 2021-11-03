@@ -5,7 +5,7 @@ const { convert } = require("geojson2shp");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
 const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService,
-    editshapeDataService, getFromProjectService, getFromReportDashbordService } = require('../service/shape_data')
+    editshapeDataService, getFromProjectService, getFromReportDashbordService,getFromReportDashbordServiceEach } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -271,20 +271,56 @@ exports.getFromReportDashbord = async (req, res, next) => {
     try {
         const { search, project_name, prov, amp, tam } = req.query
         const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam)   
+        const _sumPotArea = await getFromReportDashbordServiceEach(search, project_name, prov, amp, tam)   
+        
         let PATM = _res._prov.map(e => {
             // const _find = _res._temp.find(x => x.)
+            let _Potprov = 0
+            let _Areaprov = 0
+            _sumPotArea.Sumpottam.forEach(p =>{
+                if (p.prov == e.name) {
+                    _Potprov += p.count
+                }
+            } )
+            _sumPotArea.Sumareatam.forEach(a =>{
+                if (a.prov == e.name) {
+                    a.row_distan = Number(a.row_distan)
+                    a.row_distan = (Math.round(a.row_distan * 100))/100
+                    _Areaprov += a.row_distan
+                }
+            } )
                 return {
                     id: e.id,
                     prov_name:  e.name,
+                    sum_pot: _Potprov,
+                    sum_area: _Areaprov,
                     amp: []
                 }
         })
         PATM.forEach(e => {
             _res._amp.forEach(a => {
                 if (e.id == a.prov_id) {
+
+                    let _Potamp = 0
+                    let _Areaamp = 0
+                    _sumPotArea.Sumpottam.forEach(pa =>{
+                        if (pa.amp == a.name) {
+                            _Potamp += pa.count
+                        }
+                    } )
+                    _sumPotArea.Sumareatam.forEach(aa =>{
+                        if (aa.amp == a.name) {
+                            aa.row_distan = Number(aa.row_distan)
+                            aa.row_distan = (Math.round(aa.row_distan * 100))/100
+                            _Areaamp += aa.row_distan
+                        }
+                    } )
+
                     e.amp.push({
                         id: a.id,
                         amp_name: a.name,
+                        sum_pot: _Potamp,
+                    sum_area: _Areaamp,
                         tam: []
                     })
                 } 
@@ -292,26 +328,49 @@ exports.getFromReportDashbord = async (req, res, next) => {
         })
         PATM.forEach(e => {
             _res._tam.forEach(t => {
+                if (e.amp.id == t.amp_id) {
+
+                }
                 const _find = e.amp.find(m => m.id == t.amp_id)
                 if(_find){
+                    
+                        let _Pottam = 0
+                        let _Areatam = 0
+                        _sumPotArea.Sumpottam.forEach(pt =>{
+                            if (pt.tam == t.name) {
+                                _Pottam += pt.count
+                            }
+                        } )
+                        _sumPotArea.Sumareatam.forEach(at =>{
+                            if (at.tam == t.name) {
+                                at.row_distan = Number(at.row_distan)
+                                at.row_distan = (Math.round(at.row_distan * 100))/100
+                                _Areatam += at.row_distan
+                            }
+                        } )
+    
                     _find.tam.push({
                         id: t.id,
-                        tam_name: t.name
+                        tam_name: t.name,
+                        sum_pot: _Pottam,
+                    sum_area: _Areatam,
                     })
                 }
             })
         })
         
 
-
-
-        result(res, {PATM, count: _res.___temp, pot: _res._temp})
+        result(res, {PATM, count: _res.___temp, pot: _res._temp, _sumPotArea})
+        // result(res, {_sumPotArea})
+        
         
         
     } catch (error) {
         next(error);
     }
 }
+
+
 
 exports.checkUploadFile = async (req, res, next) => {
     var _type
