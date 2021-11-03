@@ -328,9 +328,6 @@ exports.getFromReportDashbord = async (req, res, next) => {
         })
         PATM.forEach(e => {
             _res._tam.forEach(t => {
-                if (e.amp.id == t.amp_id) {
-
-                }
                 const _find = e.amp.find(m => m.id == t.amp_id)
                 if(_find){
                     

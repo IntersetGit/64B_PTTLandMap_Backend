@@ -14,7 +14,7 @@ require('./socket')
 require('./cron')
 
 app.use(cors());
-app.use(helmet());
+// app.use(helmet());
 app.use(paginate.middleware(10, 50));
 app.use(upload())
 // view engine setup
