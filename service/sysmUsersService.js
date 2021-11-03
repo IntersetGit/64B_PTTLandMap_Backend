@@ -86,7 +86,7 @@ exports.getUserService = async () => {
 }
 
 
-exports.createConfigAdService = async () => {
+exports.createConfigAdService = async (model) => {
     await models.sysm_config.create({
         note: model.node,
         info_form: model.info
