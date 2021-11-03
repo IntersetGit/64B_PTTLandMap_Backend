@@ -207,11 +207,15 @@ exports.editMasLayersShapeService = async (data, user) => {
 }
 
 exports.deleteMasLayersShapeService = async (data, user) => {
+  const { table_name } = await models.mas_layers_shape.findByPk(data.id)
+  await sequelizeStringFindOne(` DROP TABLE shape_data.${table_name} `)
   await models.mas_layers_shape.destroy({
     where: { id: data.id }
   })
   return true
 }
+
+
 
 //------------ แสดงตารางข้อมูล Status Project หน้า Status โครงการ ------------//
 exports.getAllMasStatusProjectService = async (search, order, sort) => {
