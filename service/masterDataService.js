@@ -207,8 +207,10 @@ exports.editMasLayersShapeService = async (data, user) => {
 }
 
 exports.deleteMasLayersShapeService = async (data, user) => {
-  const { table_name } = await models.mas_layers_shape.findByPk(data.id)
-  await sequelizeStringFindOne(` DROP TABLE shape_data.${table_name} `)
+  const getGisPk = await models.mas_layers_shape.findByPk(data.id);
+  const getAllDB = await sequelizeString(`select * from information_schema.tables`);
+  const { table_schema, table_name} =  getAllDB.find(x => x.table_name == getGisPk.table_name);
+  await sequelizeStringFindOne(` DROP TABLE ${table_schema}.${table_name} `);
   await models.mas_layers_shape.destroy({
     where: { id: data.id }
   })

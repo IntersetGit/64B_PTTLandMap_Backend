@@ -24,6 +24,11 @@ exports.shapeDataService = async (table_name, id, type) => {
   if (type == 'shape file') str_type = `shape_data`
   if (type == 'kml') str_type = `kml_data`
   if (type == 'kmz') str_type = `kmz_data`
+  if (type == 'wms') {
+    const err = new Error('ไฟล์เป็น wms')
+    err.statusCode = 400
+    throw err
+  } 
   if (type == null || type == '') {
     if (filter_table_name.type == 'shape file') str_type = `shape_data`
     if (filter_table_name.type == 'kml') str_type = `kml_data`
@@ -76,18 +81,18 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
   if (type.toLowerCase() == "kmz".toLowerCase()) schema += `kmz_data`;
 
   // console.log(geojson);
-  const countTable = await sequelizeStringFindOne(` 
-        SELECT COUNT(*) AS tables
-        FROM information_schema.tables
-        WHERE table_schema  = '${schema}'
-    `);
+  // const countTable = await sequelizeStringFindOne(` 
+  //       SELECT COUNT(*) AS tables
+  //       FROM information_schema.tables
+  //       WHERE table_schema  = '${schema}'
+  //   `);
 
   if (type.toLowerCase() == "shape file".toLowerCase() || type.toLowerCase() == "point".toLowerCase()) {
-    obj.nameTable = `ptt_shape_number${Number(countTable.tables) + 1}`;
+    obj.nameTable = `ptt_shape_number${Math.floor((Math.random() * 10000) *2)}`;
   } else if (type.toLowerCase() == "kml".toLowerCase()) {
-    obj.nameTable = `ptt_kml_number${Number(countTable.tables) + 1}`;
+    obj.nameTable = `ptt_kml_number${Math.floor((Math.random() * 10000) *2)}`;
   } else {
-    obj.nameTable = `ptt_kmz_number${Number(countTable.tables) + 1}`;
+    obj.nameTable = `ptt_kmz_number${Math.floor((Math.random() * 10000) *2)}`;
   }
 
   const arrPropertie = [],
@@ -107,8 +112,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     // console.log(e.properties);
     obj.newObject = Object.keys(e.properties); //เอาชื่อตัวแปรมาใช้
     obj.newObject = obj.newObject.map((e) => e.toLowerCase());
-    obj.newObject = obj.newObject.map((str) => stringToSnakeCase(str));
-    //แปลงเป็น SnakeCase
+    obj.newObject = obj.newObject.map((str) => stringToSnakeCase(str)); //แปลงเป็น SnakeCase
     arrPropertie.push(obj.newObject);
     // Object.values(e.properties).forEach(x => {
     //     typeData.push(typeof x)
