@@ -23,7 +23,7 @@ exports.loginControllers = async (req, res, next) => {
         
         const _res = (username.toUpperCase()) !== ('superadmin'.toUpperCase()) && (username.toUpperCase()) !== ('editor'.toUpperCase()) && (username.toUpperCase()) !== ('viewer'.toUpperCase()) ? await ldap({ user_name: username, password }) :  await filterUsernameSysmUsersService(username)
         if (!_res || !_res.password) {
-            const error = new Error("เช้าสู่ระบบครั้งแรก!!");
+            const error = new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง !");
             error.statusCode = 400;
             throw error; 
         }

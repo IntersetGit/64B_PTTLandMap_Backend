@@ -35,7 +35,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             const mimetype = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
             
 
-            if (type == "shape file" || type == "Point") {
+            if (type == "shape file" || type.toLowerCase() == "point") {
                 if (mimetype == 'zip') {
                     const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
                     // console.log(geojson);
@@ -358,6 +358,7 @@ exports.getFromReportDashbord = async (req, res, next) => {
                 }
             })
         })
+
         
 
         result(res, {PATM, count: _res.___temp, pot: _res._temp, _sumPotArea})
