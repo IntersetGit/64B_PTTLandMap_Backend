@@ -98,7 +98,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
   const arrPropertie = [],
     typeData = [],
     table_key = ["prov", "amp", "tam", "project_na", "parlabel1", "row_distan", "objectid"],
-    _type_geo = ["Polygon", "Point", "LineString"]
+    _type_geo = ["Polygon", "Point", "LineString", "MultiLineString"]
     // type_geo = ["Polygon", "Point", ""]
 
   //ตรวจสอบประเภท type geo
@@ -123,6 +123,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
 
   if(type_geo === 'Polygon') _dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
   else if (type_geo === 'Point') _dataType = DataTypes.GEOMETRY("Point", 0)
+  else if (type_geo === 'MultiLineString') _dataType = DataTypes.GEOMETRY("MultiLineString", 0)
   else _dataType = DataTypes.GEOMETRY("LineStringZ", 4326)
 
   if (newArrPropertie.length > 0) {
@@ -150,7 +151,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
           allowNull: true,
         }),
         (obj1.objectid = {
-          type: DataTypes.INTEGER,
+          type: DataTypes.STRING,
           allowNull: true,
         }),
           (obj1.prov = {
@@ -178,7 +179,7 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
             allowNull: true,
           }),
           (obj1.status = {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: true,
           })
       }
@@ -223,7 +224,7 @@ exports.getAllShapeDataService = async (
     sql_count,
     val_sql = ``;
 
-  if (search) project_name == "objectid" ? val_sql = ` AND ${project_name} = ${search} ` : val_sql = ` AND ${project_name} ILIKE '%${search}%' `
+  if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `
   if (prov) val_sql += ` AND prov = '${prov}' `;
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;
