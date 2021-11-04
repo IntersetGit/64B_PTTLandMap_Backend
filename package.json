@@ -25,6 +25,7 @@
     "express-paginate": "^1.0.2",
     "express-validator": "^6.9.2",
     "geojson2shp": "^0.4.0",
+    "gtran-kml": "^1.4.5",
     "helmet": "^4.4.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",

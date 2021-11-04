@@ -21,7 +21,9 @@ exports.addShapeService = async (table, geojson) => {
     /* format insert
     INSERT INTO shape_data.ptt_shape_number3(gid,geom) VALUES (1, ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[[[[99.557856126,14.277867442],[99.637387048,14.297762334],[99.633280354,14.232705561],[99.555778959,14.230984626],[99.557856126,14.277867442]]]]}')) 
     */
-
+    geojson.feature.forEach(data => {
+        data.geometry.type
+    })
 
 
     var sql = `INSERT INTO ${table.schema}.${table.obj.nameTable}(geom,${table.obj.newObject}) VALUES `

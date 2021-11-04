@@ -28,7 +28,7 @@ exports.shapeDataService = async (table_name, id, type) => {
     const err = new Error('ไฟล์เป็น wms')
     err.statusCode = 400
     throw err
-  } 
+  }
   if (type == null || type == '') {
     if (filter_table_name.type == 'shape file') str_type = `shape_data`
     if (filter_table_name.type == 'kml') str_type = `kml_data`
@@ -54,14 +54,14 @@ exports.shapeDataService = async (table_name, id, type) => {
     /* ค้นหาสีตาม status ใน shpae*/
     for (let i = 0; i < result_sql.shape.features.length; i++) {
       const e = result_sql.shape.features[i];
-      if(e.properties.status){
+      if (e.properties.status) {
         const _status_shape = String(e.properties.status)
-        const { status_color } = await models.mas_status_project.findOne({where: {status_code: _status_shape}})
+        const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
         e.properties.status_color = status_color ?? undefined
       } else undefined
-      
+
     }
-  
+
     return result_sql
 
   } else[];
@@ -76,9 +76,9 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
   var obj1 = {}
   var schema = ``, type_geo
 
-  if (type.toLowerCase() == "shape file".toLowerCase() || type.toLowerCase() == "point".toLowerCase()) schema += `shape_data`;
-  if (type.toLowerCase() == "kml".toLowerCase()) schema += `kml_data`;
-  if (type.toLowerCase() == "kmz".toLowerCase()) schema += `kmz_data`;
+  if (type.toLowerCase() == "shape file" || type.toLowerCase() == "point") schema += `shape_data`;
+  if (type.toLowerCase() == "kml") schema += `kml_data`;
+  if (type.toLowerCase() == "kmz") schema += `kmz_data`;
 
   // console.log(geojson);
   // const countTable = await sequelizeStringFindOne(` 
@@ -88,40 +88,41 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
   //   `);
 
   if (type.toLowerCase() == "shape file".toLowerCase() || type.toLowerCase() == "point".toLowerCase()) {
-    obj.nameTable = `ptt_shape_number${Math.floor((Math.random() * 10000) *2)}`;
+    obj.nameTable = `ptt_shape_number${Math.floor((Math.random() * 10000) * 2)}`;
   } else if (type.toLowerCase() == "kml".toLowerCase()) {
-    obj.nameTable = `ptt_kml_number${Math.floor((Math.random() * 10000) *2)}`;
+    obj.nameTable = `ptt_kml_number${Math.floor((Math.random() * 10000) * 2)}`;
   } else {
-    obj.nameTable = `ptt_kmz_number${Math.floor((Math.random() * 10000) *2)}`;
+    obj.nameTable = `ptt_kmz_number${Math.floor((Math.random() * 10000) * 2)}`;
   }
 
   const arrPropertie = [],
     typeData = [],
     table_key = ["prov", "amp", "tam", "project_na", "parlabel1", "row_distan", "objectid"],
     _type_geo = ["Polygon", "Point", "LineString", "MultiLineString"]
-    // type_geo = ["Polygon", "Point", ""]
 
   //ตรวจสอบประเภท type geo
   geojson.features.forEach((e) => {
     const geometryType = _type_geo.find(ty => ty === e.geometry.type)
-    if(geometryType) type_geo = geometryType
+    if (geometryType) type_geo = geometryType
   });
 
-  for (let i = 0; i < geojson.features.length; i++) {
-    const e = geojson.features[i];
-    // console.log(e.properties);
+  //key เป็นชื่อตาราง
+  geojson.features.forEach(e => {
     obj.newObject = Object.keys(e.properties); //เอาชื่อตัวแปรมาใช้
     obj.newObject = obj.newObject.map((e) => e.toLowerCase());
     obj.newObject = obj.newObject.map((str) => stringToSnakeCase(str)); //แปลงเป็น SnakeCase
-    arrPropertie.push(obj.newObject);
-    // Object.values(e.properties).forEach(x => {
-    //     typeData.push(typeof x)
-    // })
-  }
-  const newArrPropertie = arrPropertie.length > 0 ? arrPropertie[arrPropertie.length - 1] : []
-  let _dataType 
+    arrPropertie.push(obj.newObject)
+  })
 
-  if(type_geo === 'Polygon') _dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
+  const arrayMax = Function.prototype.apply.bind(Math.max, null);
+  const _tempppp = arrPropertie.map(e => e.length)
+  var max = arrayMax(_tempppp);
+  const _index = _tempppp.findIndex(x => x == max)
+  let newArrPropertie
+  if (_index != -1) newArrPropertie = arrPropertie[_index]
+
+  let _dataType
+  if (type_geo === 'Polygon') _dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
   else if (type_geo === 'Point') _dataType = DataTypes.GEOMETRY("Point", 0)
   else if (type_geo === 'MultiLineString') _dataType = DataTypes.GEOMETRY("MultiLineString", 0)
   else _dataType = DataTypes.GEOMETRY("LineStringZ", 4326)
@@ -150,10 +151,10 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
           type: DataTypes.STRING,
           allowNull: true,
         }),
-        (obj1.objectid = {
-          type: DataTypes.STRING,
-          allowNull: true,
-        }),
+          (obj1.objectid = {
+            type: DataTypes.STRING,
+            allowNull: true,
+          }),
           (obj1.prov = {
             type: DataTypes.STRING,
             allowNull: true,
@@ -449,8 +450,8 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
           if (sql1.length > 0) {
 
             sql1.forEach(({ row_distan }) => {
-              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0) )
-              
+              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0))
+
               araea_all.push({
                 row_distan,
                 table_name: element.table_name,
@@ -492,9 +493,9 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
   })
   // แปลงเป็นกิโลเมตร ทศนิยม 2 ตำแหน่ง //
   ___temp.forEach((e) => {
-    e.row_distan = Math.round((e.row_distan/1000) * 100) / 100 
+    e.row_distan = Math.round((e.row_distan / 1000) * 100) / 100
   });
- 
+
   return { _temp, ___temp }
 };
 
@@ -507,10 +508,10 @@ exports.getFromReportDashbordService = async (search, project_name, prov, amp, t
   var sql, sql1, sql2, _res, val_sql = ``
 
   if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
-if (prov) val_sql += ` AND prov = '${prov}' `;
+  if (prov) val_sql += ` AND prov = '${prov}' `;
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;
-  
+
   const status_shape = await models.mas_status_project.findAll({ order: [["sort", "ASC"]] });
   for (const i in status_shape) {
     if (Object.hasOwnProperty.call(status_shape, i)) {
@@ -533,8 +534,8 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
           if (sql1.length > 0) {
 
             sql1.forEach(({ row_distan }) => {
-              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0) )
-              
+              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0))
+
               araea_all.push({
                 row_distan,
                 table_name: element.table_name,
@@ -552,8 +553,8 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
           }
           // เรียกจังหวัด อำเภอตำบล
           sql2 = await sequelizeString(`SELECT prov, amp, tam FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
-          sql2.forEach(({prov, amp, tam}) => {
-            array_prov.push({prov, amp, tam})
+          sql2.forEach(({ prov, amp, tam }) => {
+            array_prov.push({ prov, amp, tam })
           })
         }
       }
@@ -583,7 +584,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
   })
   // แปลงเป็นกิโลเมตร ทศนิยม 2 ตำแหน่ง //
   ___temp.forEach((e) => {
-    e.row_distan = Math.round((e.row_distan/1000) * 100) / 100 
+    e.row_distan = Math.round((e.row_distan / 1000) * 100) / 100
   });
 
   //ทำจังหวัดไม่ให้ซ้ำกัน และใส่ค่า pk fk
@@ -602,7 +603,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
         _amp.push({
           id: i + 1,
           prov_id: _prov[_prov.findIndex((x) => x.name === e.prov.replace(/\n/g, ""))]
-              .id,
+            .id,
           name: e.amp.replace(/\n/g, ""),
         });
       }
@@ -617,7 +618,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
       }
     } else[];
   });
- 
+
   return { _temp, ___temp, _prov, _amp, _tam }
 
 };
@@ -629,10 +630,10 @@ exports.getFromReportDashbordServiceEach = async (search, project_name, prov, am
   var sql, sql1, sql2, _res, val_sql = ``
 
   if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
-if (prov) val_sql += ` AND prov = '${prov}' `;
+  if (prov) val_sql += ` AND prov = '${prov}' `;
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;
-  
+
   const status_shape = await models.mas_status_project.findAll({ order: [["sort", "ASC"]] });
   for (const i in status_shape) {
     if (Object.hasOwnProperty.call(status_shape, i)) {
@@ -641,7 +642,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
         if (Object.hasOwnProperty.call(table_name, a)) {
           const element = table_name[a];
           sql = await sequelizeString(`SELECT COUNT(*), prov, amp, tam  FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql} group by (prov,amp,tam) `);
-          sql.forEach(({ count, prov,amp,tam }) => {
+          sql.forEach(({ count, prov, amp, tam }) => {
             arr_sql.push({
               count,
               table_name: element.table_name,
@@ -656,9 +657,9 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
           //หาระยะทาง
           sql1 = await sequelizeString(`SELECT row_distan, status, prov, amp, tam FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
           if (sql1.length > 0) {
-            sql1.forEach(({ row_distan, prov,amp,tam }) => {
-              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0) )
-              
+            sql1.forEach(({ row_distan, prov, amp, tam }) => {
+              row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0))
+
               araea_all.push({
                 row_distan,
                 table_name: element.table_name,
@@ -682,8 +683,8 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
           }
           // เรียกจังหวัด อำเภอตำบล
           sql2 = await sequelizeString(`SELECT prov, amp, tam FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
-          sql2.forEach(({prov, amp, tam}) => {
-            array_prov.push({prov, amp, tam})
+          sql2.forEach(({ prov, amp, tam }) => {
+            array_prov.push({ prov, amp, tam })
           })
         }
       }
@@ -713,7 +714,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
   })
   // แปลงเป็นกิโลเมตร ทศนิยม 2 ตำแหน่ง //
   Sumareatam.forEach((e) => {
-    e.row_distan = Math.round((e.row_distan/1000) * 100) / 100 
+    e.row_distan = Math.round((e.row_distan / 1000) * 100) / 100
   });
 
   //ทำจังหวัดไม่ให้ซ้ำกัน และใส่ค่า pk fk
@@ -732,7 +733,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
         _amp.push({
           id: i + 1,
           prov_id: _prov[_prov.findIndex((x) => x.name === e.prov.replace(/\n/g, ""))]
-              .id,
+            .id,
           name: e.amp.replace(/\n/g, ""),
         });
       }
@@ -747,7 +748,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
       }
     } else[];
   });
- 
-  return { Sumpottam,  Sumareatam }
+
+  return { Sumpottam, Sumareatam }
 
 };
