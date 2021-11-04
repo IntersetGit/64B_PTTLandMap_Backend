@@ -191,7 +191,7 @@ exports.editMasLayersShapeService = async (data, user) => {
     name_layer: data.name_layer,
     table_name: data.table_name,
     color_layer: data.color_layer,
-    type: data.type == "wms" ? data.type = "wms" : data.type,
+    type: data.type,
     group_layer_id: data.group_layer_id,
     url: data.url,
     wms_name: data.wms_name,
