@@ -1,0 +1,17 @@
+{
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "[javascript]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[typescript]": {
+      "editor.formatOnSave": true,
+      "editor.formatOnPaste": true,
+      "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[markdown]": {
+      "editor.formatOnSave": true,
+      "editor.wordWrap": "on",
+      "editor.renderWhitespace": "all",
+      "editor.acceptSuggestionOnEnter": "off"
+    }
+  }
