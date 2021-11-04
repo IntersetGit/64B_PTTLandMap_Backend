@@ -27,6 +27,7 @@ exports.addShapeService = async (table, geojson) => {
     var sql = `INSERT INTO ${table.schema}.${table.obj.nameTable}(geom,${table.obj.newObject}) VALUES `
     let arrSql = [], property = []
     for (let i = 0; i < geojson.features.length; i++) {
+        const _tmp = []
         const data = geojson.features[i];
         data.properties = Object.values(data.properties)
         data.properties = data.properties.map(e => String(e).replace(/'/g, ''))
@@ -90,6 +91,22 @@ exports.addShapeService = async (table, geojson) => {
                 if (table.type_geo === 'LineString') {
 
                 }
+
+                //loop พิกัด MultiLineString
+                if (table.type_geo === 'MultiLineString') {
+                    if (geo.length > 0) {
+                        geo.forEach(g => {
+                            _tmp.push(`[${g}]`)
+                        })
+                    }
+                }
+            }
+            
+            if (table.type_geo === 'MultiLineString') {
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"MultiLineString",
+                    "coordinates":[[${_tmp}]] 
+                    }'),${data.properties}) `)
             }
         }
 
@@ -144,9 +161,9 @@ exports.addShapeService = async (table, geojson) => {
 
                 if (table.type_geo === 'LineString') { // LineString
                     // data.properties.forEach(q => {
-                        
+
                     // })
-                    
+
                     // arrSql.push(`(ST_GeomFromGeoJSON('{
                     //     "type":"${table.type_geo}",
                     //     "coordinates":[ ${_arr_kmz} ]
@@ -155,6 +172,8 @@ exports.addShapeService = async (table, geojson) => {
             })
         }
     }
+
+    
     sql += arrSql.toString()
     // console.log(sql);
     await sequelizeString(sql);
