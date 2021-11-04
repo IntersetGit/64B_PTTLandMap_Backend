@@ -501,7 +501,7 @@ exports.getFromReportDashbord = async (req, res, next) => {
 
         
 
-        result(res, {PATM, count: _res.___temp, pot: _res._temp, _sumPotArea})
+        result(res, {PATM, _sumPotArea})
         // result(res, {_sumPotArea})
         
         
