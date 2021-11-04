@@ -71,42 +71,23 @@ exports.findIdLayersShape = async (id) => {
   return await models.mas_layers_shape.findByPk(id);
 };
 
-exports.createTableShapeService = async (geojson, queryInterface, type) => {
+exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
   var obj = {}
   var obj1 = {}
   var schema = ``, type_geo
 
-  if (type.toLowerCase() == "shape file" || type.toLowerCase() == "point") schema += `shape_data`;
-  if (type.toLowerCase() == "kml") schema += `kml_data`;
-  if (type.toLowerCase() == "kmz") schema += `kmz_data`;
+  /* หาประเภท type Geo */
+  let typeGeo = []
+  const typeGeometry = geojson.features.map(tp => tp.geometry.type);
+  typeGeometry.forEach(e => {
+    const index = typeGeo.findIndex(dex => dex.toLowerCase() == e.toLowerCase());
+    if (index === -1) {
+      typeGeo.push(e)
+    }
+  })
 
-  // console.log(geojson);
-  // const countTable = await sequelizeStringFindOne(` 
-  //       SELECT COUNT(*) AS tables
-  //       FROM information_schema.tables
-  //       WHERE table_schema  = '${schema}'
-  //   `);
-
-  if (type.toLowerCase() == "shape file".toLowerCase() || type.toLowerCase() == "point".toLowerCase()) {
-    obj.nameTable = `ptt_shape_number${Math.floor((Math.random() * 10000) * 2)}`;
-  } else if (type.toLowerCase() == "kml".toLowerCase()) {
-    obj.nameTable = `ptt_kml_number${Math.floor((Math.random() * 10000) * 2)}`;
-  } else {
-    obj.nameTable = `ptt_kmz_number${Math.floor((Math.random() * 10000) * 2)}`;
-  }
-
-  const arrPropertie = [],
-    typeData = [],
-    table_key = ["prov", "amp", "tam", "project_na", "parlabel1", "row_distan", "objectid"],
-    _type_geo = ["Polygon", "Point", "LineString", "MultiLineString"]
-
-  //ตรวจสอบประเภท type geo
-  geojson.features.forEach((e) => {
-    const geometryType = _type_geo.find(ty => ty === e.geometry.type)
-    if (geometryType) type_geo = geometryType
-  });
-
-  //key เป็นชื่อตาราง
+  /* ใช้ key เป็น table */
+  const arrPropertie = []
   geojson.features.forEach(e => {
     obj.newObject = Object.keys(e.properties); //เอาชื่อตัวแปรมาใช้
     obj.newObject = obj.newObject.map((e) => e.toLowerCase());
@@ -114,97 +95,213 @@ exports.createTableShapeService = async (geojson, queryInterface, type) => {
     arrPropertie.push(obj.newObject)
   })
 
-  const arrayMax = Function.prototype.apply.bind(Math.max, null);
-  const _tempppp = arrPropertie.map(e => e.length)
-  var max = arrayMax(_tempppp);
-  const _index = _tempppp.findIndex(x => x == max)
-  let newArrPropertie
-  if (_index != -1) newArrPropertie = arrPropertie[_index]
+  const indexPropertie = []
+  arrPropertie.forEach(e => {
+    const index2 = indexPropertie.findIndex(dex => dex.length === e.length)
+    if (index2 === -1) {
+      indexPropertie.push(e)
+    }
+  })
 
-  let _dataType
-  if (type_geo === 'Polygon') _dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
-  else if (type_geo === 'Point') _dataType = DataTypes.GEOMETRY("Point", 0)
-  else if (type_geo === 'MultiLineString') _dataType = DataTypes.GEOMETRY("MultiLineString", 0)
-  else _dataType = DataTypes.GEOMETRY("LineStringZ", 4326)
+  var dataType, arrNameTable = []
+  for (let i = 0; i < indexPropertie.length; i++) {
+    const colomn = indexPropertie[i];
 
-  if (newArrPropertie.length > 0) {
-    (obj1.gid = {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-      allowNull: true,
-    }),
-      (obj1.geom = {
-        type: _dataType,
-        allowNull: true,
-      });
-    newArrPropertie.forEach((colomn) => {
-      /* loop ใส่ type*/
-      const keys = table_key.find((key) => key == colomn);
-      if (keys) {
-        obj1[colomn] = {
+    for (let a = 0; a < typeGeo.length; a++) {
+      const e = typeGeo[a];
+
+      if (e === 'Polygon') dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
+      if (e === 'Point') dataType = DataTypes.GEOMETRY("Point", 0)
+      if (e === 'LineString') dataType = DataTypes.GEOMETRY("LineStringZ", 0)
+      if (e === 'MultiLineString') dataType = DataTypes.GEOMETRY("MultiLineString", 4326)
+
+      if (indexPropertie.length > 0) {
+        obj1.gid = {
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+          allowNull: true,
+        }
+        obj1.geom = {
+          type: dataType,
+          allowNull: true,
+        }
+
+        colomn.forEach(keys => {
+          obj1[keys] = {
+            type: DataTypes.STRING,
+            allowNull: true,
+          }
+        })
+
+        obj1.objectid = {
           type: DataTypes.STRING,
           allowNull: true,
-        };
+        }
+        obj1.prov = {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
+        obj1.amp = {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
+        obj1.tam = {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
+        obj1.project_na = {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
+        obj1.parlabel1 = {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
+        obj1.row_distan = {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
+        obj1.status = {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
+
       } else {
-        (obj1[colomn] = {
-          type: DataTypes.STRING,
-          allowNull: true,
-        }),
-          (obj1.objectid = {
-            type: DataTypes.STRING,
-            allowNull: true,
-          }),
-          (obj1.prov = {
-            type: DataTypes.STRING,
-            allowNull: true,
-          }),
-          (obj1.amp = {
-            type: DataTypes.STRING,
-            allowNull: true,
-          }),
-          (obj1.tam = {
-            type: DataTypes.STRING,
-            allowNull: true,
-          }),
-          (obj1.project_na = {
-            type: DataTypes.STRING,
-            allowNull: true,
-          }),
-          (obj1.parlabel1 = {
-            type: DataTypes.STRING,
-            allowNull: true,
-          }),
-          (obj1.row_distan = {
-            type: DataTypes.STRING,
-            allowNull: true,
-          }),
-          (obj1.status = {
-            type: DataTypes.STRING,
-            allowNull: true,
-          })
+        const err = new Error("ผิดพลาดไม่สามารถสร้างฐานข้อมูลได้");
+        err.statusCode = 400;
+        throw err;
       }
-    });
-  } else {
-    const err = new Error("ผิดพลาดไม่สามารถสร้างฐานข้อมูลได้");
-    err.statusCode = 400;
-    throw err;
+
+      if (mimetype === "zip") {
+        obj.nameTable = `ptt_shape_number${Math.floor((Math.random() * 100000) * 2)}`
+        schema = `shape_data`
+      }
+      if (mimetype === "kml") {
+        obj.nameTable = `ptt_kml_number${Math.floor((Math.random() * 100000) * 2)}`
+        schema = `kml_data`
+      }
+      if (mimetype === "kmz") {
+        obj.nameTable = `ptt_kmz_number${Math.floor((Math.random() * 100000) * 2)}`
+        schema = `kmz_data`
+      }
+
+      arrNameTable.push(obj.nameTable)
+      await queryInterface.createTable(`${obj.nameTable}`, obj1, { schema })
+    }
   }
 
-  await queryInterface.createTable(`${obj.nameTable}`, obj1, { schema });
-
-  // const auto = new SequelizeAuto(sequelize, null, null, {
-  //     caseFile: 'o',
-  //     caseModel: 'o',
-  //     caseProp: 'o'
-  // })
-  // auto.run();
-
   return {
-    obj,
+    arrNameTable,
+    indexPropertie,
     schema,
-    type_geo,
-  };
+  }
+
+  // const arrPropertie = [],
+  //   typeData = [],
+  //   table_key = ["prov", "amp", "tam", "project_na", "parlabel1", "row_distan", "objectid"],
+  //   _type_geo = ["Polygon", "Point", "LineString", "MultiLineString"]
+
+  // //ตรวจสอบประเภท type geo
+  // geojson.features.forEach((e) => {
+  //   const geometryType = _type_geo.find(ty => ty === e.geometry.type)
+  //   if (geometryType) type_geo = geometryType
+  // });
+
+  // //key เป็นชื่อตาราง
+  // geojson.features.forEach(e => {
+  //   obj.newObject = Object.keys(e.properties); //เอาชื่อตัวแปรมาใช้
+  //   obj.newObject = obj.newObject.map((e) => e.toLowerCase());
+  //   obj.newObject = obj.newObject.map((str) => stringToSnakeCase(str)); //แปลงเป็น SnakeCase
+  //   arrPropertie.push(obj.newObject)
+  // })
+
+  // const arrayMax = Function.prototype.apply.bind(Math.max, null);
+  // const _tempppp = arrPropertie.map(e => e.length)
+  // var max = arrayMax(_tempppp);
+  // const _index = _tempppp.findIndex(x => x == max)
+  // let newArrPropertie
+  // if (_index != -1) newArrPropertie = arrPropertie[_index]
+
+  // let _dataType
+  // if (type_geo === 'Polygon') _dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
+  // else if (type_geo === 'Point') _dataType = DataTypes.GEOMETRY("Point", 0)
+  // else if (type_geo === 'MultiLineString') _dataType = DataTypes.GEOMETRY("MultiLineString", 0)
+  // else _dataType = DataTypes.GEOMETRY("LineStringZ", 4326)
+
+  // if (newArrPropertie.length > 0) {
+  //   (obj1.gid = {
+  //     type: DataTypes.INTEGER,
+  //     autoIncrement: true,
+  //     primaryKey: true,
+  //     allowNull: true,
+  //   }),
+  //     (obj1.geom = {
+  //       type: _dataType,
+  //       allowNull: true,
+  //     });
+  //   newArrPropertie.forEach((colomn) => {
+  //     /* loop ใส่ type*/
+  //     const keys = table_key.find((key) => key == colomn);
+  //     if (keys) {
+  //       obj1[colomn] = {
+  //         type: DataTypes.STRING,
+  //         allowNull: true,
+  //       };
+  //     } else {
+  //       (obj1[colomn] = {
+  //         type: DataTypes.STRING,
+  //         allowNull: true,
+  //       }),
+  //         (obj1.objectid = {
+  //           type: DataTypes.STRING,
+  //           allowNull: true,
+  //         }),
+  //         (obj1.prov = {
+  //           type: DataTypes.STRING,
+  //           allowNull: true,
+  //         }),
+  //         (obj1.amp = {
+  //           type: DataTypes.STRING,
+  //           allowNull: true,
+  //         }),
+  //         (obj1.tam = {
+  //           type: DataTypes.STRING,
+  //           allowNull: true,
+  //         }),
+  //         (obj1.project_na = {
+  //           type: DataTypes.STRING,
+  //           allowNull: true,
+  //         }),
+  //         (obj1.parlabel1 = {
+  //           type: DataTypes.STRING,
+  //           allowNull: true,
+  //         }),
+  //         (obj1.row_distan = {
+  //           type: DataTypes.STRING,
+  //           allowNull: true,
+  //         }),
+  //         (obj1.status = {
+  //           type: DataTypes.STRING,
+  //           allowNull: true,
+  //         })
+  //     }
+  //   });
+  // } else {
+  //   const err = new Error("ผิดพลาดไม่สามารถสร้างฐานข้อมูลได้");
+  //   err.statusCode = 400;
+  //   throw err;
+  // }
+
+  // await queryInterface.createTable(`${obj.nameTable}`, obj1, { schema });
+
+  // // const auto = new SequelizeAuto(sequelize, null, null, {
+  // //     caseFile: 'o',
+  // //     caseModel: 'o',
+  // //     caseProp: 'o'
+  // // })
+  // // auto.run();
+
 };
 
 /* เรียกข้อมูลทั้งหมด shape_data */
@@ -442,6 +539,7 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
               table_name: element.table_name,
               name: statues.name,
               status: statues.status_code,
+              status_color: statues.status_color
             });
           });
 
@@ -456,7 +554,7 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam) => 
                 row_distan,
                 table_name: element.table_name,
                 name: statues.name,
-                status: statues.status_code
+                status: statues.status_code,
               })
             })
           } else {

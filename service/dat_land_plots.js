@@ -3,7 +3,7 @@ const uuid4 = require('uuid')
 const { Op } = require('sequelize')
 const { sequelizeString } = require('../util')
 
-exports.addShapeService = async (table, geojson) => {
+exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) => {
     // console.log(geojson);
     // console.log(table.obj.newObject);
 
@@ -21,12 +21,16 @@ exports.addShapeService = async (table, geojson) => {
     /* format insert
     INSERT INTO shape_data.ptt_shape_number3(gid,geom) VALUES (1, ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[[[[99.557856126,14.277867442],[99.637387048,14.297762334],[99.633280354,14.232705561],[99.555778959,14.230984626],[99.557856126,14.277867442]]]]}')) 
     */
-    geojson.feature.forEach(data => {
-        data.geometry.type
+    // geojson.feature.forEach(data => {
+    //     data.geometry.type
+    // })
+    var sql
+    arrNameTable.forEach(tableName => {
+        indexPropertie.forEach(newObject => {
+            sql = `INSERT INTO ${schema}.${tableName}(geom,${newObject}) VALUES `
+        })
     })
-
-
-    var sql = `INSERT INTO ${table.schema}.${table.obj.nameTable}(geom,${table.obj.newObject}) VALUES `
+    
     let arrSql = [], property = []
     for (let i = 0; i < geojson.features.length; i++) {
         const _tmp = []
@@ -35,12 +39,12 @@ exports.addShapeService = async (table, geojson) => {
         data.properties = data.properties.map(e => String(e).replace(/'/g, ''))
         data.properties = data.properties.map(e => `'${e}'`)
 
-        if (table.schema === 'shape_data') {
+        if (schema === 'shape_data') {
             for (let a = 0; a < data.geometry.coordinates.length; a++) {
                 const geo = data.geometry.coordinates[a];
                 const arr = []
 
-                if (table.type_geo === 'Polygon') { // polygon
+                if (data.geometry.type === 'Polygon') { // polygon
                     for (let x = 0; x < geo.length; x++) {
                         const _geo = geo[x];
                         if (_geo.length > 2) {
@@ -79,7 +83,7 @@ exports.addShapeService = async (table, geojson) => {
                         }'),${data.properties}) `)
                 }
 
-                if (table.type_geo === 'Point') { // point
+                if (data.geometry.type === 'Point') { // point
                     if (data.geometry.coordinates.length <= 2) {
                         arr.push(`[${data.geometry.coordinates}]`)
                     }
@@ -90,12 +94,12 @@ exports.addShapeService = async (table, geojson) => {
                         }'),${data.properties}) `)
                 }
 
-                if (table.type_geo === 'LineString') {
+                if (data.geometry.type === 'LineString') {
 
                 }
 
                 //loop พิกัด MultiLineString
-                if (table.type_geo === 'MultiLineString') {
+                if (data.geometry.type === 'MultiLineString') {
                     if (geo.length > 0) {
                         geo.forEach(g => {
                             _tmp.push(`[${g}]`)
@@ -104,7 +108,7 @@ exports.addShapeService = async (table, geojson) => {
                 }
             }
             
-            if (table.type_geo === 'MultiLineString') {
+            if (data.geometry.type === 'MultiLineString') {
                 arrSql.push(`(ST_GeomFromGeoJSON('{
                     "type":"MultiLineString",
                     "coordinates":[[${_tmp}]] 
@@ -112,11 +116,11 @@ exports.addShapeService = async (table, geojson) => {
             }
         }
 
-        if (table.schema === 'kml_data') {
+        if (schema === 'kml_data') {
             data.geometry.coordinates.forEach(a => {
                 const arr_kml = []
 
-                if (table.type_geo === 'Polygon') {
+                if (data.geometry.type === 'Polygon') {
                     if (a.length > 1) {
                         a.forEach(val => {
                             if (val.length >= 3 && val[val.length - 1] == 0) val.pop() // ค่ามันมี 0 ตัด 0 ออก
@@ -129,11 +133,11 @@ exports.addShapeService = async (table, geojson) => {
                         }'),${data.properties}) `)
                 }
 
-                if (table.type_geo === 'Point') { // point
+                if (data.geometry.type === 'Point') { // point
 
                 }
 
-                if (table.type_geo === 'LineString') { // point
+                if (data.geometry.type === 'LineString') { // point
 
                 }
 
@@ -141,11 +145,11 @@ exports.addShapeService = async (table, geojson) => {
         }
 
         let _arr_kmz = [], coordinte = []
-        if (table.schema === 'kmz_data') {
+        if (schema === 'kmz_data') {
             data.geometry.coordinates.forEach(kmz => {
                 const arr_kmz = []
 
-                if (table.type_geo === 'Polygon') {
+                if (data.geometry.type === 'Polygon') {
                     if (kmz.length > 0) {
                         kmz.forEach(e => {
                             arr_kmz.push(`[${e}]`)
@@ -157,11 +161,11 @@ exports.addShapeService = async (table, geojson) => {
                         }'),${data.properties}) `)
                 }
 
-                if (table.type_geo === 'Point') { // point
+                if (data.geometry.type === 'Point') { // point
 
                 }
 
-                if (table.type_geo === 'LineString') { // LineString
+                if (data.geometry.type === 'LineString') { // LineString
                     // data.properties.forEach(q => {
 
                     // })
