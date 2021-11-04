@@ -15,7 +15,6 @@ const fs = require('fs')
 const path = require("path");
 const parseKML = require('parse-kml');
 const KMZGeoJSON = require('parse2-kmz');
-const kml = require('gtran-kml');
 
 
 exports.shapeKmlKmzAdd = async (req, res, next) => {
@@ -62,10 +61,11 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     throw err
                 }
             }
+
             if (type == "kml") {
 
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
-                const geojson = await kml.toGeoJson(_pathfile); // แปลงไฟล์ kml
+                const geojson = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
                 // console.log(_createTableShape);
