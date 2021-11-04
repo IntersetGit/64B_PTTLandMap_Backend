@@ -693,7 +693,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
   const Sumpottam = [], Sumareatam = []
   arr_sql.forEach((e) => {
     e.count = Number(e.count);
-    const index = Sumpottam.findIndex((x) => x.tam === e.tam);
+    const index = Sumpottam.findIndex((x) => x.tam === e.tam && x.name === e.name);
     if (index === -1) {
       Sumpottam.push(e);
     } else {
@@ -704,7 +704,7 @@ if (prov) val_sql += ` AND prov = '${prov}' `;
   // คำนวณระยะทาง
   araea_all.forEach((e) => {
     e.row_distan = Number(e.row_distan)
-    const int = Sumareatam.findIndex((n) => n.tam === e.tam)
+    const int = Sumareatam.findIndex((n) => n.tam === e.tam && n.name === e.name)
     if (int === -1) {
       Sumareatam.push(e);
     } else {

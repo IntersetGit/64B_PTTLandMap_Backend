@@ -273,13 +273,47 @@ exports.getFromReportDashbord = async (req, res, next) => {
         const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam)   
         const _sumPotArea = await getFromReportDashbordServiceEach(search, project_name, prov, amp, tam)   
         
+
+        // araea_all.forEach((e) => {
+        //     e.row_distan = Number(e.row_distan)
+        //     const int = ___temp.findIndex((n) => n.name === e.name)
+        //     if (int === -1) {
+        //       ___temp.push(e);
+        //     } else {
+        //       ___temp[int].row_distan += e.row_distan;
+        //     }
+        //   })
+
+
         let PATM = _res._prov.map(e => {
             // const _find = _res._temp.find(x => x.)
             let _Potprov = 0
             let _Areaprov = 0
+            let statusAreaP1 = 0
+            let statusAreaP2 = 0
+            let statusAreaP3 = 0
+            let statusAreaP4 = 0
+            let statusAreaP5 = 0
+            let statusPotP1 = 0
+            let statusPotP2 = 0
+            let statusPotP3 = 0
+            let statusPotP4 = 0
+            let statusPotP5 = 0
+
             _sumPotArea.Sumpottam.forEach(p =>{
                 if (p.prov == e.name) {
                     _Potprov += p.count
+                    if (p.status == 1) {
+                        statusPotP1 +=  p.count
+                    } else if (p.status == 2) {
+                        statusPotP2 +=  p.count
+                    } else if (p.status == 3) {
+                        statusPotP3 +=  p.count
+                    } else if (p.status == 4) {
+                        statusPotP4 +=  p.count
+                    } else if (p.status == 5) {
+                        statusPotP5 +=  p.count
+                    }
                 }
             } )
             _sumPotArea.Sumareatam.forEach(a =>{
@@ -287,13 +321,36 @@ exports.getFromReportDashbord = async (req, res, next) => {
                     a.row_distan = Number(a.row_distan)
                     a.row_distan = (Math.round(a.row_distan * 100))/100
                     _Areaprov += a.row_distan
+                    if (a.status == 1) {
+                        statusAreaP1 +=  a.row_distan
+                    } else if (a.status == 2) {
+                        statusAreaP2 +=  a.row_distan
+                    } else if (a.status == 3) {
+                        statusAreaP3 +=  a.row_distan
+                    } else if (a.status == 4) {
+                        statusAreaP4 +=  a.row_distan
+                    } else if (a.status == 5) {
+                        statusAreaP5 +=  a.row_distan
+                    }
                 }
             } )
+
                 return {
                     id: e.id,
                     prov_name:  e.name,
                     sum_pot: _Potprov,
                     sum_area: _Areaprov,
+                     Area_Status_1: statusAreaP1,
+                     Area_status_2: statusAreaP2,
+                     Area_status_3: statusAreaP3,
+                     Area_status_4: statusAreaP4,
+                     Area_status_5: statusAreaP5,
+                     Pot_status_1: statusPotP1,
+                     Pot_status_2: statusPotP2,
+                     Pot_status_3: statusPotP3,
+                     Pot_status_4: statusPotP4,
+                     Pot_status_5: statusPotP5,
+                    // statusarea1: status,
                     amp: []
                 }
         })
@@ -303,9 +360,30 @@ exports.getFromReportDashbord = async (req, res, next) => {
 
                     let _Potamp = 0
                     let _Areaamp = 0
+                    let statusAreaA1 = 0
+                    let statusAreaA2 = 0
+                    let statusAreaA3 = 0
+                    let statusAreaA4 = 0
+                    let statusAreaA5 = 0
+                    let statusPotA1 = 0
+                    let statusPotA2 = 0
+                    let statusPotA3 = 0
+                    let statusPotA4 = 0
+                    let statusPotA5 = 0
                     _sumPotArea.Sumpottam.forEach(pa =>{
                         if (pa.amp == a.name) {
                             _Potamp += pa.count
+                            if (pa.status == 1) {
+                                statusPotA1 +=  pa.count
+                            } else if (pa.status == 2) {
+                                statusPotA2 +=  pa.count
+                            } else if (pa.status == 3) {
+                                statusPotA3 +=  pa.count
+                            } else if (pa.status == 4) {
+                                statusPotA4 +=  pa.count
+                            } else if (pa.status == 5) {
+                                statusPotA5 +=  pa.count
+                            }
                         }
                     } )
                     _sumPotArea.Sumareatam.forEach(aa =>{
@@ -313,6 +391,17 @@ exports.getFromReportDashbord = async (req, res, next) => {
                             aa.row_distan = Number(aa.row_distan)
                             aa.row_distan = (Math.round(aa.row_distan * 100))/100
                             _Areaamp += aa.row_distan
+                            if (aa.status == 1) {
+                                statusAreaA1 +=  aa.row_distan
+                            } else if (aa.status == 2) {
+                                statusAreaA2 +=  aa.row_distan
+                            } else if (aa.status == 3) {
+                                statusAreaA3 +=  aa.row_distan
+                            } else if (aa.status == 4) {
+                                statusAreaA4 +=  aa.row_distan
+                            } else if (aa.status == 5) {
+                                statusAreaA5 +=  aa.row_distan
+                            }
                         }
                     } )
 
@@ -320,7 +409,17 @@ exports.getFromReportDashbord = async (req, res, next) => {
                         id: a.id,
                         amp_name: a.name,
                         sum_pot: _Potamp,
-                    sum_area: _Areaamp,
+                     sum_area: _Areaamp,
+                     Area_Status_1: statusAreaA1,
+                     Area_status_2: statusAreaA2,
+                     Area_status_3: statusAreaA3,
+                     Area_status_4: statusAreaA4,
+                     Area_status_5: statusAreaA5,
+                     Pot_status_1: statusPotA1,
+                     Pot_status_2: statusPotA2,
+                     Pot_status_3: statusPotA3,
+                     Pot_status_4: statusPotA4,
+                     Pot_status_5: statusPotA5,
                         tam: []
                     })
                 } 
@@ -333,9 +432,32 @@ exports.getFromReportDashbord = async (req, res, next) => {
                     
                         let _Pottam = 0
                         let _Areatam = 0
+                        let statusAreaT1 = 0
+                        let statusAreaT2 = 0
+                        let statusAreaT3 = 0
+                        let statusAreaT4 = 0
+                        let statusAreaT5 = 0
+                        let statusPotT1 = 0
+                        let statusPotT2 = 0
+                        let statusPotT3 = 0
+                        let statusPotT4 = 0
+                        let statusPotT5 = 0
+
                         _sumPotArea.Sumpottam.forEach(pt =>{
                             if (pt.tam == t.name) {
                                 _Pottam += pt.count
+
+                                if (pt.status == 1) {
+                                    statusPotT1 +=  pt.count
+                                } else if (pt.status == 2) {
+                                    statusPotT2 +=  pt.count
+                                } else if (pt.status == 3) {
+                                    statusPotT3 +=  pt.count
+                                } else if (pt.status == 4) {
+                                    statusPotT4 +=  pt.count
+                                } else if (pt.status == 5) {
+                                    statusPotT5 +=  pt.count
+                                }
                             }
                         } )
                         _sumPotArea.Sumareatam.forEach(at =>{
@@ -343,6 +465,17 @@ exports.getFromReportDashbord = async (req, res, next) => {
                                 at.row_distan = Number(at.row_distan)
                                 at.row_distan = (Math.round(at.row_distan * 100))/100
                                 _Areatam += at.row_distan
+                                if (at.status == 1) {
+                                    statusAreaT1 +=  at.row_distan
+                                } else if (at.status == 2) {
+                                    statusAreaT2 +=  at.row_distan
+                                } else if (at.status == 3) {
+                                    statusAreaT3 +=  at.row_distan
+                                } else if (at.status == 4) {
+                                    statusAreaT4 +=  at.row_distan
+                                } else if (at.status == 5) {
+                                    statusAreaT5 +=  at.row_distan
+                                }
                             }
                         } )
     
@@ -351,6 +484,16 @@ exports.getFromReportDashbord = async (req, res, next) => {
                         tam_name: t.name,
                         sum_pot: _Pottam,
                     sum_area: _Areatam,
+                    Area_status_1: statusAreaT1,
+                    Area_status_2: statusAreaT2,
+                    Area_status_3: statusAreaT3,
+                    Area_status_4: statusAreaT4,
+                    Area_status_5: statusAreaT5,
+                    Pot_status_1: statusPotT1,
+                    Pot_status_2: statusPotT2,
+                    Pot_status_3: statusPotT3,
+                    Pot_status_4: statusPotT4,
+                    Pot_status_5: statusPotT5,
                     })
                 }
             })
@@ -358,7 +501,7 @@ exports.getFromReportDashbord = async (req, res, next) => {
 
         
 
-        result(res, {PATM, count: _res.___temp, pot: _res._temp, _sumPotArea})
+        result(res, {PATM, _sumPotArea})
         // result(res, {_sumPotArea})
         
         
