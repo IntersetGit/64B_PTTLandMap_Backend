@@ -62,6 +62,10 @@ module.exports = function(sequelize, DataTypes) {
     config_color: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    table_name_arr: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true
     }
   }, {
     sequelize,

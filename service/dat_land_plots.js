@@ -24,7 +24,7 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
     // geojson.feature.forEach(data => {
     //     data.geometry.type
     // })
-    var sql
+    var sql, typeGeo = []
     arrNameTable.forEach(tableName => {
         indexPropertie.forEach(newObject => {
             sql = `INSERT INTO ${schema}.${tableName}(geom,${newObject}) VALUES `
@@ -123,7 +123,7 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                 if (data.geometry.type === 'Polygon') {
                     if (a.length > 1) {
                         a.forEach(val => {
-                            if (val.length >= 3 && val[val.length - 1] == 0) val.pop() // ค่ามันมี 0 ตัด 0 ออก
+                            // if (val.length >= 3 && val[val.length - 1] == 0) val.pop() // ค่ามันมี 0 ตัด 0 ออก
                             arr_kml.push(`[${val}]`)
                         })
                     }
@@ -133,18 +133,39 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                         }'),${data.properties}) `)
                 }
 
+                if (data.geometry.type === 'PolygonZ') { // PolygonZ
+                    if (a.length > 0) {
+                        a.forEach(coordinate => {
+                            if(coordinate.length > 2) {
+                                arr_kml.push(`[${coordinate}]`)
+                            }
+                        })
+                    }
+                    arrSql.push(`(ST_GeomFromGeoJSON('{
+                        "type":"Polygon",
+                        "coordinates":[[ ${arr_kml} ]]
+                        }'),${data.properties}) `)
+                }
+
                 if (data.geometry.type === 'Point') { // point
 
                 }
 
-                if (data.geometry.type === 'LineString') { // point
-
+                if (data.geometry.type === 'LineString') { // LineString
+                    data.geometry.coordinates.forEach(l => {
+                        _tmp.push(`[${l}]`)
+                    })
                 }
 
             })
+            if (data.geometry.type === 'LineString') {
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"LineString",
+                    "coordinates":[[[ ${_tmp} ]]]
+                    }'),${data.properties}) `)
+            }
         }
 
-        let _arr_kmz = [], coordinte = []
         if (schema === 'kmz_data') {
             data.geometry.coordinates.forEach(kmz => {
                 const arr_kmz = []
@@ -166,16 +187,18 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                 }
 
                 if (data.geometry.type === 'LineString') { // LineString
-                    // data.properties.forEach(q => {
-
-                    // })
-
-                    // arrSql.push(`(ST_GeomFromGeoJSON('{
-                    //     "type":"${table.type_geo}",
-                    //     "coordinates":[ ${_arr_kmz} ]
-                    //     }'),${data.properties}) `)
+                    data.geometry.coordinates.forEach(l => {
+                        _tmp.push(`[${l}]`)
+                    })
+                    
                 }
             })
+            if (data.geometry.type === 'LineString') {
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"LineString",
+                    "coordinates": [${_tmp}]
+                    }'),${data.properties}) `)
+            }
         }
     }
 

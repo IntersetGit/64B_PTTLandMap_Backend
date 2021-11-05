@@ -52,14 +52,20 @@ exports.shapeDataService = async (table_name, id, type) => {
 
     let result_sql = await sequelizeStringFindOne(sql);
     /* ค้นหาสีตาม status ใน shpae*/
-    for (let i = 0; i < result_sql.shape.features.length; i++) {
-      const e = result_sql.shape.features[i];
-      if (e.properties.status) {
-        const _status_shape = String(e.properties.status)
-        const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
-        e.properties.status_color = status_color ?? undefined
-      } else undefined
+    if (result_sql.shape.features != null) {
+        for (let i = 0; i < result_sql.shape.features.length; i++) {
+        const e = result_sql.shape.features[i];
+        if (e.properties.status) {
+          const _status_shape = String(e.properties.status)
+          const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
+          e.properties.status_color = status_color ?? undefined
+        } else undefined
 
+      }
+    } else {
+      const err = new Error('ไม่มีข้อมูล shape')
+      err.statusCode = 404
+      throw err
     }
 
     return result_sql
@@ -78,6 +84,20 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
 
   /* หาประเภท type Geo */
   let typeGeo = []
+
+  geojson.features.forEach(pid => {
+    if(pid.geometry.coordinates.length < 2) {
+      pid.geometry.coordinates.forEach(coordinate => {
+        coordinate.forEach(ppd => {
+          if(ppd.length > 2) {
+            if(pid.geometry.type === 'Polygon') pid.geometry.type = 'PolygonZ'
+          } else {
+            pid.geometry.type = pid.geometry.type
+          }
+        })
+      })
+    }
+  });
   const typeGeometry = geojson.features.map(tp => tp.geometry.type);
   typeGeometry.forEach(e => {
     const index = typeGeo.findIndex(dex => dex.toLowerCase() == e.toLowerCase());
@@ -85,6 +105,7 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
       typeGeo.push(e)
     }
   })
+  
 
   /* ใช้ key เป็น table */
   const arrPropertie = []
@@ -95,7 +116,7 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
     arrPropertie.push(obj.newObject)
   })
 
-  const indexPropertie = []
+  let indexPropertie = []
   arrPropertie.forEach(e => {
     const index2 = indexPropertie.findIndex(dex => dex.length === e.length)
     if (index2 === -1) {
@@ -114,6 +135,7 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
       if (e === 'Point') dataType = DataTypes.GEOMETRY("Point", 0)
       if (e === 'LineString') dataType = DataTypes.GEOMETRY("LineStringZ", 0)
       if (e === 'MultiLineString') dataType = DataTypes.GEOMETRY("MultiLineString", 4326)
+      if (e === 'PolygonZ') dataType = DataTypes.GEOMETRY("PolygonZ", 0)
 
       if (indexPropertie.length > 0) {
         obj1.gid = {
@@ -311,7 +333,8 @@ exports.getAllShapeDataService = async (
   project_name,
   prov,
   amp,
-  tam
+  tam,
+  layer_group
 ) => {
   const table_name = await func_table_name();
   const KeepData = [],
@@ -320,21 +343,37 @@ exports.getAllShapeDataService = async (
   var sql,
     _res,
     sql_count,
-    val_sql = ``;
+    val_sql = ``,
+    fromsql 
 
-  if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `
-  if (prov) val_sql += ` AND prov = '${prov}' `;
-  if (amp) val_sql += ` AND amp = '${amp}' `;
-  if (tam) val_sql += ` AND tam = '${tam}' `;
+  if (search) val_sql += ` AND ${project_name} ILIKE '%${search}%' `
+  if (prov) val_sql += ` AND prov = '${prov}' `
+  if (amp) val_sql += ` AND amp = '${amp}' `
+  if (tam) val_sql += ` AND tam = '${tam}' `
+  if (layer_group) {
+    _res = await models.mas_layers_shape.findByPk(layer_group)
+    fromsql = `${_res.table_name}`
+  } 
 
   for (let a = 0; a < table_name.length; a++) {
     const tables = table_name[a];
-    sql = await sequelizeString(
-      `SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
-    );
-    sql_count = await sequelizeStringFindOne(
-      `SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} `
-    );
+    if (layer_group) {
+      sql = await sequelizeString(
+        `SELECT * FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
+      );
+      sql_count = await sequelizeStringFindOne(
+        `SELECT COUNT(*) AS amount_data FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} `
+      );
+    } else {
+      sql = await sequelizeString(
+        `SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
+      );
+  
+      sql_count = await sequelizeStringFindOne(
+        `SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} `
+      );
+    }
+
     amount.push(sql_count.amount_data);
     sql.forEach((e) => {
       if (e.partype === "โฉนดที่ดิน" || e.partype === "น.ส.4")
@@ -364,6 +403,7 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
   var sql, _res;
 
   if (layer_group) {
+    const allSchema = await sequelizeString(`SELECT * FROM information_schema.tables`)
     const layers_data = await models.mas_layers_shape.findAll({
       where: { group_layer_id: layer_group },
     });
@@ -374,9 +414,10 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
     for (const af in KeepData) {
       if (Object.hasOwnProperty.call(KeepData, af)) {
         const tables_name = KeepData[af];
+        const { table_schema, table_name } = allSchema.find(tbl => tbl.table_name == tables_name)
         if (tables_name != "" && tables_name != null) {
           _res = await sequelizeString(
-            (sql = `SELECT * FROM shape_data.${tables_name} `)
+            (sql = `SELECT * FROM ${table_schema}.${table_name} `)
           );
           if (_res.length > 0) {
             _res.forEach((province) => {
