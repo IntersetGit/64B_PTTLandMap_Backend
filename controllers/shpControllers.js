@@ -45,11 +45,11 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     id,
                     name_layer,
                     table_name: _createTableShape.arrNameTable[0],
-                    type,
+                    type: "shape file",
                     group_layer_id,
                     color_layer: color,
                     option_layer : option_layer,
-                    type_geo: mimetype
+                    type_geo: type
                 }, transaction)
 
                 await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie);
@@ -67,11 +67,11 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     id,
                     name_layer,
                     table_name: _createTableShape.arrNameTable[0],
-                    type,
+                    type: "kml",
                     group_layer_id,
                     color_layer: color,
                     option_layer : option_layer,
-                    type_geo: mimetype
+                    type_geo: type
                 }, transaction)
 
                 await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie)
@@ -88,11 +88,11 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     id,
                     name_layer,
                     table_name: _createTableShape.arrNameTable[0],
-                    type,
+                    type: "kmz",
                     group_layer_id,
                     color_layer: color,
                     option_layer : option_layer,
-                    type_geo: mimetype
+                    type_geo: type
                 }, transaction)
 
                 await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie);

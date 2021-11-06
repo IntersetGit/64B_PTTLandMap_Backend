@@ -53,7 +53,7 @@ exports.shapeDataService = async (table_name, id, type) => {
     let result_sql = await sequelizeStringFindOne(sql);
     /* ค้นหาสีตาม status ใน shpae*/
     if (result_sql.shape.features != null) {
-        for (let i = 0; i < result_sql.shape.features.length; i++) {
+      for (let i = 0; i < result_sql.shape.features.length; i++) {
         const e = result_sql.shape.features[i];
         if (e.properties.status) {
           const _status_shape = String(e.properties.status)
@@ -86,11 +86,12 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
   let typeGeo = []
 
   geojson.features.forEach(pid => {
-    if(pid.geometry.coordinates.length < 2) {
+    if (pid.geometry.coordinates.length === 1) pid.geometry.type = 'MultiPolygon'
+    if (pid.geometry.coordinates.length < 2) {
       pid.geometry.coordinates.forEach(coordinate => {
         coordinate.forEach(ppd => {
-          if(ppd.length > 2) {
-            if(pid.geometry.type === 'Polygon') pid.geometry.type = 'PolygonZ'
+          if (ppd.length > 2) {
+            if (pid.geometry.type === 'MultiPolygon') pid.geometry.type = 'Polygon'
           } else {
             pid.geometry.type = pid.geometry.type
           }
@@ -131,11 +132,11 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
     for (let a = 0; a < typeGeo.length; a++) {
       const e = typeGeo[a];
 
-      if (e === 'Polygon') dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
+      if (e === 'MultiPolygon') dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
       if (e === 'Point') dataType = DataTypes.GEOMETRY("Point", 0)
-      if (e === 'LineString') dataType = DataTypes.GEOMETRY("LineStringZ", 0)
+      if (e === 'LineString') dataType = DataTypes.GEOMETRY("LineString", 0)
       if (e === 'MultiLineString') dataType = DataTypes.GEOMETRY("MultiLineString", 4326)
-      if (e === 'PolygonZ') dataType = DataTypes.GEOMETRY("PolygonZ", 0)
+      if (e === 'Polygon') dataType = DataTypes.GEOMETRY("PolygonZ", 4326)
 
       if (indexPropertie.length > 0) {
         obj1.gid = {
@@ -195,17 +196,21 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
         throw err;
       }
 
-      if (mimetype === "zip") {
-        obj.nameTable = `ptt_shape_number${Math.floor((Math.random() * 100000) * 2)}`
-        schema = `shape_data`
-      }
-      if (mimetype === "kml") {
-        obj.nameTable = `ptt_kml_number${Math.floor((Math.random() * 100000) * 2)}`
-        schema = `kml_data`
-      }
-      if (mimetype === "kmz") {
-        obj.nameTable = `ptt_kmz_number${Math.floor((Math.random() * 100000) * 2)}`
-        schema = `kmz_data`
+      switch (mimetype) {
+        case "zip":
+          obj.nameTable = `ptt_shape_number${Math.floor((Math.random() * 100000) * 2)}`
+          schema = `shape_data`
+          break;
+        case "kml":
+          obj.nameTable = `ptt_kml_number${Math.floor((Math.random() * 100000) * 2)}`
+          schema = `kml_data`
+          break;
+        case "kmz":
+          obj.nameTable = `ptt_kmz_number${Math.floor((Math.random() * 100000) * 2)}`
+          schema = `kmz_data`
+          break;
+        default:
+          break;
       }
 
       arrNameTable.push(obj.nameTable)
@@ -344,7 +349,7 @@ exports.getAllShapeDataService = async (
     _res,
     sql_count,
     val_sql = ``,
-    fromsql 
+    fromsql
 
   if (search) val_sql += ` AND ${project_name} ILIKE '%${search}%' `
   if (prov) val_sql += ` AND prov = '${prov}' `
@@ -353,7 +358,7 @@ exports.getAllShapeDataService = async (
   if (layer_group) {
     _res = await models.mas_layers_shape.findByPk(layer_group)
     fromsql = `${_res.table_name}`
-  } 
+  }
 
   for (let a = 0; a < table_name.length; a++) {
     const tables = table_name[a];
@@ -368,7 +373,7 @@ exports.getAllShapeDataService = async (
       sql = await sequelizeString(
         `SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
       );
-  
+
       sql_count = await sequelizeStringFindOne(
         `SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} `
       );
