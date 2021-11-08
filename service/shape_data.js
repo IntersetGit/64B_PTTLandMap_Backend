@@ -389,21 +389,35 @@ exports.getAllShapeDataService = async (
   if (prov) val_sql += ` AND prov = '${prov}' `
   if (amp) val_sql += ` AND amp = '${amp}' `
   if (tam) val_sql += ` AND tam = '${tam}' `
-  if (layer_group) {
-    _res = await models.mas_layers_shape.findByPk(layer_group)
-    fromsql = `${_res.table_name}`
-  }
 
-  for (let a = 0; a < table_name.length; a++) {
-    const tables = table_name[a];
-    if (layer_group) {
-      sql = await sequelizeString(
-        `SELECT * FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
-      );
-      sql_count = await sequelizeStringFindOne(
-        `SELECT COUNT(*) AS amount_data FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} `
-      );
-    } else {
+  if (layer_group) {
+    
+    _res = await models.mas_layers_shape.findByPk(layer_group);
+    fromsql = `${_res.table_name}`
+
+    sql = await sequelizeString(
+      `SELECT * FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
+    );
+    sql_count = await sequelizeStringFindOne(
+      `SELECT COUNT(*) AS amount_data FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} `
+    );
+
+   amount.push(sql_count.amount_data);
+    sql.forEach((e) => {
+      if (e.partype === "โฉนดที่ดิน" || e.partype === "น.ส.4") e.color = "#FF0000" //แดง
+      else if (e.partype === "น.ส.3ก.") e.color = "#049B06"; //เขียว
+      else if (e.partype === "น.ส.3" || e.partype === "น.ส.3ข.") e.color = "#000000"; //ดำ
+      else if (e.partype === "สปก.4-01") e.color = "#0115C3" //ฟ้า
+      else e.color = "#626262"; //เทา
+
+      e.table_name = table_name.table_name;
+      arr_sql.push(e);
+    });
+
+  } else {
+    for (let a = 0; a < table_name.length; a++) {
+      const tables = table_name[a];
+
       sql = await sequelizeString(
         `SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
       );
@@ -411,25 +425,25 @@ exports.getAllShapeDataService = async (
       sql_count = await sequelizeStringFindOne(
         `SELECT COUNT(*) AS amount_data FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} `
       );
+
+      amount.push(sql_count.amount_data);
+      sql.forEach((e) => {
+        if (e.partype === "โฉนดที่ดิน" || e.partype === "น.ส.4")
+          e.color = "#FF0000";
+        //แดง
+        else if (e.partype === "น.ส.3ก.") e.color = "#049B06";
+        //เขียว
+        else if (e.partype === "น.ส.3" || e.partype === "น.ส.3ข.")
+          e.color = "#000000";
+        //ดำ
+        else if (e.partype === "สปก.4-01") e.color = "#0115C3";
+        //ฟ้า
+        else e.color = "#626262"; //เทา
+  
+        e.table_name = tables.table_name;
+        arr_sql.push(e);
+      });
     }
-
-    amount.push(sql_count.amount_data);
-    sql.forEach((e) => {
-      if (e.partype === "โฉนดที่ดิน" || e.partype === "น.ส.4")
-        e.color = "#FF0000";
-      //แดง
-      else if (e.partype === "น.ส.3ก.") e.color = "#049B06";
-      //เขียว
-      else if (e.partype === "น.ส.3" || e.partype === "น.ส.3ข.")
-        e.color = "#000000";
-      //ดำ
-      else if (e.partype === "สปก.4-01") e.color = "#0115C3";
-      //ฟ้า
-      else e.color = "#626262"; //เทา
-
-      e.table_name = tables.table_name;
-      arr_sql.push(e);
-    });
   }
 
   return { arr_sql, amount };
