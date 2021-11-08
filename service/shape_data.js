@@ -104,11 +104,11 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
       if (setK.geometry.coordinates && setK.geometry.coordinates.length >= 1 && setK.geometry.coordinates[0][0].length >= 3 && setK.geometry.type == 'Polygon') {
         setK.geometry.type = 'PolygonZ'
       }
-      if (!setT.geometry.bbox && setT.geometry.coordinates && setT.geometry.coordinates.length >= 1 && setT.geometry.type == 'Point') {
-        setT.geometry.type = 'Point'
+      if (!setK.geometry.bbox && setK.geometry.coordinates && setK.geometry.coordinates.length >= 1 && setK.geometry.type == 'Point') {
+        setK.geometry.type = 'Point'
       }
-      if (setZ.geometry.coordinates && setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0].length >= 3 && setZ.geometry.type == 'Point') {
-        setZ.geometry.type = 'PointZ'
+      if (setK.geometry.coordinates && setK.geometry.coordinates.length >= 1 && setK.geometry.coordinates[0].length >= 3 && setK.geometry.type == 'Point') {
+        setK.geometry.type = 'PointZ'
       }
     })
     
