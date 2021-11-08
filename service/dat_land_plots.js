@@ -114,22 +114,30 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
             if (data.geometry.type === 'LineString') {
 
             }
-
+          
             if (data.geometry.type === 'MultiLineString') {
                 const arrMultiLine = []
                 data.geometry.coordinates.forEach(multiLine => {
+                    const _arrMuti = []
                     multiLine.forEach(multiLines => {
-                        arrMultiLineOut.push(`[${multiLines}]`)
+                        _arrMuti.push(`[${multiLines}]`)
                     })
+                    arrMultiLine.push(`[${_arrMuti}]`)
                 });
-            }
-
-            if (data.geometry.type === 'MultiLineString') {
+                // arrMultiLine.push(arrMultiLineOut)
                 arrSql.push(`(ST_GeomFromGeoJSON('{
                     "type":"MultiLineString",
-                    "coordinates":[[${arrMultiLineOut}]] 
+                    "coordinates":[${arrMultiLine}] 
                     }'),${data.properties}) `)
+
             }
+
+            // if (data.geometry.type === 'MultiLineString') {
+            //     arrSql.push(`(ST_GeomFromGeoJSON('{
+            //         "type":"MultiLineString",
+            //         "coordinates":[[${arrMultiLine}]] 
+            //         }'),${data.properties}) `)
+            // }
         }
 
         if (schema === 'kml_data') {
