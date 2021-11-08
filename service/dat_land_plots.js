@@ -40,7 +40,7 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
         data.properties = data.properties.map(e => `'${e}'`)
 
         if (schema === 'shape_data') {
-            if (data.geometry.type === 'MultiPolygon') {
+            if (data.geometry.type === 'Polygon' || data.geometry.type === 'MultiPolygon') {
                 for (let a = 0; a < data.geometry.coordinates.length; a++) {
                     const geo = data.geometry.coordinates[a];
                     const arr = []
@@ -84,6 +84,20 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                 }
             }
 
+            // if (data.geometry.type === 'Polygon') {
+            //     const poly = []
+            //     data.geometry.coordinates.forEach(polyG => {
+            //         polyG.forEach(_polyG => {
+            //             poly.push(`[${_polyG}]`);
+            //         })
+
+            //     })
+            //     arrSql.push(`(ST_GeomFromGeoJSON('{
+            //         "type":"Polygon",
+            //         "coordinates": [[${poly}]] 
+            //         }'),${data.properties}) `)
+            // }
+
             if (data.geometry.type === 'Point') {
                 const arrPoint = []
                 data.geometry.coordinates.forEach(point => {
@@ -93,7 +107,7 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                 })
                 arrSql.push(`(ST_GeomFromGeoJSON('{
                     "type":"Point",
-                    "coordinates": ${point} 
+                    "coordinates": ${arrPoint} 
                     }'),${data.properties}) `)
             }
 
@@ -149,11 +163,25 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                         }'),${data.properties}) `)
             }
 
-            if (data.geometry.type === 'Point') { // point
+            if (data.geometry.type === 'PolygonZ') {
+                const arrPolygon = []
+                data.geometry.coordinates.forEach(poly => {
+                    poly.forEach(polyes => {
+                        arrPolygon.push(`[${polyes}]`);
+                    })
+
+                })
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                        "type":"Polygon",
+                        "coordinates":[[ ${arrPolygon} ]]
+                        }'),${data.properties}) `)
+            }
+
+            if (data.geometry.type === 'Point') {
 
             }
 
-            if (data.geometry.type === 'LineString') { // LineString
+            if (data.geometry.type === 'LineString') {
                 data.geometry.coordinates.forEach(LineStr => {
                     _tmp.push(`[${LineStr}]`)
                 })
@@ -181,11 +209,24 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                     }'),${data.properties}) `)
             }
 
-            if (data.geometry.type === 'Point') { // point
+            if (data.geometry.type === 'Point') {
 
             }
 
-            if (data.geometry.type === 'LineString') { // LineString
+            if (data.geometry.type === 'PointZ') {
+                const pointZ = []
+                data.geometry.coordinates.forEach(point => {
+                    if (data.geometry.coordinates.length <= 2) {
+                        pointZ.push(`[${point}]`);
+                    }
+                })
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"Point",
+                    "coordinates": ${pointZ} 
+                    }'),${data.properties}) `)
+            }
+
+            if (data.geometry.type === 'LineString') {
                 const lineStr = []
                 data.geometry.coordinates.forEach(line => {
                     if (line.length > 1) {
@@ -195,6 +236,19 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                 arrSql.push(`(ST_GeomFromGeoJSON('{
                     "type":"LineString",
                     "coordinates": [${lineStr}]
+                    }'),${data.properties}) `)
+            }
+
+            if (data.geometry.type === 'LineStringZ') {
+                data.geometry.coordinates.forEach(LineStr => {
+                    _tmp.push(`[${LineStr}]`)
+                })
+            }
+
+            if (data.geometry.type === 'LineStringZ') {
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"LineString",
+                    "coordinates":[ ${_tmp} ]
                     }'),${data.properties}) `)
             }
         }

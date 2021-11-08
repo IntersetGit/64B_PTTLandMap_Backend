@@ -82,23 +82,53 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
   var obj1 = {}
   var schema = ``, type_geo
 
-  /* หาประเภท type Geo */
+  /* หาประเภท type Geo และเปลี่ยนชื่อ type Geo*/
   let typeGeo = []
 
-  geojson.features.forEach(pid => {
-    if (pid.geometry.coordinates.length === 1) pid.geometry.type = 'MultiPolygon'
-    if (pid.geometry.coordinates.length < 2) {
-      pid.geometry.coordinates.forEach(coordinate => {
-        coordinate.forEach(ppd => {
-          if (ppd.length > 2) {
-            if (pid.geometry.type === 'MultiPolygon') pid.geometry.type = 'Polygon'
-          } else {
-            pid.geometry.type = pid.geometry.type
-          }
-        })
-      })
-    }
-  });
+  if (mimetype == 'zip') {
+    geojson.features.forEach(setT => {
+      if (setT.geometry.bbox && setT.geometry.bbox.length > 3 && setT.geometry.coordinates && setT.geometry.coordinates.length >= 1 && setT.geometry.type == 'Polygon') {
+        setT.geometry.type = 'MultiPolygon'
+      }
+
+      if (setT.geometry.bbox && setT.geometry.bbox.length > 3 && setT.geometry.coordinates && setT.geometry.coordinates.length >= 1 && setT.geometry.type == 'MultiLineString') {
+        setT.geometry.type = 'MultiLineString'
+      }
+
+      if (!setT.geometry.bbox && setT.geometry.coordinates && setT.geometry.coordinates.length >= 1 && setT.geometry.type == 'Point') {
+        setT.geometry.type = 'Point'
+      }
+    });
+  } else if ( mimetype == 'kml' ) {
+    geojson.features.forEach(setK => {
+      if (setK.geometry.coordinates && setK.geometry.coordinates.length >= 1 && setK.geometry.coordinates[0][0].length >= 3 && setK.geometry.type == 'Polygon') {
+        setK.geometry.type = 'PolygonZ'
+      }
+      if (!setT.geometry.bbox && setT.geometry.coordinates && setT.geometry.coordinates.length >= 1 && setT.geometry.type == 'Point') {
+        setT.geometry.type = 'Point'
+      }
+      if (setZ.geometry.coordinates && setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0].length >= 3 && setZ.geometry.type == 'Point') {
+        setZ.geometry.type = 'PointZ'
+      }
+    })
+    
+  } else {
+    geojson.features.forEach(setZ => {
+      if (setZ.geometry.coordinates && setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0].length >= 3 && setZ.geometry.type == 'LineString') {
+        setZ.geometry.type = 'LineStringZ'
+      }
+
+      if (setZ.geometry.coordinates && setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0].length >= 3 && setZ.geometry.type == 'Point') {
+        setZ.geometry.type = 'PointZ'
+      }
+
+      if (setZ.geometry.coordinates && setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0][0].length >= 3 && setZ.geometry.type == 'Polygon') {
+        setZ.geometry.type = 'PolygonZ'
+      }
+
+    })
+  }
+
   const typeGeometry = geojson.features.map(tp => tp.geometry.type);
   typeGeometry.forEach(e => {
     const index = typeGeo.findIndex(dex => dex.toLowerCase() == e.toLowerCase());
@@ -128,15 +158,19 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
   var dataType, arrNameTable = []
   for (let i = 0; i < indexPropertie.length; i++) {
     const colomn = indexPropertie[i];
+    const typeGeo_ = [typeGeo[typeGeo.length - 1]]
 
-    for (let a = 0; a < typeGeo.length; a++) {
-      const e = typeGeo[a];
+    for (let a = 0; a < typeGeo_.length; a++) {
+      const e = typeGeo_[a];
 
       if (e === 'MultiPolygon') dataType = DataTypes.GEOMETRY("MultiPolygon", 0)
       if (e === 'Point') dataType = DataTypes.GEOMETRY("Point", 0)
+      if (e === 'PointZ') dataType = DataTypes.GEOMETRY("PointZ", 0)
       if (e === 'LineString') dataType = DataTypes.GEOMETRY("LineString", 0)
-      if (e === 'MultiLineString') dataType = DataTypes.GEOMETRY("MultiLineString", 4326)
-      if (e === 'Polygon') dataType = DataTypes.GEOMETRY("PolygonZ", 4326)
+      if (e === 'LineStringZ') dataType = DataTypes.GEOMETRY("LineStringZ", 0)
+      if (e === 'MultiLineString') dataType = DataTypes.GEOMETRY("MultiLineString", 0)
+      if (e === 'Polygon') dataType = DataTypes.GEOMETRY("Polygon", 4326)
+      if (e === 'PolygonZ') dataType = DataTypes.GEOMETRY("PolygonZ", 0)
 
       if (indexPropertie.length > 0) {
         obj1.gid = {

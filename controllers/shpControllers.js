@@ -36,7 +36,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             
             if (mimetype == 'zip') {
                 
-                const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
+                const geojson = await shp(file.data); // แปลงไฟล์ shape
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
