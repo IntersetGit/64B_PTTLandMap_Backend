@@ -35,7 +35,7 @@ exports.editDatStreetViewService = async (data, users) => {
     }
 
     await models.dat_street_view.update({
-        id,
+        id: data.id,
         coordinate: data.coordinate,
         name: data.name,
         url: data.url,
