@@ -15,6 +15,8 @@ const fs = require('fs')
 const path = require("path");
 const parseKML = require('parse-kml');
 const KMZGeoJSON = require('parse2-kmz');
+const { toKML } = require("parse2-kmz");
+
 
 
 exports.shapeKmlKmzAdd = async (req, res, next) => {
@@ -143,6 +145,8 @@ exports.convertGeoToShp = async (req, res, next) => {
         next(error);
     }
 }
+
+
 
 exports.getAllDataLayer = async (req, res, next) => {
     try {
@@ -604,3 +608,134 @@ const updataKmlKmz = (files) => {
 }
 
 
+
+
+exports.convertGeoToShp = async (req, res, next) => {
+    try {
+        const features = [req.body];
+        const options = {
+            layer: "PTT",
+            targetCrs: 2154,
+        }
+        const id = features[0].id
+
+        await convert(features, `public/shapfile/PTT-${id}.zip`, options)
+
+        // const _res = async (features, config) => {
+        //     await download(`${config.SERVICE_HOST}/${features[0].id}`, `public`)
+        //     fs.writeFileSync(`public/shapfile/${features[0].id}`, await download(`${config.SERVICE_HOST}/${features[0].id}`))
+
+        //     download(`${config.SERVICE_HOST}/${features[0].id}`).pipe(fs.createWriteStream(`public/shapfile/${features[0].id}`))
+
+        //     const data_ = await Promise.all([`${config.SERVICE_HOST}/${features[0].id}`].map(url => download(url, 'public')))
+
+        //     return data_
+        // };
+
+        result(res, _res)
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
+
+
+// exports.convertGeoToKml = async(req, res, next) =>{
+//     try {
+//         const geojson = [req.body];
+
+        
+    
+//         const kml = require('gtran-kml');
+//     // Specify promise library if necessary
+//     kml.setPromiseLib(require('bluebird'));
+     
+//     // Read KML file
+//     kml.toGeoJson('source.kml');
+//     //   .then((object) => {
+//     //     const geojson = object;
+//     //   });
+   
+     
+//     // Save geojson into KML file
+//     await kml.fromGeoJson(geojson, 'point.kml', {
+//       symbol: geometry.type
+//     });
+    
+//     result(res )
+    
+    
+//     } catch (error) {
+//         next(error);
+//     }
+    
+// }
+
+
+
+
+
+// exports.convertGeoToKml = async (req, res, next) => {
+//     try {
+//         const geojsonObject = [req.body];
+        // const _option = {
+        //     layer: "PTT",
+        //     targetCrs: 2154,
+        // }
+        
+        // // const gid = _features[0].gid
+        // var test = await  toKML(geojsonObject, {
+        //     Name: 'My List Of Markers',
+        //     Description: "One of the many places you are not I am"
+        // })
+        // console.log(test);
+
+
+        // result(res, _res)
+
+//     } catch (error) {
+//        next(error) 
+//     }
+// }
+
+
+// var kmlNameDescription = tokml(geojsonObject, {
+//     name: 'name',
+//     description: 'description'
+// });
+
+// // name and describe the KML document as a whole
+// var kmlDocumentName = tokml(geojsonObject, {
+//     documentName: 'My List Of Markers',
+//     documentDescription: "One of the many places you are not I am"
+// });
+
+var geojson2kml = require("geojson2kml");
+
+  
+
+exports.convertGeoToKml = async(req, res , next) =>{
+ 
+        const geojson = req.body;
+        const {name} = req.query
+    
+
+        
+        geojson2kml(geojson, `public/kmlfile/PTT-${name}.Kml`,function(err){
+           
+            if(err) 
+            throw err;
+            done(err)
+          
+    
+        })
+    
+
+
+      result(res )
+   
+        }
+    

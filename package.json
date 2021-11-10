@@ -24,7 +24,10 @@
     "express-fileupload": "^1.2.1",
     "express-paginate": "^1.0.2",
     "express-validator": "^6.9.2",
+    "geojson-to-kml": "0.0.1",
+    "geojson2kml": "^0.1.1",
     "geojson2shp": "^0.4.0",
+    "gtran-kml": "^1.4.5",
     "helmet": "^4.4.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
@@ -55,6 +58,7 @@
     "socket.io": "^3.1.0",
     "swagger-generator-express": "^2.1.1",
     "tedious": "^9.2.3",
+    "tokml": "^0.4.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
