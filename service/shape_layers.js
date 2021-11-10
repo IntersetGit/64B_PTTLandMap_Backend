@@ -23,6 +23,7 @@ exports.addShapeLayersService = async (model, transaction) => {
     if (model.date) _model.date = model.date
     if (model.option_layer) _model.option_layer = model.option_layer
     if (model.symbol_point) _model.symbol_point = model.symbol_point
+    if (model.table_name_arr)  _model.table_name_arr = model.table_name_arr
 
     await models.mas_layers_shape.create(_model, { transaction })
     return id

@@ -191,7 +191,7 @@ exports.editMasLayersShapeService = async (data, user) => {
     name_layer: data.name_layer,
     table_name: data.table_name,
     color_layer: data.color_layer,
-    type: data.type == "wms" ? data.type = "wms" : data.type,
+    type: data.type,
     group_layer_id: data.group_layer_id,
     url: data.url,
     wms_name: data.wms_name,
@@ -209,8 +209,12 @@ exports.editMasLayersShapeService = async (data, user) => {
 exports.deleteMasLayersShapeService = async (data, user) => {
   const getGisPk = await models.mas_layers_shape.findByPk(data.id);
   const getAllDB = await sequelizeString(`select * from information_schema.tables`);
-  const { table_schema, table_name} =  getAllDB.find(x => x.table_name == getGisPk.table_name);
-  await sequelizeStringFindOne(` DROP TABLE ${table_schema}.${table_name} `);
+
+  if(getGisPk.table_name) {
+    const { table_schema, table_name} =  getAllDB.find(x => x.table_name == getGisPk.table_name);
+    await sequelizeStringFindOne(` DROP TABLE ${table_schema}.${table_name} `);
+  }
+  
   await models.mas_layers_shape.destroy({
     where: { id: data.id }
   })

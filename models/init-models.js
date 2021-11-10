@@ -1,6 +1,7 @@
 var DataTypes = require("sequelize").DataTypes;
 var _dat_layers = require("./dat_layers");
 var _dat_profile_users = require("./dat_profile_users");
+var _dat_street_view = require("./dat_street_view");
 var _mas_district = require("./mas_district");
 var _mas_layer_groups = require("./mas_layer_groups");
 var _mas_layers_shape = require("./mas_layers_shape");
@@ -15,6 +16,7 @@ var _sysm_users = require("./sysm_users");
 function initModels(sequelize) {
   var dat_layers = _dat_layers(sequelize, DataTypes);
   var dat_profile_users = _dat_profile_users(sequelize, DataTypes);
+  var dat_street_view = _dat_street_view(sequelize, DataTypes);
   var mas_district = _mas_district(sequelize, DataTypes);
   var mas_layer_groups = _mas_layer_groups(sequelize, DataTypes);
   var mas_layers_shape = _mas_layers_shape(sequelize, DataTypes);
@@ -48,6 +50,10 @@ function initModels(sequelize) {
   sysm_users.hasMany(dat_profile_users, { as: "update_by_dat_profile_users", foreignKey: "update_by"});
   dat_profile_users.belongsTo(sysm_users, { as: "user", foreignKey: "user_id"});
   sysm_users.hasMany(dat_profile_users, { as: "user_dat_profile_users", foreignKey: "user_id"});
+  dat_street_view.belongsTo(sysm_users, { as: "created_by_sysm_user", foreignKey: "created_by"});
+  sysm_users.hasMany(dat_street_view, { as: "dat_street_views", foreignKey: "created_by"});
+  dat_street_view.belongsTo(sysm_users, { as: "updated_by_sysm_user", foreignKey: "updated_by"});
+  sysm_users.hasMany(dat_street_view, { as: "updated_by_dat_street_views", foreignKey: "updated_by"});
   sysm_users.belongsTo(sysm_roles, { as: "role", foreignKey: "roles_id"});
   sysm_roles.hasMany(sysm_users, { as: "sysm_users", foreignKey: "roles_id"});
   sysm_users.belongsTo(sysm_users, { as: "created_by_sysm_user", foreignKey: "created_by"});
@@ -58,6 +64,7 @@ function initModels(sequelize) {
   return {
     dat_layers,
     dat_profile_users,
+    dat_street_view,
     mas_district,
     mas_layer_groups,
     mas_layers_shape,

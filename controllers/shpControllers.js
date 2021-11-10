@@ -36,76 +36,69 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             const id = uuid.v4();
             const mimetype = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
             
+            if (mimetype == 'zip') {
+                
+                const geojson = await shp(file.data); // แปลงไฟล์ shape
+                // console.log(geojson);
+                const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
+                // console.log(_createTableShape);
 
-            if (type == "shape file" || type.toLowerCase() == "point") {
-                if (mimetype == 'zip') {
-                    const geojson = await shp(file.data.buffer); // แปลงไฟล์ shape
-                    // console.log(geojson);
-                    const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
-                    // console.log(_createTableShape);
+                await addShapeLayersService({
+                    id,
+                    name_layer,
+                    table_name: _createTableShape.arrNameTable[0],
+                    type: "shape file",
+                    group_layer_id,
+                    color_layer: color,
+                    option_layer : option_layer,
+                    type_geo: type
+                }, transaction)
 
-                    await addShapeLayersService({
-                        id,
-                        name_layer,
-                        table_name: _createTableShape.obj.nameTable,
-                        type,
-                        group_layer_id,
-                        color_layer: color,
-                        option_layer : option_layer ,
-                        type_geo: _createTableShape.type_geo
-                    }, transaction)
-
-                    await addShapeService(_createTableShape, geojson);
-
-                } else {
-                    const err = new Error('Please file .zip only')
-                    err.statusCode = 400
-                    throw err
-                }
+                await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie);
+                
             }
 
-            if (type == "kml") {
-
+            if (mimetype == 'kml') {
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
                 const geojson = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
                 // console.log(geojson);
-                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+                const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
 
                 await addShapeLayersService({
                     id,
                     name_layer,
-                    table_name: _createTableShape.obj.nameTable,
-                    type,
+                    table_name: _createTableShape.arrNameTable[0],
+                    type: "kml",
                     group_layer_id,
                     color_layer: color,
-                    option_layer : option_layer ,
-                    type_geo: _createTableShape.type_geo
+                    option_layer : option_layer,
+                    type_geo: type
                 }, transaction)
 
-                await addShapeService(_createTableShape, geojson);
+                await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie)
+                
             }
 
-            
-
-            if (type == "kmz") {
+            if (mimetype == 'kmz') {
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
                 const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
                 // console.log(geojson);
-                const _createTableShape = await createTableShapeService(geojson, queryInterface, type);
+                const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
                 await addShapeLayersService({
                     id,
                     name_layer,
-                    table_name: _createTableShape.obj.nameTable,
-                    type,
+                    table_name: _createTableShape.arrNameTable[0],
+                    type: "kmz",
                     group_layer_id,
                     color_layer: color,
-                    option_layer : option_layer ,
-                    type_geo: _createTableShape.type_geo
+                    option_layer : option_layer,
+                    type_geo: type
                 }, transaction)
 
-                await addShapeService(_createTableShape, geojson);
+                await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie);
+                
             }
 
             await transaction.commit();
@@ -189,13 +182,14 @@ exports.getShapeData = async (req, res, next) => {
 exports.getInfoProject = async (req, res, next) => {
     try {
 
-        const { search, project_name, prov, amp, tam } = req.query
-        const _res_sql = await getAllShapeDataService(search, project_name, prov, amp, tam)
+        const { search, project_name, prov, amp, tam, layer_group } = req.query
+        const _res_sql = await getAllShapeDataService(search, project_name, prov, amp, tam, layer_group)
         _res_sql.arr_sql.forEach(e => {e.geom =  undefined})
+        const amount_data = (_res_sql.amount.length > 0) ?_res_sql.amount.reduce((sum, num) => Number(sum) + Number(num)) : 0
 
         result(res, {
             data: _res_sql.arr_sql,
-            amount_data: (_res_sql.amount > 0 ) ? _res_sql.amount.reduce((sum, num) => Number(sum) + Number(num)) : 0
+            amount_data
         })
 
     } catch (error) {
@@ -251,11 +245,12 @@ exports.getFromProjectDashboard = async (req, res, next) => {
         const { search, project_name, prov, amp, tam } = req.query
         const _res_sql = await getFromProjectService(search, project_name, prov, amp, tam);
         const { _temp, ___temp } = _res_sql
-        const status = [], data = [], _status = [], _data = []
+        const status = [], data = [], _status = [], _data = [], status_color = []
 
         _temp.forEach(e => {
             status.push(e.name)
             data.push(e.count)
+            status_color.push(e.status_color)
         })
         ___temp.forEach(e => {
             _status.push(e.name)
@@ -264,7 +259,8 @@ exports.getFromProjectDashboard = async (req, res, next) => {
 
         result(res, {
             plot: { status, data },
-            distance: { status: _status, data: _data }
+            distance: { status: _status, data: _data },
+            status_color
         })
     } catch (error) {
         next(error);
