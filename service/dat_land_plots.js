@@ -4,8 +4,6 @@ const { Op } = require('sequelize')
 const { sequelizeString } = require('../util')
 
 exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) => {
-    // console.log(geojson);
-    // console.log(table.obj.newObject);
 
     // if (geojson) {
     //     geojson.features.forEach(x => {
@@ -21,9 +19,6 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
     /* format insert
     INSERT INTO shape_data.ptt_shape_number3(gid,geom) VALUES (1, ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[[[[99.557856126,14.277867442],[99.637387048,14.297762334],[99.633280354,14.232705561],[99.555778959,14.230984626],[99.557856126,14.277867442]]]]}')) 
     */
-    // geojson.feature.forEach(data => {
-    //     data.geometry.type
-    // })
     var sql, typeGeo = []
     arrNameTable.forEach(tableName => {
         indexPropertie.forEach(newObject => {
@@ -33,7 +28,7 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
 
     let arrSql = [], property = []
     for (let i = 0; i < geojson.features.length; i++) {
-        const _tmp = [], arrMultiLineOut = []
+        const _tmp = []
         const data = geojson.features[i];
         data.properties = Object.values(data.properties)
         data.properties = data.properties.map(e => String(e).replace(/'/g, ''))
@@ -84,19 +79,18 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
                 }
             }
 
-            // if (data.geometry.type === 'Polygon') {
-            //     const poly = []
-            //     data.geometry.coordinates.forEach(polyG => {
-            //         polyG.forEach(_polyG => {
-            //             poly.push(`[${_polyG}]`);
-            //         })
-
-            //     })
-            //     arrSql.push(`(ST_GeomFromGeoJSON('{
-            //         "type":"Polygon",
-            //         "coordinates": [[${poly}]] 
-            //         }'),${data.properties}) `)
-            // }
+            if (data.geometry.type === 'PolygonZ') {
+                const polyZ = []
+                data.geometry.coordinates.forEach(polyG => {
+                    polyG.forEach(_polyG => {
+                        polyZ.push(`[${_polyG}]`);
+                    })
+                })
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"Polygon",
+                    "coordinates": [[${polyZ}]] 
+                    }'),${data.properties}) `)
+            }
 
             if (data.geometry.type === 'Point') {
                 const arrPoint = []
@@ -112,7 +106,25 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
             }
 
             if (data.geometry.type === 'LineString') {
+                const arrLineS = []
+                data.geometry.coordinates.forEach(lineS => {
+                    arrLineS.push(`[${lineS}]`)
+                })
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"LineString",
+                    "coordinates":[ ${arrLineS} ]
+                    }'),${data.properties}) `)
+            }
 
+            if (data.geometry.type === 'LineStringZ') {
+                const arrLineZ = []
+                data.geometry.coordinates.forEach(lineZ => {
+                    arrLineZ.push(`[${lineZ}]`)
+                })
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"LineString",
+                    "coordinates":[ ${arrLineZ} ]
+                    }'),${data.properties}) `)
             }
           
             if (data.geometry.type === 'MultiLineString') {
@@ -189,6 +201,16 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
 
             }
 
+            if (data.geometry.type === 'PointZ') {
+                const arrPointZ = []
+                if (data.geometry.coordinates.length >= 3) arrPointZ.push(`[${data.geometry.coordinates}]`);
+                
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"Point",
+                    "coordinates": ${arrPointZ} 
+                    }'),${data.properties}) `)
+            }
+
             if (data.geometry.type === 'LineString') {
                 data.geometry.coordinates.forEach(LineStr => {
                     _tmp.push(`[${LineStr}]`)
@@ -218,7 +240,14 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
             }
 
             if (data.geometry.type === 'Point') {
-
+                const pointt = []
+                data.geometry.coordinates.forEach(point => {
+                    pointt.push(`[${point}]`)
+                })
+                arrSql.push(`(ST_GeomFromGeoJSON('{
+                    "type":"Point",
+                    "coordinates": ${pointt} 
+                    }'),${data.properties}) `)
             }
 
             if (data.geometry.type === 'PointZ') {

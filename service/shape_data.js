@@ -95,35 +95,39 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
         setT.geometry.type = 'MultiLineString'
       }
 
-      if (!setT.geometry.bbox && setT.geometry.coordinates && setT.geometry.coordinates.length >= 1 && setT.geometry.type == 'Point') {
+      if (setT.geometry.coordinates.length >= 2 && setT.geometry.type == 'Point') {
         setT.geometry.type = 'Point'
       }
     });
   } else if ( mimetype == 'kml' ) {
     geojson.features.forEach(setK => {
-      if (setK.geometry.coordinates && setK.geometry.coordinates.length >= 1 && setK.geometry.coordinates[0][0].length >= 3 && setK.geometry.type == 'Polygon') {
-        setK.geometry.type = 'PolygonZ'
+      if (setK.geometry.coordinates && setK.geometry.coordinates.length >= 1  && setK.geometry.type == 'Polygon') {
+        if(setK.geometry.coordinates[0][0].length >= 3) setK.geometry.type = 'PolygonZ'
       }
-      if (!setK.geometry.bbox && setK.geometry.coordinates && setK.geometry.coordinates.length >= 1 && setK.geometry.type == 'Point') {
+      if (setK.geometry.coordinates.length <= 2 && setK.geometry.type == 'Point') {
         setK.geometry.type = 'Point'
       }
-      if (setK.geometry.coordinates && setK.geometry.coordinates.length >= 1 && setK.geometry.coordinates[0].length >= 3 && setK.geometry.type == 'Point') {
+      if (setK.geometry.coordinates.length >= 3 && setK.geometry.type == 'Point') {
         setK.geometry.type = 'PointZ'
       }
     })
     
   } else {
     geojson.features.forEach(setZ => {
-      if (setZ.geometry.coordinates && setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0].length >= 3 && setZ.geometry.type == 'LineString') {
+      if (setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0].length >= 2 && setZ.geometry.type == 'LineString') {
+        setZ.geometry.type = 'LineString'
+      }
+
+      if (setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0].length >= 3 && setZ.geometry.type == 'LineString') {
         setZ.geometry.type = 'LineStringZ'
       }
 
-      if (setZ.geometry.coordinates && setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0].length >= 3 && setZ.geometry.type == 'Point') {
+      if (setZ.geometry.coordinates.length >= 3 && setZ.geometry.type == 'Point') {
         setZ.geometry.type = 'PointZ'
       }
 
-      if (setZ.geometry.coordinates && setZ.geometry.coordinates.length >= 1 && setZ.geometry.coordinates[0][0].length >= 3 && setZ.geometry.type == 'Polygon') {
-        setZ.geometry.type = 'PolygonZ'
+      if (setZ.geometry.coordinates.length >= 1 && setZ.geometry.type == 'Polygon') {
+        if(setZ.geometry.coordinates[0][0].length >= 3) setZ.geometry.type = 'PolygonZ'
       }
 
     })
