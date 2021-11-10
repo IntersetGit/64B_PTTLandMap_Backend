@@ -709,29 +709,5 @@ exports.convertGeoToShp = async (req, res, next) => {
 //     documentDescription: "One of the many places you are not I am"
 // });
 
-var geojson2kml = require("geojson2kml");
 
-  
-
-exports.convertGeoToKml = async(req, res , next) =>{
- 
-        const geojson = req.body;
-        const {name} = req.query
-    
-
-        
-        geojson2kml(geojson, `public/kmlfile/PTT-${name}.Kml`,function(err){
-           
-            if(err) 
-            throw err;
-            done(err)
-          
-    
-        })
-    
-
-
-      result(res )
-   
-        }
     
