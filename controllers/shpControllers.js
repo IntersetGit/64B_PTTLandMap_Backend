@@ -11,7 +11,7 @@ const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
 const { shapeDataService } = require("../service/shape_data");
 const { checkImgById } = require('../util');
-const fs = require('fs')
+const fs = require('fs');
 const path = require("path");
 const parseKML = require('parse-kml');
 const KMZGeoJSON = require('parse2-kmz');
@@ -238,8 +238,8 @@ exports.editShapeMap = async (req, res, next) => {
 **/
 exports.getFromProjectDashboard = async (req, res, next) => {
     try {
-        const { search, project_name, prov, amp, tam } = req.query
-        const _res_sql = await getFromProjectService(search, project_name, prov, amp, tam);
+        const { search, project_name, prov, amp, tam, layer_group} = req.query
+        const _res_sql = await getFromProjectService(search, project_name, prov, amp, tam, layer_group);
         const { _temp, ___temp } = _res_sql
         const status = [], data = [], _status = [], _data = [], status_color = []
 
@@ -265,9 +265,9 @@ exports.getFromProjectDashboard = async (req, res, next) => {
 
 exports.getFromReportDashbord = async (req, res, next) => {
     try {
-        const { search, project_name, prov, amp, tam } = req.query
-        const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam)   
-        const _sumPotArea = await getFromReportDashbordServiceEach(search, project_name, prov, amp, tam)   
+        const { search, project_name, prov, amp, tam, layer_group} = req.query
+        const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam, layer_group)   
+        const _sumPotArea = await getFromReportDashbordServiceEach(search, project_name, prov, amp, tam, layer_group)   
         
 
         // araea_all.forEach((e) => {
