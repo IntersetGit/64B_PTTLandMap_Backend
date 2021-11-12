@@ -1,11 +1,4 @@
 var DataTypes = require("sequelize").DataTypes;
-var _1 = require("./1");
-var _2 = require("./2");
-var _3 = require("./3");
-var _3 = require("./3");
-var _Feature Labels (NUMBER) = require("./Feature Labels (NUMBER)");
-var _Feature Labels (NUMBER) = require("./Feature Labels (NUMBER)");
-var _ROW_line = require("./ROW_line");
 var _dat_layers = require("./dat_layers");
 var _dat_profile_users = require("./dat_profile_users");
 var _dat_street_view = require("./dat_street_view");
@@ -15,35 +8,12 @@ var _mas_layers_shape = require("./mas_layers_shape");
 var _mas_name_titles = require("./mas_name_titles");
 var _mas_province = require("./mas_province");
 var _mas_status_project = require("./mas_status_project");
-var _mas_subdistrict = require("./mas_subdistrict");
-var _ptt_kml_number103287 = require("./ptt_kml_number103287");
-var _ptt_kml_number110488 = require("./ptt_kml_number110488");
-var _ptt_kml_number121440 = require("./ptt_kml_number121440");
-var _ptt_kml_number18420 = require("./ptt_kml_number18420");
-var _ptt_kml_number33372 = require("./ptt_kml_number33372");
-var _ptt_kml_number7368 = require("./ptt_kml_number7368");
-var _ptt_kmz_number1 = require("./ptt_kmz_number1");
-var _ptt_shape_number141618 = require("./ptt_shape_number141618");
-var _ptt_shape_number169247 = require("./ptt_shape_number169247");
-var _ptt_shape_number183506 = require("./ptt_shape_number183506");
-var _ptt_shape_number40191 = require("./ptt_shape_number40191");
-var _ptt_shape_number86323 = require("./ptt_shape_number86323");
-var _ptt_shape_number90504 = require("./ptt_shape_number90504");
+var _mas_subdistrict = require("./mas_subdistrict");;
 var _sysm_config = require("./sysm_config");
 var _sysm_roles = require("./sysm_roles");
 var _sysm_users = require("./sysm_users");
-var _undefined = require("./undefined");
-var _waterways = require("./waterways");
-var _เขื่อนป้องกันการกัดเซ = require("./เขื่อนป้องกันการกัดเซ");
 
 function initModels(sequelize) {
-  var 1 = _1(sequelize, DataTypes);
-  var 2 = _2(sequelize, DataTypes);
-  var 3 = _3(sequelize, DataTypes);
-  var 3 = _3(sequelize, DataTypes);
-  var Feature Labels (NUMBER) = _Feature Labels (NUMBER)(sequelize, DataTypes);
-  var Feature Labels (NUMBER) = _Feature Labels (NUMBER)(sequelize, DataTypes);
-  var ROW_line = _ROW_line(sequelize, DataTypes);
   var dat_layers = _dat_layers(sequelize, DataTypes);
   var dat_profile_users = _dat_profile_users(sequelize, DataTypes);
   var dat_street_view = _dat_street_view(sequelize, DataTypes);
@@ -54,25 +24,9 @@ function initModels(sequelize) {
   var mas_province = _mas_province(sequelize, DataTypes);
   var mas_status_project = _mas_status_project(sequelize, DataTypes);
   var mas_subdistrict = _mas_subdistrict(sequelize, DataTypes);
-  var ptt_kml_number103287 = _ptt_kml_number103287(sequelize, DataTypes);
-  var ptt_kml_number110488 = _ptt_kml_number110488(sequelize, DataTypes);
-  var ptt_kml_number121440 = _ptt_kml_number121440(sequelize, DataTypes);
-  var ptt_kml_number18420 = _ptt_kml_number18420(sequelize, DataTypes);
-  var ptt_kml_number33372 = _ptt_kml_number33372(sequelize, DataTypes);
-  var ptt_kml_number7368 = _ptt_kml_number7368(sequelize, DataTypes);
-  var ptt_kmz_number1 = _ptt_kmz_number1(sequelize, DataTypes);
-  var ptt_shape_number141618 = _ptt_shape_number141618(sequelize, DataTypes);
-  var ptt_shape_number169247 = _ptt_shape_number169247(sequelize, DataTypes);
-  var ptt_shape_number183506 = _ptt_shape_number183506(sequelize, DataTypes);
-  var ptt_shape_number40191 = _ptt_shape_number40191(sequelize, DataTypes);
-  var ptt_shape_number86323 = _ptt_shape_number86323(sequelize, DataTypes);
-  var ptt_shape_number90504 = _ptt_shape_number90504(sequelize, DataTypes);
   var sysm_config = _sysm_config(sequelize, DataTypes);
   var sysm_roles = _sysm_roles(sequelize, DataTypes);
   var sysm_users = _sysm_users(sequelize, DataTypes);
-  var undefined = _undefined(sequelize, DataTypes);
-  var waterways = _waterways(sequelize, DataTypes);
-  var เขื่อนป้องกันการกัดเซ = _เขื่อนป้องกันการกัดเซ(sequelize, DataTypes);
 
   mas_subdistrict.belongsTo(mas_district, { as: "district", foreignKey: "district_id"});
   mas_district.hasMany(mas_subdistrict, { as: "mas_subdistricts", foreignKey: "district_id"});
@@ -108,13 +62,6 @@ function initModels(sequelize) {
   sysm_users.hasMany(sysm_users, { as: "update_by_sysm_users", foreignKey: "update_by"});
 
   return {
-    1,
-    2,
-    3,
-    3,
-    Feature Labels (NUMBER),
-    Feature Labels (NUMBER),
-    ROW_line,
     dat_layers,
     dat_profile_users,
     dat_street_view,
@@ -125,25 +72,9 @@ function initModels(sequelize) {
     mas_province,
     mas_status_project,
     mas_subdistrict,
-    ptt_kml_number103287,
-    ptt_kml_number110488,
-    ptt_kml_number121440,
-    ptt_kml_number18420,
-    ptt_kml_number33372,
-    ptt_kml_number7368,
-    ptt_kmz_number1,
-    ptt_shape_number141618,
-    ptt_shape_number169247,
-    ptt_shape_number183506,
-    ptt_shape_number40191,
-    ptt_shape_number86323,
-    ptt_shape_number90504,
     sysm_config,
     sysm_roles,
-    sysm_users,
-    undefined,
-    waterways,
-    เขื่อนป้องกันการกัดเซ,
+    sysm_users
   };
 }
 module.exports = initModels;
