@@ -3,8 +3,8 @@ var _1 = require("./1");
 var _2 = require("./2");
 var _3 = require("./3");
 var _3 = require("./3");
-// var _Feature Labels (NUMBER) = require("./Feature Labels (NUMBER)");
-// var _Feature Labels (NUMBER) = require("./Feature Labels (NUMBER)");
+var _Feature Labels (NUMBER) = require("./Feature Labels (NUMBER)");
+var _Feature Labels (NUMBER) = require("./Feature Labels (NUMBER)");
 var _ROW_line = require("./ROW_line");
 var _dat_layers = require("./dat_layers");
 var _dat_profile_users = require("./dat_profile_users");
@@ -37,12 +37,12 @@ var _waterways = require("./waterways");
 var _เขื่อนป้องกันการกัดเซ = require("./เขื่อนป้องกันการกัดเซ");
 
 function initModels(sequelize) {
-  // var 1 = _1(sequelize, DataTypes);
-  // var 2 = _2(sequelize, DataTypes);
-  // var 3 = _3(sequelize, DataTypes);
-  // var 3 = _3(sequelize, DataTypes);
-  // var Feature Labels (NUMBER) = _Feature Labels (NUMBER)(sequelize, DataTypes);
-  // var Feature Labels (NUMBER) = _Feature Labels (NUMBER)(sequelize, DataTypes);
+  var 1 = _1(sequelize, DataTypes);
+  var 2 = _2(sequelize, DataTypes);
+  var 3 = _3(sequelize, DataTypes);
+  var 3 = _3(sequelize, DataTypes);
+  var Feature Labels (NUMBER) = _Feature Labels (NUMBER)(sequelize, DataTypes);
+  var Feature Labels (NUMBER) = _Feature Labels (NUMBER)(sequelize, DataTypes);
   var ROW_line = _ROW_line(sequelize, DataTypes);
   var dat_layers = _dat_layers(sequelize, DataTypes);
   var dat_profile_users = _dat_profile_users(sequelize, DataTypes);
@@ -108,12 +108,12 @@ function initModels(sequelize) {
   sysm_users.hasMany(sysm_users, { as: "update_by_sysm_users", foreignKey: "update_by"});
 
   return {
-    // 1,
-    // 2,
-    // 3,
-    // 3,
-    // Feature Labels (NUMBER),
-    // Feature Labels (NUMBER),
+    1,
+    2,
+    3,
+    3,
+    Feature Labels (NUMBER),
+    Feature Labels (NUMBER),
     ROW_line,
     dat_layers,
     dat_profile_users,
