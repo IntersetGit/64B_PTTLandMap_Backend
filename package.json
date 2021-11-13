@@ -11,7 +11,7 @@
     "up-models_": "sequelize-auto -o './models' -d pttlandmap_db -h 103.253.72.178 -u hrSystemAdmin -p 5432 -x 4Dm!n2020@Interset -e postgres"
   },
   "dependencies": {
-    "@rbzhang/gtran-kmz": "^1.1.5",
+    "@timedata/geojson2shp-utf8": "^0.3.2",
     "activedirectory": "^0.7.2",
     "alasql": "^1.7.3",
     "axios": "^0.21.1",
@@ -27,10 +27,11 @@
     "express-validator": "^6.9.2",
     "geojson-to-kml": "0.0.1",
     "geojson2shp": "^0.4.0",
-    "gtran-kml": "^1.4.5",
+    "gtran-kmz": "^1.1.4",
     "helmet": "^4.4.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
+    "json2csv": "^5.0.6",
     "json2xls": "^0.1.2",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",

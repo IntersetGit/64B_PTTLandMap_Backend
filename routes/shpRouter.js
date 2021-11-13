@@ -11,7 +11,7 @@ router.get('/getDataLayer', [authenticateToken], getAllDataLayer);
 /* เรียกข้อมูลเป็น geo json */
 router.get('/shapeData', [authenticateToken], getShapeData);
 /* แปลง geo เป็น shp */
-router.post('/convertGeoToShp', [authenticateToken], convertGeoToKml);
+router.get('/convertGeoToShp', convertGeoToKml);
 
 /* ค้นหาข้อมูลหน้า และเรียกข้อมูล map  */
 router.get('/getSearchData', [authenticateToken], getInfoProject);
