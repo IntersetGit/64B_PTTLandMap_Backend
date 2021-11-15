@@ -174,7 +174,7 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
       if (e === 'LineStringZ') dataType = DataTypes.GEOMETRY("LineStringZ", 0)
       if (e === 'MultiLineString') dataType = DataTypes.GEOMETRY("MultiLineString", 0)
       if (e === 'Polygon') dataType = DataTypes.GEOMETRY("Polygon", 4326)
-      if (e === 'PolygonZ') dataType = DataTypes.GEOMETRY("PolygonZ", 0)
+      if (e === 'PolygonZ') dataType = DataTypes.GEOMETRY("PolygonZ", 4326)
 
       if (indexPropertie.length > 0) {
         obj1.gid = {

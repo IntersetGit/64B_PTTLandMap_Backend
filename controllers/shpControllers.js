@@ -45,7 +45,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             if (mimetype == 'zip') {
 
                 const geojson = await shp(file.data); // แปลงไฟล์ shape
-                console.log(geojson);
+                // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
                 tables = _createTableShape.arrNameTable
@@ -120,12 +120,13 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
     } catch (error) {
         if (transaction) await transaction.rollback();
         if (tables && schema) {
-            tables.forEach(e => {
+            for (let i = 0; i < tables.length; i++) {
+                const e = tables[i];
                 await queryInterface.dropTable({
                     tableName: e,
                     schema,
                 })
-            })
+            }
         }
         next(error);
     }
