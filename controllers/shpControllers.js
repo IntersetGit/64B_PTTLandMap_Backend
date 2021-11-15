@@ -27,6 +27,7 @@ const http = require('http');
 exports.shapeKmlKmzAdd = async (req, res, next) => {
     const queryInterface = await sequelize.getQueryInterface();
     const transaction = await sequelize.transaction();
+    let schema, tables
     try {
 
         if (!req.files) {
@@ -47,6 +48,8 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
+                tables = _createTableShape.arrNameTable
+                schema =_createTableShape.schema
 
                 await addShapeLayersService({
                     id,
@@ -69,6 +72,8 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
+                tables = _createTableShape.arrNameTable
+                schema =_createTableShape.schema
 
                 await addShapeLayersService({
                     id,
@@ -91,6 +96,9 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
+                tables = _createTableShape.arrNameTable
+                schema =_createTableShape.schema
+
                 await addShapeLayersService({
                     id,
                     name_layer,
@@ -111,6 +119,14 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
         }
     } catch (error) {
         if (transaction) await transaction.rollback();
+        if (tables && schema) {
+            tables.forEach(e => {
+                await queryInterface.dropTable({
+                    tableName: e,
+                    schema,
+                })
+            })
+        }
         next(error);
     }
 }
