@@ -25,7 +25,6 @@
     "express-fileupload": "^1.2.1",
     "express-paginate": "^1.0.2",
     "express-validator": "^6.9.2",
-    "geojson-to-kml": "0.0.1",
     "geojson2shp": "^0.4.0",
     "gtran-kmz": "^1.1.4",
     "helmet": "^4.4.1",
