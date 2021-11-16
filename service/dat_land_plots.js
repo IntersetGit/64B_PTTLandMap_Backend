@@ -94,11 +94,10 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
 
             if (data.geometry.type === 'Point') {
                 const arrPoint = []
-                data.geometry.coordinates.forEach(point => {
-                    if (data.geometry.coordinates.length <= 2) {
-                        arrPoint.push(`[${point}]`);
-                    }
-                })
+                if (data.geometry.coordinates.length === 2) {
+                    arrPoint.push(`[${data.geometry.coordinates}]`);
+                }
+                
                 arrSql.push(`(ST_GeomFromGeoJSON('{
                     "type":"Point",
                     "coordinates": ${arrPoint} 
