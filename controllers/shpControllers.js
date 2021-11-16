@@ -17,10 +17,15 @@ const parseKML = require('parse-kml');
 const KMZGeoJSON = require('parse2-kmz');
 const convertKml = require('tokml');
 const convertKmz = require('gtran-kmz');
-const json2xls = require('json2xls');
+// const json2xlss = require('json2xls');
 const CsvParser = require("json2csv").Parser;
 const { errorUserNot } = require("../messages");
 const http = require('http');
+// const exportFromJSON = require('export-from-json');
+// const json2xls = require('p3x-json2xls-worker-thread');
+const xl = require('excel4node');
+const { log } = require("console");
+
 
 
 
@@ -202,6 +207,70 @@ exports.convertGeoToKml = async (req, res, next) => {
             
             }
             if (type === 'xls') {
+
+                const wb = new xl.Workbook();
+                const ws = wb.addWorksheet('Worksheet Name');
+
+                const headingColumnNames = [], data = []
+                shape.features.forEach(e => {
+                    data.push(e.properties)
+                });
+                const keys = data.map(key => Object.keys(key));
+                keys.forEach(valKey => {
+                    valKey.forEach(e => {
+                        const index = headingColumnNames.findIndex(ind => ind == e);
+                        if (index === -1) headingColumnNames.push(e);
+                    })
+                })
+             
+                let headingColumnIndex = 1;
+                headingColumnNames.forEach(heading => {
+                    ws.cell(1, headingColumnIndex++)
+                        .string(heading)
+                });
+                
+                let rowIndex = 2;
+                data.forEach( record => {
+                    let columnIndex = 1;
+                    Object.keys(record ).forEach(columnName =>{
+                        ws.cell(rowIndex,columnIndex++)
+                            .string(record [columnName])
+                    });
+                    rowIndex++;
+                }); 
+                wb.write(`Geojsontoexcel-${id}.xlsx`);
+                
+
+                // const { data } = await exportFromJSON(shape);
+                // res.setHeader("Content-Type", "application/vnd.ms-excel; charset=utf-8");
+                // res.setHeader(`Content-Disposition`, `attachment; filename=${uuid4}.xls`);
+                // res.status(200).end(data);
+      
+                    
+                //     // const data = '[{"foo":"foo"},{"bar":"bar"}]'
+                //     const fileName = 'download'
+                //     const exportType = 'xls'
+                
+                //     const result = exportFromJSON({
+                //         shape,
+                //         fileName,
+                //         exportType,
+                //         processor (content, xls, fileName) {
+                //             switch (type) {
+                               
+                //                 case 'xls':
+                //                     response.setHeader('Content-Type', 'application/vnd.ms-excel')
+                //                     break
+                //             }
+                //             response.setHeader('Content-disposition', `attachment; filename=${uuid4}.xls`)
+                //             return content
+                //         }
+                //     })
+                
+                //     response.write(result)
+                //     response.end()
+                // console.log(result);
+                
     
             }
         }
