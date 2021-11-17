@@ -198,6 +198,7 @@ exports.editMasLayersShapeService = async (data, user) => {
     type_server: data.type_server,
     date: data.date,
     option_layer: data.option_layer,
+    config_color: data.config_color,
     symbol_point: data.symbol_point,
     type_geo: data.type_geo
   }, {

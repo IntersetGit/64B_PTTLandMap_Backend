@@ -53,15 +53,19 @@ exports.shapeDataService = async (table_name, id, type) => {
     let result_sql = await sequelizeStringFindOne(sql);
     /* ค้นหาสีตาม status ใน shpae*/
     if (result_sql.shape.features != null) {
-      for (let i = 0; i < result_sql.shape.features.length; i++) {
-        const e = result_sql.shape.features[i];
-        if (e.properties.status) {
-          const _status_shape = String(e.properties.status)
-          const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
-          e.properties.status_color = status_color ?? undefined
-        } else undefined
-
+      if (filter_table_name.config_color === true) return result_sql
+      else {
+        for (let i = 0; i < result_sql.shape.features.length; i++) {
+          const e = result_sql.shape.features[i];
+          if (e.properties.status) {
+            const _status_shape = String(e.properties.status)
+            const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
+            e.properties.status_color = status_color ?? undefined
+          }
+  
+        }
       }
+      
     } else {
       const err = new Error('ไม่มีข้อมูล shape')
       err.statusCode = 404
@@ -471,8 +475,8 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
     for (const af in KeepData) {
       if (Object.hasOwnProperty.call(KeepData, af)) {
         const tables_name = KeepData[af];
-        const { table_schema, table_name } = allSchema.find(tbl => tbl.table_name == tables_name)
         if (tables_name != "" && tables_name != null) {
+        const { table_schema, table_name } = allSchema.find(tbl => tbl.table_name == tables_name)
           _res = await sequelizeString(
             (sql = `SELECT * FROM ${table_schema}.${table_name} `)
           );
