@@ -5,6 +5,6 @@ const uploadControllers = require("../controllers/uploadControllers");
 /* uploads */
 // router.post('/', [passportJWT.isLogin], uploadControllers.uploads);
 router.post('/', uploadControllers.uploads);
-
+router.post('/defaultSatellite',uploadControllers.uploadDefault)
 
 module.exports = router;
