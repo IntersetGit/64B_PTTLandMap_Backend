@@ -478,7 +478,7 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
         if (tables_name != "" && tables_name != null) {
         const { table_schema, table_name } = allSchema.find(tbl => tbl.table_name == tables_name)
           _res = await sequelizeString(
-            (sql = `SELECT * FROM ${table_schema}.${table_name} `)
+            (sql = `SELECT * FROM ${table_schema}.${table_name}  `)
           );
           if (_res.length > 0) {
             _res.forEach((province) => {
@@ -505,6 +505,9 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
       });
     }
   }
+
+
+
 
   // [...new Set(arr_sql.map(({prov}) => prov.replace(/\n/g, '') ))],
   // [...new Set(arr_sql.map(({amp}) => amp.replace(/\n/g, '') ))],

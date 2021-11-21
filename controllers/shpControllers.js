@@ -402,11 +402,14 @@ exports.getFromReportDashbord = async (req, res, next) => {
             let statusAreaP3 = 0
             let statusAreaP4 = 0
             let statusAreaP5 = 0
+            let statusAreaP6 = 0
+
             let statusPotP1 = 0
             let statusPotP2 = 0
             let statusPotP3 = 0
             let statusPotP4 = 0
             let statusPotP5 = 0
+            let statusPotP6 = 0
 
             _sumPotArea.Sumpottam.forEach(p => {
                 if (p.prov == e.name) {
@@ -421,6 +424,8 @@ exports.getFromReportDashbord = async (req, res, next) => {
                         statusPotP4 += p.count
                     } else if (p.status == 5) {
                         statusPotP5 += p.count
+                    } else if (p.status == 6) {
+                        statusPotP6 += p.count
                     }
                 }
             })
@@ -439,8 +444,10 @@ exports.getFromReportDashbord = async (req, res, next) => {
                         statusAreaP4 += a.row_distan
                     } else if (a.status == 5) {
                         statusAreaP5 += a.row_distan
-                    }
+                    }else if (a.status == 6) {
+                        statusAreaP6 += a.row_distan
                 }
+            }
             })
 
             return {
@@ -453,11 +460,12 @@ exports.getFromReportDashbord = async (req, res, next) => {
                 Area_status_3: statusAreaP3,
                 Area_status_4: statusAreaP4,
                 Area_status_5: statusAreaP5,
+                Area_status_6: statusAreaP6,
                 Pot_status_1: statusPotP1,
                 Pot_status_2: statusPotP2,
                 Pot_status_3: statusPotP3,
                 Pot_status_4: statusPotP4,
-                Pot_status_5: statusPotP5,
+                Pot_status_6: statusPotP6,
                 // statusarea1: status,
                 amp: []
             }
@@ -473,11 +481,13 @@ exports.getFromReportDashbord = async (req, res, next) => {
                     let statusAreaA3 = 0
                     let statusAreaA4 = 0
                     let statusAreaA5 = 0
+                    let statusAreaA6 = 0
                     let statusPotA1 = 0
                     let statusPotA2 = 0
                     let statusPotA3 = 0
                     let statusPotA4 = 0
                     let statusPotA5 = 0
+                    let statusPotA6 = 0
                     _sumPotArea.Sumpottam.forEach(pa => {
                         if (pa.amp == a.name) {
                             _Potamp += pa.count
@@ -491,8 +501,10 @@ exports.getFromReportDashbord = async (req, res, next) => {
                                 statusPotA4 += pa.count
                             } else if (pa.status == 5) {
                                 statusPotA5 += pa.count
-                            }
+                            }else if (pa.status == 6) {
+                                statusPotA6 += pa.count
                         }
+                    }
                     })
                     _sumPotArea.Sumareatam.forEach(aa => {
                         if (aa.amp == a.name) {
@@ -509,8 +521,10 @@ exports.getFromReportDashbord = async (req, res, next) => {
                                 statusAreaA4 += aa.row_distan
                             } else if (aa.status == 5) {
                                 statusAreaA5 += aa.row_distan
-                            }
+                            }else if (aa.status == 6) {
+                                statusAreaA6 += aa.row_distan
                         }
+                    }
                     })
 
                     e.amp.push({
@@ -523,11 +537,13 @@ exports.getFromReportDashbord = async (req, res, next) => {
                         Area_status_3: statusAreaA3,
                         Area_status_4: statusAreaA4,
                         Area_status_5: statusAreaA5,
+                        Area_status_6: statusAreaA6,
                         Pot_status_1: statusPotA1,
                         Pot_status_2: statusPotA2,
                         Pot_status_3: statusPotA3,
                         Pot_status_4: statusPotA4,
                         Pot_status_5: statusPotA5,
+                        Pot_status_6: statusPotA6,
                         tam: []
                     })
                 }
@@ -545,11 +561,13 @@ exports.getFromReportDashbord = async (req, res, next) => {
                     let statusAreaT3 = 0
                     let statusAreaT4 = 0
                     let statusAreaT5 = 0
+                    let statusAreaT6 = 0
                     let statusPotT1 = 0
                     let statusPotT2 = 0
                     let statusPotT3 = 0
                     let statusPotT4 = 0
                     let statusPotT5 = 0
+                    let statusPotT6 = 0
 
                     _sumPotArea.Sumpottam.forEach(pt => {
                         if (pt.tam == t.name) {
@@ -565,8 +583,10 @@ exports.getFromReportDashbord = async (req, res, next) => {
                                 statusPotT4 += pt.count
                             } else if (pt.status == 5) {
                                 statusPotT5 += pt.count
-                            }
+                            } else if (pt.status == 6) {
+                                statusPotT6 += pt.count
                         }
+                     }
                     })
                     _sumPotArea.Sumareatam.forEach(at => {
                         if (at.tam == t.name) {
@@ -583,8 +603,10 @@ exports.getFromReportDashbord = async (req, res, next) => {
                                 statusAreaT4 += at.row_distan
                             } else if (at.status == 5) {
                                 statusAreaT5 += at.row_distan
-                            }
+                            } else if (at.status == 6) {
+                                statusAreaT6 += at.row_distan
                         }
+                    }
                     })
 
                     _find.tam.push({
@@ -597,11 +619,13 @@ exports.getFromReportDashbord = async (req, res, next) => {
                         Area_status_3: statusAreaT3,
                         Area_status_4: statusAreaT4,
                         Area_status_5: statusAreaT5,
+                        Area_status_6: statusAreaT6,
                         Pot_status_1: statusPotT1,
                         Pot_status_2: statusPotT2,
                         Pot_status_3: statusPotT3,
                         Pot_status_4: statusPotT4,
                         Pot_status_5: statusPotT5,
+                        Pot_status_6: statusPotT6,
                     })
                 }
             })
