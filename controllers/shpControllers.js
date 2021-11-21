@@ -382,11 +382,12 @@ exports.getFromReportDashbord = async (req, res, next) => {
         const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam, layer_group)
         const _sumPotArea = await getFromReportDashbordServiceEach(search, project_name, prov, amp, tam, layer_group)        
         const COLOR = []
-        sqlColor = await sequelizeString(`SELECT status_code, status_color  FROM master_lookup.mas_status_project order by status_code `);
+        sqlColor = await sequelizeString(`SELECT status_code, status_color, name  FROM master_lookup.mas_status_project order by status_code `);
         sqlColor.forEach((color) => {
             COLOR.push({
             status_code: color.status_code,
             status_color: color.status_color,
+            status_name : color.name,
           });
         });
 
