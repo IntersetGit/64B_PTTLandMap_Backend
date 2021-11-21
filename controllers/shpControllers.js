@@ -21,6 +21,7 @@ const CsvParser = require("json2csv").Parser;
 const { errorUserNot } = require("../messages");
 const http = require('http');
 const xl = require('excel4node');
+const {sequelizeString} = require("../util");
 
 
 
@@ -379,7 +380,15 @@ exports.getFromReportDashbord = async (req, res, next) => {
     try {
         const { search, project_name, prov, amp, tam, layer_group } = req.query
         const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam, layer_group)
-        const _sumPotArea = await getFromReportDashbordServiceEach(search, project_name, prov, amp, tam, layer_group)
+        const _sumPotArea = await getFromReportDashbordServiceEach(search, project_name, prov, amp, tam, layer_group)        
+        const COLOR = []
+        sqlColor = await sequelizeString(`SELECT status_code, status_color  FROM master_lookup.mas_status_project `);
+        sqlColor.forEach((color) => {
+            COLOR.push({
+            status_code: color.status_code,
+            status_color: color.status_color,
+          });
+        });
 
 
         // araea_all.forEach((e) => {
@@ -391,7 +400,6 @@ exports.getFromReportDashbord = async (req, res, next) => {
         //       ___temp[int].row_distan += e.row_distan;
         //     }
         //   })
-
 
         let PATM = _res._prov.map(e => {
             // const _find = _res._temp.find(x => x.)
@@ -465,6 +473,7 @@ exports.getFromReportDashbord = async (req, res, next) => {
                 Pot_status_2: statusPotP2,
                 Pot_status_3: statusPotP3,
                 Pot_status_4: statusPotP4,
+                Pot_status_5: statusPotP5,
                 Pot_status_6: statusPotP6,
                 // statusarea1: status,
                 amp: []
@@ -631,12 +640,8 @@ exports.getFromReportDashbord = async (req, res, next) => {
             })
         })
 
-
-
-        result(res, { PATM })
+        result(res, { PATM, COLOR })
         // result(res, {_sumPotArea})
-
-
 
     } catch (error) {
         next(error);
