@@ -19,10 +19,11 @@ exports.getAllMasterLayers = async (search) => {
 //----------- by id ------------------------//
 
 exports.getByIdMasLayersNameService = async (id) => {
-  const byIDMasLayername = await models.mas_layer_groups.findOne({
-    where: { id }
-  })
-  return byIDMasLayername;
+  
+    let sql = ` select * from master_lookup.mas_layer_groups where isuse =1  `
+    if (id) sql += ` and id  =  '${id}' `
+
+  return sequelizeString(sql)
 }
 
 

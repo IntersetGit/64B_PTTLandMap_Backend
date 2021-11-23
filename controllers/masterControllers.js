@@ -66,12 +66,10 @@ exports.getByIdMasLayersName = async (req, res, next) => {
   try {
     const {id} = req.query
     let _res =  await getByIdMasLayersNameService(id)
-
-     _res.symbol =  checkImgById( _res.id, "symbol_group") ?? null
   
-    // _byID.forEach(aa => { 
-    //      aa.symbol = checkImgById(aa.id, "symbol_group") ?? null
-    // });
+    _res.forEach(aa => { 
+         aa.symbol = checkImgById(aa.id, "symbol_group") ?? null
+    });
 
 
     result(res, _res)
@@ -79,6 +77,7 @@ exports.getByIdMasLayersName = async (req, res, next) => {
     next(error)
   }
 }
+
 
 
 
