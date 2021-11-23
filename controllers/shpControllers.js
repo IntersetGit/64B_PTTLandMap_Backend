@@ -5,7 +5,7 @@ const { convert } = require("@timedata/geojson2shp-utf8");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
 const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService,
-    editshapeDataService, getFromProjectService, getFromReportDashbordService, getFromReportDashbordServiceEach } = require('../service/shape_data')
+    editshapeDataService, getFromProjectService, getFromReportDashbordService, getFromReportDashbordServiceEach, getReportDashboardService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -21,7 +21,7 @@ const CsvParser = require("json2csv").Parser;
 const { errorUserNot } = require("../messages");
 const http = require('http');
 const xl = require('excel4node');
-const {sequelizeString} = require("../util");
+const { sequelizeString } = require("../util");
 
 
 
@@ -51,7 +51,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
                 tables = _createTableShape.arrNameTable
-                schema =_createTableShape.schema
+                schema = _createTableShape.schema
 
                 await addShapeLayersService({
                     id,
@@ -75,7 +75,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
                 tables = _createTableShape.arrNameTable
-                schema =_createTableShape.schema
+                schema = _createTableShape.schema
 
                 await addShapeLayersService({
                     id,
@@ -99,7 +99,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
                 tables = _createTableShape.arrNameTable
-                schema =_createTableShape.schema
+                schema = _createTableShape.schema
 
                 await addShapeLayersService({
                     id,
@@ -163,45 +163,45 @@ exports.convertGeoJson = async (req, res, next) => {
                 const dest = `public/shapfile/shapfile-${uuid4}.zip`
                 const url = `${config.SERVICE_HOST}/shapfile/shapfile-${uuid4}.zip`;
                 // await download(url, dest);
-                await convert(shape.features, dest , options);
+                await convert(shape.features, dest, options);
                 result(res, url);
             }
-    
+
             if (type === 'kml') {
                 const data = await convertKml(shape);
                 res.setHeader("Content-Type", "text/kml; charset=utf-8");
                 res.setHeader(`Content-Disposition`, `attachment; filename=${uuid4}.kml`);
                 res.status(200).end(data);
-    
+
             }
-    
+
             if (type === 'kmz') {
                 const { data } = await convertKmz.fromGeoJson(shape);
                 res.setHeader("Content-Type", "text/kmz; charset=utf-8");
                 res.setHeader(`Content-Disposition`, `attachment; filename=${uuid4}.kmz`);
                 res.status(200).end(data);
-    
+
             }
-    
+
             if (type === 'csv') {
-                    const url = `${config.SERVICE_HOST}/shp/convertGeoToShp?id=${id}&type=${type}`
-                    const csvFields = [], data = []
-                    shape.features.forEach(e => {
-                        data.push(e.properties)
-                    });
-                    const keys = data.map(key => Object.keys(key));
-                    keys.forEach(valKey => {
-                        valKey.forEach(e => {
-                            const index = csvFields.findIndex(ind => ind == e);
-                            if (index === -1) csvFields.push(e);
-                        })
+                const url = `${config.SERVICE_HOST}/shp/convertGeoToShp?id=${id}&type=${type}`
+                const csvFields = [], data = []
+                shape.features.forEach(e => {
+                    data.push(e.properties)
+                });
+                const keys = data.map(key => Object.keys(key));
+                keys.forEach(valKey => {
+                    valKey.forEach(e => {
+                        const index = csvFields.findIndex(ind => ind == e);
+                        if (index === -1) csvFields.push(e);
                     })
-                    const csvParser = new CsvParser({ csvFields, withBOM: true });
-                    const resCsvData = csvParser.parse(data);
-                    res.setHeader("Content-Type", "text/csv; charset=utf-8");
-                    res.setHeader(`Content-Disposition`, `attachment; filename=${uuid4}.csv`);
-                    res.status(200).end(resCsvData);
-            
+                })
+                const csvParser = new CsvParser({ csvFields, withBOM: true });
+                const resCsvData = csvParser.parse(data);
+                res.setHeader("Content-Type", "text/csv; charset=utf-8");
+                res.setHeader(`Content-Disposition`, `attachment; filename=${uuid4}.csv`);
+                res.status(200).end(resCsvData);
+
             }
             if (type === 'xls') {
 
@@ -219,29 +219,29 @@ exports.convertGeoJson = async (req, res, next) => {
                         if (index === -1) headingColumnNames.push(e);
                     })
                 })
-             
+
                 let headingColumnIndex = 1;
                 headingColumnNames.forEach(heading => {
                     ws.cell(1, headingColumnIndex++)
                         .string(heading)
                 });
-                
+
                 let rowIndex = 2;
-                data.forEach( record => {
+                data.forEach(record => {
                     let columnIndex = 1;
-                    Object.keys(record ).forEach(columnName =>{
-                        ws.cell(rowIndex,columnIndex++)
-                            .string(record [columnName])
+                    Object.keys(record).forEach(columnName => {
+                        ws.cell(rowIndex, columnIndex++)
+                            .string(record[columnName])
                     });
                     rowIndex++;
-                }); 
+                });
                 const excute = `${uuid4}.xlsx`
                 res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8");
                 res.setHeader(`Content-Disposition`, `attachment; filename=${excute}`);
                 wb.write(excute, res);
             }
         }
-        
+
 
     } catch (error) {
         next(error);
@@ -379,276 +379,163 @@ exports.getFromProjectDashboard = async (req, res, next) => {
 exports.getFromReportDashbord = async (req, res, next) => {
     try {
         const { search, project_name, prov, amp, tam, layer_group } = req.query
-        const _res = await getFromReportDashbordService(search, project_name, prov, amp, tam, layer_group)
-        const _sumPotArea = await getFromReportDashbordServiceEach(search, project_name, prov, amp, tam, layer_group)        
-        const COLOR = []
-        sqlColor = await sequelizeString(`SELECT status_code, status_color, name  FROM master_lookup.mas_status_project order by status_code `);
-        sqlColor.forEach((color) => {
-            COLOR.push({
-            status_code: color.status_code,
-            status_color: color.status_color,
-            status_name : color.name,
-          });
+        const _data = await getReportDashboardService(search, project_name, prov, amp, tam, layer_group);
+
+        const _provList = [], _ampList = [], _tamList = [], _status = []
+        _data.forEach(e => {
+
+            e.prov = e.prov.replace(/\n/g, "")
+            e.amp = e.amp.replace(/\n/g, "")
+            e.tam = e.tam.replace(/\n/g, "")
+            e.row_distan = Number(e.row_distan)
+            if (e.prov && e.amp && e.tam) {
+
+                const indexProv = _provList.findIndex(x => x.prov === e.prov);
+                if (indexProv === -1) _provList.push(e);
+
+                const indexAmp = _ampList.findIndex(x => x.amp === e.amp);
+                if (indexAmp === -1) _ampList.push(e);
+
+                const indexTam = _tamList.findIndex(x => x.tam === e.tam);
+                if (indexTam === -1) _tamList.push(e);
+
+                const indexStatus = _status.findIndex(x => x.id === e.status_code);
+                if (indexStatus === -1) _status.push({
+                    id: e.status_code,
+                    status: e.name,
+                    color: e.status_color,
+                });
+            }
+
         });
 
+        const _model = {
+            table: _status,
+            data: {
+                all: []
+            },
+        }
 
-        // araea_all.forEach((e) => {
-        //     e.row_distan = Number(e.row_distan)
-        //     const int = ___temp.findIndex((n) => n.name === e.name)
-        //     if (int === -1) {
-        //       ___temp.push(e);
-        //     } else {
-        //       ___temp[int].row_distan += e.row_distan;
-        //     }
-        //   })
 
-        let PATM = _res._prov.map(e => {
-            // const _find = _res._temp.find(x => x.)
-            let _Potprov = 0
-            let _Areaprov = 0
-            let statusAreaP1 = 0
-            let statusAreaP2 = 0
-            let statusAreaP3 = 0
-            let statusAreaP4 = 0
-            let statusAreaP5 = 0
-            let statusAreaP6 = 0
+        /* All */
+        _provList.forEach((e, index) => {
+            e.id = index + 1
+            const _provAll = _data.filter(x => (x.prov.replace(/\n/g, "") == e.prov))
+            const _ampFilter = _ampList.filter(x => (x.prov.replace(/\n/g, "") == e.prov))
+            _model.data.all.push({
+                prov_id: e.id,
+                prov_name: e.prov,
+                plot: _provAll.length,
+                distance: _provAll.reduce((a, b) => {
+                    return { row_distan: a.row_distan + b.row_distan }
+                }).row_distan,
 
-            let statusPotP1 = 0
-            let statusPotP2 = 0
-            let statusPotP3 = 0
-            let statusPotP4 = 0
-            let statusPotP5 = 0
-            let statusPotP6 = 0
+                amp_list: _ampFilter.map(x => {
+                    const _ampAll = _data.filter(a => (a.amp.replace(/\n/g, "") == x.amp))
+                    const _tamFilter = _tamList.filter(a => (a.amp.replace(/\n/g, "") == x.amp))
+                    return {
+                        amp_name: x.amp,
+                        plot: _ampAll.length,
+                        distance: _ampAll.reduce((a, b) => {
+                            return { row_distan: a.row_distan + b.row_distan }
+                        }).row_distan,
+                        tam_list: _tamFilter.map(y => {
+                            const _tamAll = _data.filter(a => (a.tam.replace(/\n/g, "") == y.tam))
+                            return {
+                                tam_name: x.amp,
+                                plot: _tamAll.length,
+                                distance: _tamAll.reduce((a, b) => {
+                                    return { row_distan: a.row_distan + b.row_distan }
+                                }).row_distan,
+                            }
+                        })
+                    }
 
-            _sumPotArea.Sumpottam.forEach(p => {
-                if (p.prov == e.name) {
-                    _Potprov += p.count
-                    if (p.status == 1) {
-                        statusPotP1 += p.count
-                    } else if (p.status == 2) {
-                        statusPotP2 += p.count
-                    } else if (p.status == 3) {
-                        statusPotP3 += p.count
-                    } else if (p.status == 4) {
-                        statusPotP4 += p.count
-                    } else if (p.status == 5) {
-                        statusPotP5 += p.count
-                    } else if (p.status == 6) {
-                        statusPotP6 += p.count
+                })
+            })
+        });
+
+        _status.forEach(item => {
+            const name_obj = `status_${item.id}`;
+            _model.data[name_obj] = []
+            /* Lool */
+            const _provListStatus = [], _ampListStatus = [], _tamListStatus = []
+            _data.forEach(e => {
+                if (e.status_code == item.id) {
+
+                    e.prov = e.prov.replace(/\n/g, "")
+                    e.amp = e.amp.replace(/\n/g, "")
+                    e.tam = e.tam.replace(/\n/g, "")
+                    e.row_distan = Number(e.row_distan)
+                    if (e.prov && e.amp && e.tam) {
+
+                        const indexProv = _provListStatus.findIndex(x => x.prov === e.prov);
+                        if (indexProv === -1) _provListStatus.push(e);
+
+                        const indexAmp = _ampListStatus.findIndex(x => x.amp === e.amp);
+                        if (indexAmp === -1) _ampListStatus.push(e);
+
+                        const indexTam = _tamListStatus.findIndex(x => x.tam === e.tam);
+                        if (indexTam === -1) _tamListStatus.push(e);
+
                     }
                 }
-            })
-            _sumPotArea.Sumareatam.forEach(a => {
-                if (a.prov == e.name) {
-                    a.row_distan = Number(a.row_distan)
-                    a.row_distan = (Math.round(a.row_distan * 100)) / 100
-                    _Areaprov += a.row_distan
-                    if (a.status == 1) {
-                        statusAreaP1 += a.row_distan
-                    } else if (a.status == 2) {
-                        statusAreaP2 += a.row_distan
-                    } else if (a.status == 3) {
-                        statusAreaP3 += a.row_distan
-                    } else if (a.status == 4) {
-                        statusAreaP4 += a.row_distan
-                    } else if (a.status == 5) {
-                        statusAreaP5 += a.row_distan
-                    }else if (a.status == 6) {
-                        statusAreaP6 += a.row_distan
-                }
-            }
-            })
 
-            return {
-                id: e.id,
-                prov_name: e.name,
-                sum_pot: _Potprov,
-                sum_area: _Areaprov,
-                Area_status_1: statusAreaP1,
-                Area_status_2: statusAreaP2,
-                Area_status_3: statusAreaP3,
-                Area_status_4: statusAreaP4,
-                Area_status_5: statusAreaP5,
-                Area_status_6: statusAreaP6,
-                Pot_status_1: statusPotP1,
-                Pot_status_2: statusPotP2,
-                Pot_status_3: statusPotP3,
-                Pot_status_4: statusPotP4,
-                Pot_status_5: statusPotP5,
-                Pot_status_6: statusPotP6,
-                // statusarea1: status,
-                amp: []
-            }
-        })
-        PATM.forEach(e => {
-            _res._amp.forEach(a => {
-                if (e.id == a.prov_id) {
+            });
 
-                    let _Potamp = 0
-                    let _Areaamp = 0
-                    let statusAreaA1 = 0
-                    let statusAreaA2 = 0
-                    let statusAreaA3 = 0
-                    let statusAreaA4 = 0
-                    let statusAreaA5 = 0
-                    let statusAreaA6 = 0
-                    let statusPotA1 = 0
-                    let statusPotA2 = 0
-                    let statusPotA3 = 0
-                    let statusPotA4 = 0
-                    let statusPotA5 = 0
-                    let statusPotA6 = 0
-                    _sumPotArea.Sumpottam.forEach(pa => {
-                        if (pa.amp == a.name) {
-                            _Potamp += pa.count
-                            if (pa.status == 1) {
-                                statusPotA1 += pa.count
-                            } else if (pa.status == 2) {
-                                statusPotA2 += pa.count
-                            } else if (pa.status == 3) {
-                                statusPotA3 += pa.count
-                            } else if (pa.status == 4) {
-                                statusPotA4 += pa.count
-                            } else if (pa.status == 5) {
-                                statusPotA5 += pa.count
-                            }else if (pa.status == 6) {
-                                statusPotA6 += pa.count
+            _provListStatus.forEach((e, index) => {
+                e.id = index + 1
+                const _provAll = _data.filter(x => (x.prov.replace(/\n/g, "") == e.prov && x.status_code == item.id))
+                const _ampFilter = _ampListStatus.filter(x => (x.prov.replace(/\n/g, "") == e.prov))
+                _model.data[name_obj].push({
+                    status_id: item.id,
+                    prov_id: e.id,
+                    prov_name: e.prov,
+                    plot: _provAll.length,
+                    distance: _provAll.reduce((a, b) => {
+                        return { row_distan: a.row_distan + b.row_distan }
+                    }).row_distan,
+
+                    amp_list: _ampFilter.map(x => {
+                        const _ampAll = _data.filter(a => (a.amp.replace(/\n/g, "") == x.amp && a.status_code == item.id))
+                        const _tamFilter = _tamListStatus.filter(a => (a.amp.replace(/\n/g, "") == x.amp))
+                        return {
+                            amp_name: x.amp,
+                            plot: _ampAll.length,
+                            distance: _ampAll.reduce((a, b) => {
+                                return { row_distan: a.row_distan + b.row_distan }
+                            }).row_distan,
+                            tam_list: _tamFilter.map(y => {
+                                const _tamAll = _data.filter(a => (a.tam.replace(/\n/g, "") == y.tam) && a.status_code == item.id)
+                                return {
+                                    tam_name: x.amp,
+                                    plot: _tamAll.length,
+                                    distance: _tamAll.reduce((a, b) => {
+                                        return { row_distan: a.row_distan + b.row_distan }
+                                    }).row_distan,
+                                }
+                            })
                         }
-                    }
-                    })
-                    _sumPotArea.Sumareatam.forEach(aa => {
-                        if (aa.amp == a.name) {
-                            aa.row_distan = Number(aa.row_distan)
-                            aa.row_distan = (Math.round(aa.row_distan * 100)) / 100
-                            _Areaamp += aa.row_distan
-                            if (aa.status == 1) {
-                                statusAreaA1 += aa.row_distan
-                            } else if (aa.status == 2) {
-                                statusAreaA2 += aa.row_distan
-                            } else if (aa.status == 3) {
-                                statusAreaA3 += aa.row_distan
-                            } else if (aa.status == 4) {
-                                statusAreaA4 += aa.row_distan
-                            } else if (aa.status == 5) {
-                                statusAreaA5 += aa.row_distan
-                            }else if (aa.status == 6) {
-                                statusAreaA6 += aa.row_distan
-                        }
-                    }
-                    })
 
-                    e.amp.push({
-                        id: a.id,
-                        amp_name: a.name,
-                        sum_pot: _Potamp,
-                        sum_area: _Areaamp,
-                        Area_status_1: statusAreaA1,
-                        Area_status_2: statusAreaA2,
-                        Area_status_3: statusAreaA3,
-                        Area_status_4: statusAreaA4,
-                        Area_status_5: statusAreaA5,
-                        Area_status_6: statusAreaA6,
-                        Pot_status_1: statusPotA1,
-                        Pot_status_2: statusPotA2,
-                        Pot_status_3: statusPotA3,
-                        Pot_status_4: statusPotA4,
-                        Pot_status_5: statusPotA5,
-                        Pot_status_6: statusPotA6,
-                        tam: []
                     })
-                }
+                })
+            });
+
+            _model.data[name_obj].sort((a, b) => {
+                return a.prov_id - b.prov_id
             })
-        })
-        PATM.forEach(e => {
-            _res._tam.forEach(t => {
-                const _find = e.amp.find(m => m.id == t.amp_id)
-                if (_find) {
-
-                    let _Pottam = 0
-                    let _Areatam = 0
-                    let statusAreaT1 = 0
-                    let statusAreaT2 = 0
-                    let statusAreaT3 = 0
-                    let statusAreaT4 = 0
-                    let statusAreaT5 = 0
-                    let statusAreaT6 = 0
-                    let statusPotT1 = 0
-                    let statusPotT2 = 0
-                    let statusPotT3 = 0
-                    let statusPotT4 = 0
-                    let statusPotT5 = 0
-                    let statusPotT6 = 0
-
-                    _sumPotArea.Sumpottam.forEach(pt => {
-                        if (pt.tam == t.name) {
-                            _Pottam += pt.count
-
-                            if (pt.status == 1) {
-                                statusPotT1 += pt.count
-                            } else if (pt.status == 2) {
-                                statusPotT2 += pt.count
-                            } else if (pt.status == 3) {
-                                statusPotT3 += pt.count
-                            } else if (pt.status == 4) {
-                                statusPotT4 += pt.count
-                            } else if (pt.status == 5) {
-                                statusPotT5 += pt.count
-                            } else if (pt.status == 6) {
-                                statusPotT6 += pt.count
-                        }
-                     }
-                    })
-                    _sumPotArea.Sumareatam.forEach(at => {
-                        if (at.tam == t.name) {
-                            at.row_distan = Number(at.row_distan)
-                            at.row_distan = (Math.round(at.row_distan * 100)) / 100
-                            _Areatam += at.row_distan
-                            if (at.status == 1) {
-                                statusAreaT1 += at.row_distan
-                            } else if (at.status == 2) {
-                                statusAreaT2 += at.row_distan
-                            } else if (at.status == 3) {
-                                statusAreaT3 += at.row_distan
-                            } else if (at.status == 4) {
-                                statusAreaT4 += at.row_distan
-                            } else if (at.status == 5) {
-                                statusAreaT5 += at.row_distan
-                            } else if (at.status == 6) {
-                                statusAreaT6 += at.row_distan
-                        }
-                    }
-                    })
-
-                    _find.tam.push({
-                        id: t.id,
-                        tam_name: t.name,
-                        sum_pot: _Pottam,
-                        sum_area: _Areatam,
-                        Area_status_1: statusAreaT1,
-                        Area_status_2: statusAreaT2,
-                        Area_status_3: statusAreaT3,
-                        Area_status_4: statusAreaT4,
-                        Area_status_5: statusAreaT5,
-                        Area_status_6: statusAreaT6,
-                        Pot_status_1: statusPotT1,
-                        Pot_status_2: statusPotT2,
-                        Pot_status_3: statusPotT3,
-                        Pot_status_4: statusPotT4,
-                        Pot_status_5: statusPotT5,
-                        Pot_status_6: statusPotT6,
-                    })
-                }
-            })
+        });
+        _model.data["all"].sort((a, b) => {
+            return a.prov_id - b.prov_id
         })
 
-        result(res, { PATM, COLOR })
-        // result(res, {_sumPotArea})
+
+        result(res, _model)
 
     } catch (error) {
         next(error);
     }
 }
-
 
 
 exports.checkUploadFile = async (req, res, next) => {
@@ -744,13 +631,13 @@ const updataKmlKmz = (files) => {
 const download = (url, dest, cb) => {
     var file = fs.createWriteStream(dest);
     var request = http.get(url, (response) => {
-      response.pipe(file);
-      file.on('finish', function() {
-        file.close(cb);  // close() is async, call cb after close completes.
-      });
-    }).on('error', function(err) { // Handle errors
-      fs.unlink(dest); // Delete the file async. (But we don't check the result)
-      if (cb) cb(err.message);
+        response.pipe(file);
+        file.on('finish', function () {
+            file.close(cb);  // close() is async, call cb after close completes.
+        });
+    }).on('error', function (err) { // Handle errors
+        fs.unlink(dest); // Delete the file async. (But we don't check the result)
+        if (cb) cb(err.message);
     });
 
     return request
