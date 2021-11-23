@@ -750,8 +750,15 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam, lay
 exports.getReportDashboardService = async (search, project_name, prov, amp, tam, layer_group) => {
   const table_name = await func_table_name();
   const tempData = []
-  for (let i = 0; i < table_name.length; i++) {
-    const allTableShape = table_name[i];
+  let val_sql = ``
+
+  if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
+  if (prov) val_sql += ` AND prov = '${prov}' `;
+  if (amp) val_sql += ` AND amp = '${amp}' `;
+  if (tam) val_sql += ` AND tam = '${tam}' `;
+
+  if (layer_group) {
+    let get_gis = await models.mas_layers_shape.findByPk(layer_group);
     let res_sql = await sequelizeString(`
     SELECT 
       gid, 
@@ -762,14 +769,38 @@ exports.getReportDashboardService = async (search, project_name, prov, amp, tam,
       sta.status_code,
       sta.name,
       sta.status_color 
-    FROM shape_data.${allTableShape.table_name}
-    INNER JOIN master_lookup.mas_status_project sta ON sta.status_code = status `);
+    FROM shape_data.${get_gis.table_name}
+    INNER JOIN master_lookup.mas_status_project sta ON sta.status_code = status 
+    WHERE gid is not null ${val_sql} `)
 
     res_sql.forEach(e => {
       tempData.push(e)
     });
+    
+    return tempData
+  } else {
+    for (let i = 0; i < table_name.length; i++) {
+      const allTableShape = table_name[i];
+      let res_sql = await sequelizeString(`
+      SELECT 
+        gid, 
+        row_distan,
+        prov,
+        amp,
+        tam,
+        sta.status_code,
+        sta.name,
+        sta.status_color 
+      FROM shape_data.${allTableShape.table_name}
+      INNER JOIN master_lookup.mas_status_project sta ON sta.status_code = status 
+      WHERE gid is not null ${val_sql} `);
+  
+      res_sql.forEach(e => {
+        tempData.push(e)
+      });
+    }
+    return tempData
   }
-  return tempData
 }
 
 

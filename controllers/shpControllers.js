@@ -422,31 +422,36 @@ exports.getFromReportDashbord = async (req, res, next) => {
             e.id = index + 1
             const _provAll = _data.filter(x => (x.prov.replace(/\n/g, "") == e.prov))
             const _ampFilter = _ampList.filter(x => (x.prov.replace(/\n/g, "") == e.prov))
+            const _distance = _provAll.reduce((a, b) => {
+                return { row_distan: a.row_distan + b.row_distan }
+            }).row_distan
+
             _model.data.all.push({
                 prov_id: e.id,
                 prov_name: e.prov,
                 plot: _provAll.length,
-                distance: _provAll.reduce((a, b) => {
-                    return { row_distan: a.row_distan + b.row_distan }
-                }).row_distan,
+                distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100),
 
                 amp_list: _ampFilter.map(x => {
                     const _ampAll = _data.filter(a => (a.amp.replace(/\n/g, "") == x.amp))
                     const _tamFilter = _tamList.filter(a => (a.amp.replace(/\n/g, "") == x.amp))
+                    const _distance = _ampAll.reduce((a, b) => {
+                        return { row_distan: a.row_distan + b.row_distan }
+                    }).row_distan
+
                     return {
                         amp_name: x.amp,
                         plot: _ampAll.length,
-                        distance: _ampAll.reduce((a, b) => {
-                            return { row_distan: a.row_distan + b.row_distan }
-                        }).row_distan,
+                        distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100),
                         tam_list: _tamFilter.map(y => {
                             const _tamAll = _data.filter(a => (a.tam.replace(/\n/g, "") == y.tam))
+                            const _distance = _tamAll.reduce((a, b) => {
+                                return { row_distan: a.row_distan + b.row_distan }
+                            }).row_distan
                             return {
                                 tam_name: x.amp,
                                 plot: _tamAll.length,
-                                distance: _tamAll.reduce((a, b) => {
-                                    return { row_distan: a.row_distan + b.row_distan }
-                                }).row_distan,
+                                distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100)
                             }
                         })
                     }
@@ -487,32 +492,35 @@ exports.getFromReportDashbord = async (req, res, next) => {
                 e.id = index + 1
                 const _provAll = _data.filter(x => (x.prov.replace(/\n/g, "") == e.prov && x.status_code == item.id))
                 const _ampFilter = _ampListStatus.filter(x => (x.prov.replace(/\n/g, "") == e.prov))
+                const _distance = _provAll.reduce((a, b) => {
+                    return { row_distan: a.row_distan + b.row_distan }
+                }).row_distan
                 _model.data[name_obj].push({
                     status_id: item.id,
                     prov_id: e.id,
                     prov_name: e.prov,
                     plot: _provAll.length,
-                    distance: _provAll.reduce((a, b) => {
-                        return { row_distan: a.row_distan + b.row_distan }
-                    }).row_distan,
+                    distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100),
 
                     amp_list: _ampFilter.map(x => {
                         const _ampAll = _data.filter(a => (a.amp.replace(/\n/g, "") == x.amp && a.status_code == item.id))
                         const _tamFilter = _tamListStatus.filter(a => (a.amp.replace(/\n/g, "") == x.amp))
+                        const _distance = _ampAll.reduce((a, b) => {
+                            return { row_distan: a.row_distan + b.row_distan }
+                        }).row_distan
                         return {
                             amp_name: x.amp,
                             plot: _ampAll.length,
-                            distance: _ampAll.reduce((a, b) => {
-                                return { row_distan: a.row_distan + b.row_distan }
-                            }).row_distan,
+                            distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100),
                             tam_list: _tamFilter.map(y => {
                                 const _tamAll = _data.filter(a => (a.tam.replace(/\n/g, "") == y.tam) && a.status_code == item.id)
+                                const _distance = _tamAll.reduce((a, b) => {
+                                    return { row_distan: a.row_distan + b.row_distan }
+                                }).row_distan
                                 return {
                                     tam_name: x.amp,
                                     plot: _tamAll.length,
-                                    distance: _tamAll.reduce((a, b) => {
-                                        return { row_distan: a.row_distan + b.row_distan }
-                                    }).row_distan,
+                                    distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100)
                                 }
                             })
                         }
