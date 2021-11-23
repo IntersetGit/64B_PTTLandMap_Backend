@@ -19,6 +19,7 @@ router.post('/getMasLayers',[authenticateToken],masterControllers.getMasLayersNa
 router.post('/masLayers', [authenticateToken], masterControllers.createMasLayers);
 router.put('/masLayers', [authenticateToken], masterControllers.updateMasLayers);
 router.delete('/masLayers', [authenticateToken], masterControllers.deleteMasLayers);
+router.get('/masLayersName/:id', [authenticateToken], masterControllers.getByIdMasLayersName);
 //--------------------------------------------------//
 
 //---------เพิ่่ม ลบ แก้ไข dat_layers ------------------//

@@ -15,6 +15,17 @@ exports.getAllMasterLayers = async (search) => {
   sql += 'order by  order_by'
   return sequelizeString(sql)
 }
+
+//----------- by id ------------------------//
+
+exports.getByIdMasLayersNameService = async (id) => {
+  const byIDMasLayername = await models.mas_layer_groups.findOne({
+    where: { id }
+  })
+  return byIDMasLayername;
+}
+
+
 //----------------------- แสดง จังหวัด อำเภอ ตำบล ----------------------//
 exports.getMasProviceService = async () => {
   return await models.mas_province.findAll()
