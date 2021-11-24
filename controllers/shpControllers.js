@@ -443,13 +443,15 @@ exports.getFromReportDashbord = async (req, res, next) => {
                         amp_name: x.amp,
                         plot: _ampAll.length,
                         distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100),
+
+                        
                         tam_list: _tamFilter.map(y => {
                             const _tamAll = _data.filter(a => (a.tam.replace(/\n/g, "") == y.tam))
                             const _distance = _tamAll.reduce((a, b) => {
                                 return { row_distan: a.row_distan + b.row_distan }
                             }).row_distan
                             return {
-                                tam_name: x.amp,
+                                tam_name: y.tam,
                                 plot: _tamAll.length,
                                 distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100)
                             }
@@ -518,7 +520,7 @@ exports.getFromReportDashbord = async (req, res, next) => {
                                     return { row_distan: a.row_distan + b.row_distan }
                                 }).row_distan
                                 return {
-                                    tam_name: x.amp,
+                                    tam_name: x.tam,
                                     plot: _tamAll.length,
                                     distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100)
                                 }
