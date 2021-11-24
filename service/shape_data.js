@@ -506,13 +506,6 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
     }
   }
 
-
-
-
-  // [...new Set(arr_sql.map(({prov}) => prov.replace(/\n/g, '') ))],
-  // [...new Set(arr_sql.map(({amp}) => amp.replace(/\n/g, '') ))],
-  // [...new Set(arr_sql.map(({tam}) => tam.replace(/\n/g, '') ))]
-
   const prov = [],
     amp = [],
     tam = [];
