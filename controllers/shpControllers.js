@@ -520,7 +520,7 @@ exports.getFromReportDashbord = async (req, res, next) => {
                                     return { row_distan: a.row_distan + b.row_distan }
                                 }).row_distan
                                 return {
-                                    tam_name: x.tam,
+                                    tam_name: y.tam,
                                     plot: _tamAll.length,
                                     distance: (Math.round((Math.round(_distance * 100.0 / 100.0) / 1000) * 100) / 100)
                                 }
