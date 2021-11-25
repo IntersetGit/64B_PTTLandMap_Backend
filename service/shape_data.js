@@ -62,10 +62,10 @@ exports.shapeDataService = async (table_name, id, type) => {
             const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
             e.properties.status_color = status_color ?? undefined
           }
-  
+
         }
       }
-      
+
     } else {
       const err = new Error('ไม่มีข้อมูล shape')
       err.statusCode = 404
@@ -476,9 +476,9 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
       if (Object.hasOwnProperty.call(KeepData, af)) {
         const tables_name = KeepData[af];
         if (tables_name != "" && tables_name != null) {
-        const { table_schema, table_name } = allSchema.find(tbl => tbl.table_name == tables_name)
+          const { table_schema, table_name } = allSchema.find(tbl => tbl.table_name == tables_name)
           _res = await sequelizeString(
-            (sql = `SELECT * FROM ${table_schema}.${table_name} `)
+            (sql = `SELECT * FROM ${table_schema}.${table_name}  `)
           );
           if (_res.length > 0) {
             _res.forEach((province) => {
@@ -505,10 +505,6 @@ exports.getShapeProvinceMapService = async (layer_group, layer_shape) => {
       });
     }
   }
-
-  // [...new Set(arr_sql.map(({prov}) => prov.replace(/\n/g, '') ))],
-  // [...new Set(arr_sql.map(({amp}) => amp.replace(/\n/g, '') ))],
-  // [...new Set(arr_sql.map(({tam}) => tam.replace(/\n/g, '') ))]
 
   const prov = [],
     amp = [],
@@ -744,6 +740,62 @@ exports.getFromProjectService = async (search, project_name, prov, amp, tam, lay
 };
 
 
+exports.getReportDashboardService = async (search, project_name, prov, amp, tam, layer_group) => {
+  const table_name = await func_table_name();
+  const tempData = []
+  let val_sql = ``
+
+  if (search) val_sql = ` AND ${project_name} ILIKE '%${search}%' `;
+  if (prov) val_sql += ` AND prov = '${prov}' `;
+  if (amp) val_sql += ` AND amp = '${amp}' `;
+  if (tam) val_sql += ` AND tam = '${tam}' `;
+
+  if (layer_group) {
+    let get_gis = await models.mas_layers_shape.findByPk(layer_group);
+    let res_sql = await sequelizeString(`
+    SELECT 
+      gid, 
+      row_distan,
+      prov,
+      amp,
+      tam,
+      sta.status_code,
+      sta.name,
+      sta.status_color 
+    FROM shape_data.${get_gis.table_name}
+    INNER JOIN master_lookup.mas_status_project sta ON sta.status_code = status 
+    WHERE gid is not null ${val_sql} `)
+
+    res_sql.forEach(e => {
+      tempData.push(e)
+    });
+    
+    return tempData
+  } else {
+    for (let i = 0; i < table_name.length; i++) {
+      const allTableShape = table_name[i];
+      let res_sql = await sequelizeString(`
+      SELECT 
+        gid, 
+        row_distan,
+        prov,
+        amp,
+        tam,
+        sta.status_code,
+        sta.name,
+        sta.status_color 
+      FROM shape_data.${allTableShape.table_name}
+      INNER JOIN master_lookup.mas_status_project sta ON sta.status_code = status 
+      WHERE gid is not null ${val_sql} `);
+  
+      res_sql.forEach(e => {
+        tempData.push(e)
+      });
+    }
+    return tempData
+  }
+}
+
 
 exports.getFromReportDashbordService = async (search, project_name, prov, amp, tam, layer_group) => {
 
@@ -756,34 +808,34 @@ exports.getFromReportDashbordService = async (search, project_name, prov, amp, t
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;
 
+  
+
   const status_shape = await models.mas_status_project.findAll({ order: [["sort", "ASC"]] });
   if (layer_group) {
     _res = await models.mas_layers_shape.findByPk(layer_group);
     for (const i in status_shape) {
       if (Object.hasOwnProperty.call(status_shape, i)) {
         const statues = status_shape[i];
-        sql = await sequelizeString(`SELECT COUNT(*)  FROM shape_data.${_res.table_name} WHERE status = '${statues.status_code}' ${val_sql} `);
-        sql.forEach(({ count }) => {
+        sql = await sequelizeString(`SELECT COUNT(*), status FROM shape_data.${_res.table_name} WHERE status = '${statues.status_code}' ${val_sql} GROUP BY status `);
+        sql.forEach(({ count, status }) => {
           arr_sql.push({
             count,
             table_name: _res.table_name,
             name: statues.name,
-            status: statues.status_code,
+            status
           });
         });
 
         //หาระยะทาง
         sql1 = await sequelizeString(`SELECT row_distan, status FROM shape_data.${_res.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
         if (sql1.length > 0) {
-
-          sql1.forEach(({ row_distan }) => {
-            row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0))
-
+          sql1.forEach(({ row_distan, status }) => {
+            row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0));
             araea_all.push({
               row_distan,
               table_name: _res.table_name,
               name: statues.name,
-              status: statues.status_code
+              status
             })
           })
         } else {
@@ -818,14 +870,14 @@ exports.getFromReportDashbordService = async (search, project_name, prov, amp, t
                 status: statues.status_code,
               });
             });
-  
+
             //หาระยะทาง
             sql1 = await sequelizeString(`SELECT row_distan, status FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
             if (sql1.length > 0) {
-  
+
               sql1.forEach(({ row_distan }) => {
                 row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0))
-  
+
                 araea_all.push({
                   row_distan,
                   table_name: element.table_name,
@@ -851,16 +903,16 @@ exports.getFromReportDashbordService = async (search, project_name, prov, amp, t
       }
     }
   }
-  
+
   // ทำข้อมูลแปลงทั้งหมดใน shape
-  const _temp = [], ___temp = []
+  const arrStatus = [], ___temp = []
   arr_sql.forEach((e) => {
     e.count = Number(e.count);
-    const index = _temp.findIndex((x) => x.name === e.name);
+    const index = arrStatus.findIndex((x) => x.name === e.name);
     if (index === -1) {
-      _temp.push(e);
+      arrStatus.push(e);
     } else {
-      _temp[index].count + e.count;
+      arrStatus[index].count + e.count;
     }
   });
 
@@ -911,7 +963,7 @@ exports.getFromReportDashbordService = async (search, project_name, prov, amp, t
     } else[];
   });
 
-  return { _temp, ___temp, _prov, _amp, _tam }
+  return { _status: arrStatus, _prov, _amp, _tam }
 
 };
 
@@ -933,50 +985,50 @@ exports.getFromReportDashbordServiceEach = async (search, project_name, prov, am
       if (Object.hasOwnProperty.call(status_shape, i)) {
         const statues = status_shape[i];
         sql = await sequelizeString(`SELECT COUNT(*), prov, amp, tam  FROM shape_data.${_res.table_name} WHERE status = '${statues.status_code}' ${val_sql} group by (prov,amp,tam) `);
-            sql.forEach(({ count, prov, amp, tam }) => {
-              arr_sql.push({
-                count,
-                table_name: _res.table_name,
-                name: statues.name,
-                status: statues.status_code,
-                prov,
-                amp,
-                tam
-              });
-            });
-  
-            //หาระยะทาง
-            sql1 = await sequelizeString(`SELECT row_distan, status, prov, amp, tam FROM shape_data.${_res.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
-            if (sql1.length > 0) {
-              sql1.forEach(({ row_distan, prov, amp, tam }) => {
-                row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0))
-  
-                araea_all.push({
-                  row_distan,
-                  table_name: _res.table_name,
-                  name: statues.name,
-                  status: statues.status_code,
-                  prov,
-                  amp,
-                  tam
-                })
-              })
-            } else {
-              araea_all.push({
-                row_distan: 0,
-                table_name: _res.table_name,
-                name: statues.name,
-                status: statues.status_code,
-                prov,
-                amp,
-                tam
-              })
-            }
-            // เรียกจังหวัด อำเภอตำบล
-            sql2 = await sequelizeString(`SELECT prov, amp, tam FROM shape_data.${_res.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
-            sql2.forEach(({ prov, amp, tam }) => {
-              array_prov.push({ prov, amp, tam })
+        sql.forEach(({ count, prov, amp, tam }) => {
+          arr_sql.push({
+            count,
+            table_name: _res.table_name,
+            name: statues.name,
+            status: statues.status_code,
+            prov,
+            amp,
+            tam
+          });
+        });
+
+        //หาระยะทาง
+        sql1 = await sequelizeString(`SELECT row_distan, status, prov, amp, tam FROM shape_data.${_res.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
+        if (sql1.length > 0) {
+          sql1.forEach(({ row_distan, prov, amp, tam }) => {
+            row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0))
+
+            araea_all.push({
+              row_distan,
+              table_name: _res.table_name,
+              name: statues.name,
+              status: statues.status_code,
+              prov,
+              amp,
+              tam
             })
+          })
+        } else {
+          araea_all.push({
+            row_distan: 0,
+            table_name: _res.table_name,
+            name: statues.name,
+            status: statues.status_code,
+            prov,
+            amp,
+            tam
+          })
+        }
+        // เรียกจังหวัด อำเภอตำบล
+        sql2 = await sequelizeString(`SELECT prov, amp, tam FROM shape_data.${_res.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
+        sql2.forEach(({ prov, amp, tam }) => {
+          array_prov.push({ prov, amp, tam })
+        })
       }
     }
   } else {
@@ -998,13 +1050,13 @@ exports.getFromReportDashbordServiceEach = async (search, project_name, prov, am
                 tam
               });
             });
-  
+
             //หาระยะทาง
             sql1 = await sequelizeString(`SELECT row_distan, status, prov, amp, tam FROM shape_data.${element.table_name} WHERE status = '${statues.status_code}' ${val_sql}`);
             if (sql1.length > 0) {
               sql1.forEach(({ row_distan, prov, amp, tam }) => {
                 row_distan = (Math.round((Number(row_distan) * 100.0) / 100.0))
-  
+
                 araea_all.push({
                   row_distan,
                   table_name: element.table_name,
@@ -1036,7 +1088,7 @@ exports.getFromReportDashbordServiceEach = async (search, project_name, prov, am
       }
     }
   }
-  
+
   // ทำข้อมูลแปลงทั้งหมดใน shape
   const Sumpottam = [], Sumareatam = []
   arr_sql.forEach((e) => {

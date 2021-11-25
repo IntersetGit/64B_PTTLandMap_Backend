@@ -1,7 +1,7 @@
 const { sequelizeString } = require("../util/index"); //connect db  query string
 const messages = require('../messages/index');
 const result = require("../middleware/result");
-const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService, getMasLayersService, getDatLayersService, getMasProviceService, getMasSubdistrictService, getMasDistrictService, getAllMasterLayers, getSysmRoleService, editMasLayersShapeService, _getdatefromWms } = require("../service/masterDataService")
+const { createDatLayersService, updateDatLayersService, deleteDatLayersService, createMasLayersService, getByIdMasLayersNameService, updateMasLayersService, deleteMasLayersService, getAllTitleNameService, getMasLayersService, getDatLayersService, getMasProviceService, getMasSubdistrictService, getMasDistrictService, getAllMasterLayers, getSysmRoleService, editMasLayersShapeService, _getdatefromWms } = require("../service/masterDataService")
 const { viewGetNameTitleService } = require('../service/views_database/view_name_title')
 const models = require("../models/index");
 const { checkImgById } = require('../util')
@@ -60,6 +60,24 @@ exports.getMasLayersName = async (req, res, next) => {
     next(error)
   }
 }
+
+
+exports.getByIdMasLayersName = async (req, res, next) => {
+  try {
+    const {id} = req.query
+    let _res =  await getByIdMasLayersNameService(id)
+  
+    _res.forEach(aa => { 
+         aa.symbol = checkImgById(aa.id, "symbol_group") ?? null
+    });
+
+
+    result(res, _res)
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 
 
@@ -161,6 +179,7 @@ exports.getAllMasLayersShape = async (req, res, next) => {
     next(error);
   }
 }
+
 exports.getByIdMasLayersShape = async (req, res, next) => {
   try {
     const {id} = req.params

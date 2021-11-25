@@ -15,6 +15,18 @@ exports.getAllMasterLayers = async (search) => {
   sql += 'order by  order_by'
   return sequelizeString(sql)
 }
+
+//----------- by id ------------------------//
+
+exports.getByIdMasLayersNameService = async (id) => {
+  
+    let sql = ` select * from master_lookup.mas_layer_groups where isuse =1  `
+    if (id) sql += ` and id  =  '${id}' `
+
+  return sequelizeString(sql)
+}
+
+
 //----------------------- แสดง จังหวัด อำเภอ ตำบล ----------------------//
 exports.getMasProviceService = async () => {
   return await models.mas_province.findAll()
