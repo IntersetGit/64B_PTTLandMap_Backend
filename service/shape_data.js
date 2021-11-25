@@ -105,6 +105,9 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
     });
   } else if (mimetype == 'kml') {
     geojson.features.forEach(setK => {
+      if (setK.geometry == 'GeometryCollection') {
+
+      }
       if (setK.geometry.coordinates && setK.geometry.coordinates.length >= 1 && setK.geometry.type == 'Polygon') {
         if (setK.geometry.coordinates[0][0].length >= 3) setK.geometry.type = 'PolygonZ'
       }

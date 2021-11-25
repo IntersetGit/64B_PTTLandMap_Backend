@@ -29,7 +29,7 @@ const { sequelizeString } = require("../util");
 exports.shapeKmlKmzAdd = async (req, res, next) => {
     const queryInterface = await sequelize.getQueryInterface();
     const transaction = await sequelize.transaction();
-    let schema, tables
+    let schema, tables, filepath
     try {
 
         if (!req.files) {
@@ -72,6 +72,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
                 const geojson = await parseKML.toJson(_pathfile); // แปลงไฟล์ kml
                 // console.log(geojson);
+                filepath = _pathfile
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
                 tables = _createTableShape.arrNameTable
@@ -88,7 +89,8 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     type_geo: type
                 }, transaction)
 
-                await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie)
+                await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie);
+                await removeFilePubilc(_pathfile);
 
             }
 
@@ -130,6 +132,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 })
             }
         }
+        await removeFilePubilc(filepath);
         next(error);
     }
 }
@@ -618,7 +621,7 @@ exports.checkUploadFile = async (req, res, next) => {
 
 
 const updataKmlKmz = (files) => {
-    const _path = `${path.resolve()}/public/kmlfile/`;
+    const _path = `${path.resolve()}/public/filekmlkmz/`;
     const _file = `${_path}/${files.name}`
 
     //เช็ค path ว่ามีไหม ถ้าไม่มีจะสร้างขึ้นมา
@@ -636,6 +639,13 @@ const updataKmlKmz = (files) => {
 
     return _file
 
+}
+
+const removeFilePubilc = async (addresspath) => {
+    const _path = `${path.resolve()}/public/filekmlkmz/`;
+    if (fs.existsSync(_path)) {
+        fs.unlinkSync(addresspath);
+    } 
 }
 
 const download = (url, dest, cb) => {
