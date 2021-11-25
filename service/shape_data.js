@@ -418,7 +418,7 @@ exports.getAllShapeDataService = async (
       else if (e.partype === "สปก.4-01") e.color = "#0115C3" //ฟ้า
       else e.color = "#626262"; //เทา
 
-      e.table_name = table_name.table_name;
+      e.table_name = _res.table_name;
       arr_sql.push(e);
     });
 
