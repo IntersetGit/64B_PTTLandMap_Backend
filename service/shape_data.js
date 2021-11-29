@@ -378,14 +378,7 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
 
 /* เรียกข้อมูลทั้งหมด shape_data */
 
-exports.getAllShapeDataService = async (
-  search,
-  project_name,
-  prov,
-  amp,
-  tam,
-  layer_group
-) => {
+exports.getAllShapeDataService = async (layer_group, project_name, document_name, select_search, search, prov, amp, tam) => {
   const table_name = await func_table_name();
   const KeepData = [],
     arr_sql = [],
@@ -396,10 +389,12 @@ exports.getAllShapeDataService = async (
     val_sql = ``,
     fromsql
 
-  if (search) val_sql += ` AND ${project_name} ILIKE '%${search}%' `
-  if (prov) val_sql += ` AND prov = '${prov}' `
-  if (amp) val_sql += ` AND amp = '${amp}' `
-  if (tam) val_sql += ` AND tam = '${tam}' `
+    if (select_search && search) val_sql += ` AND ${select_search} ILIKE '%${search}%' `
+    if (document_name) val_sql += ` AND partype = '${document_name}' `
+    if (project_name) val_sql += ` AND project_na = '${project_name}' ` 
+    if (prov) val_sql += ` AND prov = '${prov}' `
+    if (amp) val_sql += ` AND amp = '${amp}' `
+    if (tam) val_sql += ` AND tam = '${tam}' `
 
   if (layer_group) {
 
@@ -407,7 +402,7 @@ exports.getAllShapeDataService = async (
     fromsql = `${_res.table_name}`
 
     sql = await sequelizeString(
-      `SELECT * FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
+      `SELECT * FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} ORDER BY gid`
     );
     sql_count = await sequelizeStringFindOne(
       `SELECT COUNT(*) AS amount_data FROM shape_data.${fromsql} WHERE gid IS NOT NULL ${val_sql} `
