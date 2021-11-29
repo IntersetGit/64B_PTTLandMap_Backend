@@ -32,7 +32,7 @@ router.post('/checkUploadFile', [authenticateToken], checkUploadFile)
  * Dashboard
 **/
 
-router.get('/getSearchDataDashboard', [authenticateToken], getSearchDataDashboard);
+router.get('/getDataNameProject', [authenticateToken], getSearchDataDashboard);
 router.get('/getFromProjectMap', [authenticateToken], getFromProjectDashboard);
 router.get('/getFromReportBackOffice', [authenticateToken], getFromReportDashbord);
 
