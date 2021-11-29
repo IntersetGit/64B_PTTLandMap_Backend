@@ -97,6 +97,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             if (mimetype == 'kmz') {
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
                 const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
+                filepath = _pathfile
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
@@ -115,7 +116,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 }, transaction)
 
                 await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie);
-
+                await removeFilePubilc(_pathfile);
             }
 
             await transaction.commit();
@@ -312,8 +313,8 @@ exports.getSearchDataDashboard = async (req, res, next) => {
 exports.getInfoProject = async (req, res, next) => {
     try {
 
-        const { search, project_name, prov, amp, tam, layer_group } = req.query
-        const _res_sql = await getAllShapeDataService(search, project_name, prov, amp, tam, layer_group)
+        const { layer_group, project_name, document_name, select_search, search, prov, amp, tam } = req.query
+        const _res_sql = await getAllShapeDataService(layer_group, project_name, document_name, select_search, search, prov, amp, tam)
         _res_sql.arr_sql.forEach(e => { e.geom = undefined })
         const amount_data = (_res_sql.amount.length > 0) ? _res_sql.amount.reduce((sum, num) => Number(sum) + Number(num)) : 0
 
