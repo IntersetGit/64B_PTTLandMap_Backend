@@ -5,7 +5,7 @@ const { convert } = require("@timedata/geojson2shp-utf8");
 const { addShapeService, getDataLayerService } = require("../service/dat_land_plots");
 const { getDataShapService, addShapeLayersService, addkmlLayersService } = require('../service/shape_layers')
 const { findIdLayersShape, createTableShapeService, getAllShapeDataService, getShapeProvinceMapService, searchDataShapeProvAmpTamMapService,
-    editshapeDataService, getFromProjectService, getFromReportDashbordService, getFromReportDashbordServiceEach, getReportDashboardService } = require('../service/shape_data')
+    editshapeDataService, getFromProjectService, getFromReportDashbordService,getNameProject, getFromReportDashbordServiceEach, getReportDashboardService } = require('../service/shape_data')
 const uuid = require('uuid');
 const config = require('../config');
 const sequelize = require("../config/dbConfig"); //connect database
@@ -285,6 +285,24 @@ exports.getShapeData = async (req, res, next) => {
         result(res, await shapeDataService(_res.table_name, null, _res.type))
 
     } catch (error) {
+        next(error);
+    }
+}
+
+
+//-------------------------------------------------------------------------------
+exports.getSearchDataDashboard = async (req, res, next) => {
+    
+    try {
+
+        const { layer_group } = req.query
+        const _res_sql = await getNameProject(layer_group)
+        
+
+        result(res, _res_sql )
+
+    } catch (error) {
+        console.log('errrorr');
         next(error);
     }
 }
