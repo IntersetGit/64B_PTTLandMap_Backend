@@ -234,6 +234,10 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
           type: DataTypes.STRING,
           allowNull: true,
         }
+        obj1.hyperlink = {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
 
       } else {
         const err = new Error("ผิดพลาดไม่สามารถสร้างฐานข้อมูลได้");
