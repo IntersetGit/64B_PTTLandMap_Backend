@@ -425,7 +425,7 @@ exports.getAllShapeDataService = async (layer_group, project_name, document_name
       const tables = table_name[a];
 
       sql = await sequelizeString(
-        `SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} GROUP BY gid`
+        `SELECT * FROM shape_data.${tables.table_name} WHERE gid IS NOT NULL ${val_sql} ORDER BY gid`
       );
 
       sql_count = await sequelizeStringFindOne(
