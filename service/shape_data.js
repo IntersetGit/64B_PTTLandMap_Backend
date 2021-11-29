@@ -56,6 +56,7 @@ exports.shapeDataService = async (table_name, id, type) => {
       if (filter_table_name.config_color === true) {
         result_sql.shape.features.forEach(e => {
           e.properties.gid = e.id
+          e.properties.table_name = filter_table_name.table_name
         })
         return result_sql
       } 
@@ -67,6 +68,7 @@ exports.shapeDataService = async (table_name, id, type) => {
             const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
             e.properties.status_color = status_color ?? undefined
             e.properties.gid = e.id
+            e.properties.table_name = filter_table_name.table_name
           }
 
         }
@@ -390,66 +392,50 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
 
 //------------- get โครงการ -----------------------//
 
-exports.getNameProject = async(layer_group,layer_shape) => {
+exports.getNameProject = async (layer_group, layer_shape) => {
+  var projects_name = [], partypes = [], tablename = [] 
 
+  if (layer_group) {
 
-  var project_name ,
-       table_name = '',
-      tablename = [],
-      _data,
-      KeepData = [],
+  var _project_name ,
+      _data
      
-      
-      
-      // const Schema = await sequelizeString(`SELECT * FROM information_schema.tables`)
-      // const data_layers = await models.mas_layers_shape.findAll();
-      
-      // if (data_layers.length > 0) {
-      //   data_layers.forEach((e) => [KeepData.push(e.table_name)]);
-      // };
-  
-      // for (const aa in KeepData) {
-      //   if (Object.hasOwnProperty.call(KeepData, aa)) {
-      //     const tables_name = KeepData[aa];
-      //     if (tables_name != "" && tables_name != null) {
-      //       const { table_schema, table_name } = Schema.find(tbl => tbl.table_name == tables_name)
-      //       _res =  await sequelizeString( 
-      //         (sql = `SELECT project_na , partype FROM ${table_schema}.${table_name}  `);
-      //     }
-      //   }
-      // }
      
-         _data =  `SELECT * FROM master_lookup.mas_layers_shape where  ` ;
+     
+         _data =  `SELECT * FROM master_lookup.mas_layers_shape where 1=1 ` ;
          
          if(layer_group) _data += ` AND group_layer_id = '${layer_group}' `
          if(layer_shape) _data  += `AND id = '${layer_shape}' `
          
   
           const data = await sequelizeString(_data)
- 
-          data.forEach((e) => {
-          table_name = e.table_name 
+         
+          for (let i = 0; i < data.length; i++) {
+            const table_name = data[i].table_name;
+          _project_name = await sequelizeString(`SELECT DISTINCT project_na , partype  FROM shape_data.${table_name}`);  
+          _project_name.forEach((a) => {
+            partypes.push(a.partype);
+            projects_name.push(a.project_na);
+          })
+        };
 
-          project_name = `SELECT DISTINCT project_na , partype  FROM shape_data.${table_name}`;  
-        });
+       
+    
+  } else {
+    const allSchemaShape = await func_table_name()
+    for (let i = 0; i < allSchemaShape.length; i++) {
+      const e = allSchemaShape[i];
+      const sql =  await sequelizeString(`SELECT project_na, partype FROM shape_data.${e.table_name} `);
+      sql.forEach(val => {
+        partypes.push(val.partype);
+        projects_name.push(val.project_na);
+      })
+    }
+  }
 
-        // const Schema = await sequelizeString(`SELECT * FROM information_schema.tables`)
-        // for (const af in KeepData) {
-        //   if (Object.hasOwnProperty.call(KeepData, af)) {
-        //     const tables_name = KeepData[af];
-        //     if (tables_name != "" && tables_name != null) {
-        //       const { table_schema, table_name } = Schema.find(tbl => tbl.table_name == tables_name)
-        //       _res = await sequelizeString(
-        //         (sql = `SELECT * FROM ${table_schema}.${table_name}  `)
-        //       );
+  return { projects_name , partypes }
 
-
-  console.log(tablename);
-
-  return await sequelizeString(project_name) ;
-
-
-  };
+};
 
 
 /* เรียกข้อมูลทั้งหมด shape_data */

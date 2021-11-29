@@ -302,22 +302,21 @@ exports.getSearchDataDashboard = async (req, res, next) => {
         const { layer_group, layer_shape } = req.query
         const _res_sql = await getNameProject(layer_group,layer_shape)
      
-        _res_sql.forEach((e) => {
-            const int = tablename.findIndex((n) => n === e.project_na)
+        _res_sql.projects_name.forEach((e) => {
+            const int = tablename.findIndex((n) => n === e)
             if (int === -1) {
-                tablename.push(e.project_na);
+                tablename.push(e);
               }
         })
 
-        _res_sql.forEach((e) => {
-            const int = partype.findIndex((n) => n === e.partype)
+        _res_sql.partypes.forEach((e) => {
+            const int = partype.findIndex((n) => n === e)
             if (int === -1) {
-                partype.push(e.partype);
+                partype.push(e);
               }
         })
-    
-        console.log(tablename , partype);
-        result(res, { Project_name : tablename , Document_name :  partype } )
+
+        result(res, { project_name : tablename , document_name :  partype } )
 
 
     } catch (error) {
