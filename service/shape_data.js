@@ -53,7 +53,12 @@ exports.shapeDataService = async (table_name, id, type) => {
     let result_sql = await sequelizeStringFindOne(sql);
     /* ค้นหาสีตาม status ใน shpae*/
     if (result_sql.shape.features != null) {
-      if (filter_table_name.config_color === true) return result_sql
+      if (filter_table_name.config_color === true) {
+        result_sql.shape.features.forEach(e => {
+          e.properties.gid = e.id
+        })
+        return result_sql
+      } 
       else {
         for (let i = 0; i < result_sql.shape.features.length; i++) {
           const e = result_sql.shape.features[i];
@@ -61,6 +66,7 @@ exports.shapeDataService = async (table_name, id, type) => {
             const _status_shape = String(e.properties.status)
             const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
             e.properties.status_color = status_color ?? undefined
+            e.properties.gid = e.id
           }
 
         }
@@ -440,7 +446,7 @@ exports.getNameProject = async(layer_group) => {
        _data.forEach((e) => {
          table_name = e.table_name 
 
-            project_name = await sequelizeString ( `SELECT project_na FROM shape_data.${table_name})`);  
+            // project_name = await sequelizeString ( `SELECT project_na FROM shape_data.${table_name})`);  
         });
         
           // const Project_name = `SELECT project_na FROM shape_data.${project_na}`  ;
@@ -500,6 +506,7 @@ exports.getAllShapeDataService = async (layer_group, project_name, document_name
     val_sql = ``
 
     if (select_search && search) val_sql += ` AND ${select_search} ILIKE '%${search}%' `
+    else val_sql += ` AND parid LIKE '%${search || ""}%' OR parlabel1 '%${search || ""}%'`
     if (document_name) val_sql += ` AND partype = '${document_name}' `
     if (project_name) val_sql += ` AND project_na = '${project_name}' ` 
     if (prov) val_sql += ` AND prov = '${prov}' `
