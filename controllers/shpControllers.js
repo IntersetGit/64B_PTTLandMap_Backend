@@ -294,33 +294,13 @@ exports.getShapeData = async (req, res, next) => {
 
 //---------------------------get โครงการ ----------------------------//
 exports.getSearchDataDashboard = async (req, res, next) => {
-    
     try {
-  
-        const  tablename = []
-        const partype = []
+
         const { layer_group, layer_shape } = req.query
-        const _res_sql = await getNameProject(layer_group,layer_shape)
-     
-        _res_sql.projects_name.forEach((e) => {
-            const int = tablename.findIndex((n) => n === e)
-            if (int === -1) {
-                tablename.push(e);
-              }
-        })
-
-        _res_sql.partypes.forEach((e) => {
-            const int = partype.findIndex((n) => n === e)
-            if (int === -1) {
-                partype.push(e);
-              }
-        })
-
-        result(res, { project_name : tablename , document_name :  partype } )
+        result(res, await getNameProject(layer_group,layer_shape) );
 
 
     } catch (error) {
-        
         next(error);
     }
 }

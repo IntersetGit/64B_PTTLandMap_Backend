@@ -393,47 +393,34 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
 //------------- get โครงการ -----------------------//
 
 exports.getNameProject = async (layer_group, layer_shape) => {
-  var projects_name = [], partypes = [], tablename = [] 
-
+  var project_name = [], document_name = []
   if (layer_group) {
+    const { table_name } = await models.mas_layers_shape.findByPk(layer_group);
+    const sql = await sequelizeString(`SELECT DISTINCT partype  FROM shape_data.${table_name}`);  
+    const sql_ = await sequelizeString(`SELECT DISTINCT project_na  FROM shape_data.${table_name}`);  
+    sql.forEach(({ partype }) => {
+      document_name.push(partype);
+    })
+    sql_.forEach(({ project_na }) => {
+      project_name.push(project_na);
+    })
 
-  var _project_name ,
-      _data
-     
-     
-     
-         _data =  `SELECT * FROM master_lookup.mas_layers_shape where 1=1 ` ;
-         
-         if(layer_group) _data += ` AND group_layer_id = '${layer_group}' `
-         if(layer_shape) _data  += `AND id = '${layer_shape}' `
-         
-  
-          const data = await sequelizeString(_data)
-         
-          for (let i = 0; i < data.length; i++) {
-            const table_name = data[i].table_name;
-          _project_name = await sequelizeString(`SELECT DISTINCT project_na , partype  FROM shape_data.${table_name}`);  
-          _project_name.forEach((a) => {
-            partypes.push(a.partype);
-            projects_name.push(a.project_na);
-          })
-        };
-
-       
-    
   } else {
     const allSchemaShape = await func_table_name()
     for (let i = 0; i < allSchemaShape.length; i++) {
       const e = allSchemaShape[i];
-      const sql =  await sequelizeString(`SELECT project_na, partype FROM shape_data.${e.table_name} `);
-      sql.forEach(val => {
-        partypes.push(val.partype);
-        projects_name.push(val.project_na);
+      const sql =  await sequelizeString(`SELECT DISTINCT partype FROM shape_data.${e.table_name} `);
+      const sql_ =  await sequelizeString(`SELECT DISTINCT project_na FROM shape_data.${e.table_name} `);
+      sql.forEach(({ partype }) => {
+        document_name.push(partype);
+      })
+      sql_.forEach(({ project_na }) => {
+        project_name.push(project_na);
       })
     }
   }
 
-  return { projects_name , partypes }
+  return { project_name , document_name }
 
 };
 
