@@ -377,110 +377,33 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
 };
 
 
-//---------------------------------------------------------------------------//
 
-
-
-
-
-// exports.getShapeDataService = async (
-//   search,
-//   project_name,
-//   payid,
-//   parlabel1,
-//   layer_group
-
-  
- 
-// ) => {
-//   console.log(search);
-
-//   const table_name = await func_table_name();
-//   var sql,
-//     _res,
-//     fromsql= []
-
-
-//   if (layer_group) {
-
-//     _res = await sequelizeString(
-//       `SELECT * FROM master_lookup.mas_layers_shape where group_layer_id = '${layer_group}' AND  table_name is not null AND TYPE = `
-//     );
-
-//     let tablename = ''
-//    _res.forEach( (e) => {
-//       tablename = e.table_name 
-//            sql = `SELECT * FROM shape_data.${tablename}` ;
-//    })
-//    console.log('=========================================');
-//    console.log(tablename)
-   
-//     // fromsql = `${_res.table_name}`
-
-//     return await sequelizeString(sql)
-// }
-// }
 //------------- get โครงการ -----------------------//
 
-exports.getNameProject = async(layer_group) => {
+exports.getNameProject = async(layer_group,layer_shape) => {
 
 
-  let project_name ,
-      table_name = '',
+  var project_name ,
+       table_name = '',
       tablename = [] 
-  
 
-
-   const _data = await sequelizeString( `SELECT * FROM master_lookup.mas_layers_shape where group_layer_id = '${layer_group}' AND  table_name is not null `) ;
- 
-       _data.forEach((e) => {
-         table_name = e.table_name 
-
-            project_name = await sequelizeString ( `SELECT project_na FROM shape_data.${table_name})`);  
-        });
+         var _data =  `SELECT * FROM master_lookup.mas_layers_shape where group_layer_id = '${layer_group}'  ` ;
         
-          // const Project_name = `SELECT project_na FROM shape_data.${project_na}`  ;
-          
-        //   Project_name.forEach((a, i) => {
+         if(layer_shape) _data  += `AND id = '${layer_shape}' `
 
-        //     const i1 = Project_name.findIndex((x) => x.name === a.Project_name.replace(/\n/g, ""));
-        //     if (i1 === -1 && a.Project_name) {
-        //       tablename.push({
-        //         id: i + 1,
-        //         name: a.Project_name.replace(/\n/g, ""),
-        //       });
-            
-        // };
+          const data = await sequelizeString(_data)
+ 
+          data.forEach((e) => {
+         table_name = e.table_name 
+            project_name = `SELECT DISTINCT project_na , partype  FROM shape_data.${table_name}`;  
+        });
 
-        //  })
-    
+  console.log(tablename);
 
-        // Project_name.forEach((e, i) => {
-        //   if (e.table_name) {
-        //     const i1 = table_name.findIndex((x) => x.name === e.table_name.replace(/\n/g, ""));
-        //     if (i1 === -1 && e.table_name) {
-        //       tablename.push({
-        //         id: i + 1,
-        //         name: e.table_name.replace(/\n/g, ""),
-        //       });
-        //     }
-      
-
-
-
-  console.log(project_name);
-
-  return await sequelizeString  (project_name) ;
+  return await sequelizeString(project_name) ;
 
 
   };
-  // return table_name
-
-
-// }
-
-
-
 
 
 /* เรียกข้อมูลทั้งหมด shape_data */

@@ -22,6 +22,7 @@ const { errorUserNot } = require("../messages");
 const http = require('http');
 const xl = require('excel4node');
 const { sequelizeString } = require("../util");
+const { set } = require("lodash");
 
 
 
@@ -291,19 +292,36 @@ exports.getShapeData = async (req, res, next) => {
 }
 
 
-//-------------------------------------------------------------------------------
+//---------------------------get โครงการ ----------------------------//
 exports.getSearchDataDashboard = async (req, res, next) => {
     
     try {
+  
+        const  tablename = []
+        const partype = []
+        const { layer_group, layer_shape } = req.query
+        const _res_sql = await getNameProject(layer_group,layer_shape)
+     
+        _res_sql.forEach((e) => {
+            const int = tablename.findIndex((n) => n === e.project_na)
+            if (int === -1) {
+                tablename.push(e.project_na);
+              }
+        })
 
-        const { layer_group } = req.query
-        const _res_sql = await getNameProject(layer_group)
-        
+        _res_sql.forEach((e) => {
+            const int = partype.findIndex((n) => n === e.partype)
+            if (int === -1) {
+                partype.push(e.partype);
+              }
+        })
+    
+        console.log(tablename , partype);
+        result(res, { Project_name : tablename , Document_name :  partype } )
 
-        result(res, _res_sql )
 
     } catch (error) {
-        console.log('errrorr');
+        
         next(error);
     }
 }

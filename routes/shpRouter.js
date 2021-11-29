@@ -31,8 +31,8 @@ router.post('/checkUploadFile', [authenticateToken], checkUploadFile)
  * เรียกข้อมูลสิทธิ์
  * Dashboard
 **/
-router.get('/getSearchDataDashboard', [authenticateToken], getSearchDataDashboard);
 
+router.get('/getSearchDataDashboard', [authenticateToken], getSearchDataDashboard);
 router.get('/getFromProjectMap', [authenticateToken], getFromProjectDashboard);
 router.get('/getFromReportBackOffice', [authenticateToken], getFromReportDashbord);
 
