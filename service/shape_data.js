@@ -395,18 +395,54 @@ exports.getNameProject = async(layer_group,layer_shape) => {
 
   var project_name ,
        table_name = '',
-      tablename = [] 
-
-         var _data =  `SELECT * FROM master_lookup.mas_layers_shape where group_layer_id = '${layer_group}'  ` ;
-        
+      tablename = [],
+      _data,
+      KeepData = [],
+     
+      
+      
+      // const Schema = await sequelizeString(`SELECT * FROM information_schema.tables`)
+      // const data_layers = await models.mas_layers_shape.findAll();
+      
+      // if (data_layers.length > 0) {
+      //   data_layers.forEach((e) => [KeepData.push(e.table_name)]);
+      // };
+  
+      // for (const aa in KeepData) {
+      //   if (Object.hasOwnProperty.call(KeepData, aa)) {
+      //     const tables_name = KeepData[aa];
+      //     if (tables_name != "" && tables_name != null) {
+      //       const { table_schema, table_name } = Schema.find(tbl => tbl.table_name == tables_name)
+      //       _res =  await sequelizeString( 
+      //         (sql = `SELECT project_na , partype FROM ${table_schema}.${table_name}  `);
+      //     }
+      //   }
+      // }
+     
+         _data =  `SELECT * FROM master_lookup.mas_layers_shape where  ` ;
+         
+         if(layer_group) _data += ` AND group_layer_id = '${layer_group}' `
          if(layer_shape) _data  += `AND id = '${layer_shape}' `
-
+         
+  
           const data = await sequelizeString(_data)
  
           data.forEach((e) => {
-         table_name = e.table_name 
-            project_name = `SELECT DISTINCT project_na , partype  FROM shape_data.${table_name}`;  
+          table_name = e.table_name 
+
+          project_name = `SELECT DISTINCT project_na , partype  FROM shape_data.${table_name}`;  
         });
+
+        // const Schema = await sequelizeString(`SELECT * FROM information_schema.tables`)
+        // for (const af in KeepData) {
+        //   if (Object.hasOwnProperty.call(KeepData, af)) {
+        //     const tables_name = KeepData[af];
+        //     if (tables_name != "" && tables_name != null) {
+        //       const { table_schema, table_name } = Schema.find(tbl => tbl.table_name == tables_name)
+        //       _res = await sequelizeString(
+        //         (sql = `SELECT * FROM ${table_schema}.${table_name}  `)
+        //       );
+
 
   console.log(tablename);
 
