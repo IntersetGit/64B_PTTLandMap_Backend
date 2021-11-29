@@ -97,6 +97,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
             if (mimetype == 'kmz') {
                 const _pathfile = await updataKmlKmz(file) //อัพไฟล์ kml
                 const geojson = await KMZGeoJSON.toJson(_pathfile) // แปลงไฟล์ kmz
+                filepath = _pathfile
                 // console.log(geojson);
                 const _createTableShape = await createTableShapeService(geojson, queryInterface, mimetype);
                 // console.log(_createTableShape);
@@ -115,7 +116,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 }, transaction)
 
                 await addShapeService(geojson, _createTableShape.schema, _createTableShape.arrNameTable, _createTableShape.indexPropertie);
-
+                await removeFilePubilc(_pathfile);
             }
 
             await transaction.commit();
