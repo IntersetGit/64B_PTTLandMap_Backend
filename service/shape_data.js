@@ -56,6 +56,7 @@ exports.shapeDataService = async (table_name, id, type) => {
       if (filter_table_name.config_color === true) {
         result_sql.shape.features.forEach(e => {
           e.properties.gid = e.id
+          e.properties.table_name = filter_table_name.table_name
         })
         return result_sql
       } 
@@ -67,6 +68,7 @@ exports.shapeDataService = async (table_name, id, type) => {
             const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
             e.properties.status_color = status_color ?? undefined
             e.properties.gid = e.id
+            e.properties.table_name = filter_table_name.table_name
           }
 
         }
@@ -390,30 +392,28 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
 
 //------------- get โครงการ -----------------------//
 
-exports.getNameProject = async(layer_group,layer_shape) => {
+exports.getNameProject = async (layer_group, layer_shape) => {
+  var projects_name = [], partypes = [], tablename = [] 
 
+  if (layer_group) {
 
-  var project_name ,
-       table_name = '',
-      tablename = [] 
+    
+    
+  } else {
+    const allSchemaShape = await func_table_name()
+    for (let i = 0; i < allSchemaShape.length; i++) {
+      const e = allSchemaShape[i];
+      const sql =  await sequelizeString(`SELECT project_na, partype FROM shape_data.${e.table_name} `);
+      sql.forEach(val => {
+        partypes.push(val.partype);
+        projects_name.push(val.project_na);
+      })
+    }
+  }
 
-         var _data =  `SELECT * FROM master_lookup.mas_layers_shape where group_layer_id = '${layer_group}'  ` ;
-        
-         if(layer_shape) _data  += `AND id = '${layer_shape}' `
+  return { projects_name , partypes }
 
-          const data = await sequelizeString(_data)
- 
-          data.forEach((e) => {
-         table_name = e.table_name 
-            project_name = `SELECT DISTINCT project_na , partype  FROM shape_data.${table_name}`;  
-        });
-
-  console.log(tablename);
-
-  return await sequelizeString(project_name) ;
-
-
-  };
+};
 
 
 /* เรียกข้อมูลทั้งหมด shape_data */
