@@ -1,7 +1,6 @@
 const path = require("path");
 const uuidv4 = require("uuid");
 const fs = require("fs");
-
 const result = require("../middleware/result");
 const config = require("../config");
 
@@ -59,7 +58,7 @@ exports.uploads = async (req, res, next) => {
 };
 
 exports.uploadDefault = (req, res, next) => {
-    const {id} = req.body
+  const { id } = req.body;
   try {
     fs.readFile("./public/uploads/default/satellite.jpg", (err, data) => {
       if (err) console.log(err);
@@ -75,5 +74,34 @@ exports.uploadDefault = (req, res, next) => {
     });
   } catch (error) {
     result(res, error);
+  }
+};
+
+exports.uploadPointDefault = (req, res, next) => {
+  try {
+    const { img } = req.body;
+    const id = uuidv4.v4();
+    fs.readFile(`./public/uploads/default/Symbol/${img}`, (err, data) => {
+      if (err) throw new Error(err);
+      else {
+        fs.writeFile(
+          `./public/uploads/symbol_point/${id}.png`,
+          data,
+          (err, data) => {
+            if (err) throw new Error(err);
+            let model = {
+              location: `${config.SERVICE_HOST}/uploads/symbol_point/${id}.png`,
+              path: `/uploads/symbol_point/${id}.png`,
+              nameOld: img,
+              nameNew: `${id}.png`,
+              type: 'png',
+            };
+            result(res, model);
+          }
+        );
+      }
+    });
+  } catch (error) {
+    next(error);
   }
 };
