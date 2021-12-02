@@ -57,6 +57,7 @@ exports.shapeDataService = async (table_name, id, type) => {
         result_sql.shape.features.forEach(e => {
           e.properties.gid = e.id
           e.properties.table_name = filter_table_name.table_name
+          e.properties.from_model = filter_table_name.group_layer_id === 'f942a946-3bcb-4062-9207-d78ab437edf3' ? true : false
         })
         return result_sql
       } 
@@ -69,6 +70,7 @@ exports.shapeDataService = async (table_name, id, type) => {
             e.properties.status_color = status_color ?? undefined
             e.properties.gid = e.id
             e.properties.table_name = filter_table_name.table_name
+            e.properties.from_model = filter_table_name.group_layer_id === 'f942a946-3bcb-4062-9207-d78ab437edf3' ? true : false
           }
 
         }

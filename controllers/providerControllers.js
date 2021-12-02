@@ -20,14 +20,16 @@ exports.loginControllers = async (req, res, next) => {
             username = _decrypt.username
             password = _decrypt.password
         }
-        
-        const _res = (username.toUpperCase()) !== ('superadmin'.toUpperCase()) && (username.toUpperCase()) !== ('editor'.toUpperCase()) && (username.toUpperCase()) !== ('viewer'.toUpperCase()) ? await ldap({ user_name: username, password }) :  await filterUsernameSysmUsersService(username)
+        let _res = await filterUsernameSysmUsersService(username)
+        if (_res.is_ad) {
+            _res = await ldap({ user_name: username, password })
+        }
         if (!_res || !_res.password) {
             const error = new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง !");
             error.statusCode = 400;
-            throw error; 
+            throw error;
         }
-    
+
         const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
         // console.log(passwordecrypt);
         if (!passwordecrypt) {
@@ -35,8 +37,8 @@ exports.loginControllers = async (req, res, next) => {
             error.statusCode = 400;
             throw error;
         }
-        
-        
+
+
         const model = {
             sysm_id: _res.id,
             roles_id: _res.roles_id,
@@ -169,21 +171,27 @@ const generateAccessToken = async (model) => {
 
 
 //---------- ค้นหาผู้ใช้งาน -------------------------ลูกหมี// 
-exports.getSearchUserController = async (req, res) => {
-    const { search } = req.body;
-    let sql = `
-        select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast from system.sysm_users Suser
+exports.getSearchUserController = async (req, res, next) => {
+    try {
+        const { search } = req.body;
+        let sql = `
+        select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast , is_ad
+        from system.sysm_users Suser
         inner join ptt_data.dat_profile_users Puser on Suser.id=Puser.user_id
         inner join system.sysm_roles roles on roles.id=Suser.roles_id AND Suser.isuse =1`
 
-    if (search) {
-        sql += ` WHERE Suser.user_name ILIKE '%${search}%'
+        if (search) {
+            sql += ` WHERE Suser.user_name ILIKE '%${search}%'
             or Suser.e_mail ILIKE '%${search}%' 
             or Puser.first_name  ILIKE '%${search}%' 
             or Puser.last_name ILIKE '%${search}%' 
             or roles.roles_name ILIKE '%${search}%'`
+        }
+        res.send(await sequelizeString(sql))
+    } catch (error) {
+        next(error);
     }
-    res.send(await sequelizeString(sql))
+
 
 }
 

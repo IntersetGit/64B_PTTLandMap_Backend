@@ -8,7 +8,7 @@ var _mas_layers_shape = require("./mas_layers_shape");
 var _mas_name_titles = require("./mas_name_titles");
 var _mas_province = require("./mas_province");
 var _mas_status_project = require("./mas_status_project");
-var _mas_subdistrict = require("./mas_subdistrict");;
+var _mas_subdistrict = require("./mas_subdistrict");
 var _sysm_config = require("./sysm_config");
 var _sysm_roles = require("./sysm_roles");
 var _sysm_users = require("./sysm_users");
@@ -74,7 +74,7 @@ function initModels(sequelize) {
     mas_subdistrict,
     sysm_config,
     sysm_roles,
-    sysm_users
+    sysm_users,
   };
 }
 module.exports = initModels;

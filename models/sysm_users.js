@@ -84,6 +84,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       comment: "แก้ไขข้อมูลวันที่"
+    },
+    is_ad: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      comment: "เช็คสถานะ AD true = เป็น ad ใน false = ad นอก"
     }
   }, {
     sequelize,

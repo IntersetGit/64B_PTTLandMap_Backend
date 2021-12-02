@@ -41,5 +41,6 @@ module.exports = {
     LDAP_URL_PROD: process.env.LDAP_URL_PROD,
     LDAP_SEARCH_PROD: process.env.LDAP_SEARCH_PROD,
     USER_NAME_AD: process.env.USER_NAME_AD,
-    PASSWORD_AD: process.env.PASSWORD_AD
+    PASSWORD_AD: process.env.PASSWORD_AD,
+    FRISTPASSWORD: process.env.FRISTPASSWORD
 };

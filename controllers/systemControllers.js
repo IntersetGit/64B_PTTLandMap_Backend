@@ -59,6 +59,7 @@ exports.createUserAD = async (req, res, next) => {
           password,
           e_mail: _res.mail,
           created_by: id,
+          is_ad: true
         },
         transaction
       );
@@ -87,6 +88,50 @@ exports.createUserAD = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.createUser = async (req, res, next) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const { username, token, roles_id, first_name, last_name, e_mail} = req.body;
+    if (token) {
+      const _decrypt = DecryptCryptoJS(token);
+      username = _decrypt.username;
+    }
+
+    const _res = await filterUsernameSysmUsersService(username);
+    const id = uuidv4.v4();
+    if (!_res) {
+      await createSysmUsersService(
+        {
+          id,
+          roles_id,
+          user_name: username,
+          password: config.FRISTPASSWORD,
+          e_mail: _res.mail,
+          created_by: id,
+          is_ad: false
+        },
+        transaction
+      );
+      await createDatProfileUsersService(
+        {
+          user_id: id,
+          created_by: id,
+          first_name,
+          last_name,
+          e_mail
+        },
+        transaction
+      );
+    }
+
+    result(res, id);
+    await transaction.commit();
+  } catch (error) {
+    if (transaction) await transaction.rollback()
+    next(error);
+  }
+}
 
 //-------- update roles_id โดย id---------//
 exports.updateRoleUser = async (req, res, next) => {
@@ -163,11 +208,11 @@ exports.delUserAd = async (req, res, next) => {
 exports.updateConfigAd = async (req, res, next) => {
   try {
     const model = req.body;
-    
+
     if (model.id) result(res, await updateConfigAdService(model));
     else result(res, await createConfigAdService(model));
-   
-    
+
+
   } catch (error) {
     next(error);
   }
