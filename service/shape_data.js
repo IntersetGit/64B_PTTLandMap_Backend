@@ -443,8 +443,12 @@ exports.getAllShapeDataService = async (layer_group, project_name, document_name
     sql_count,
     val_sql = ``
 
-    if (select_search && search) val_sql += ` AND ${select_search} ILIKE '%${search}%' `
-    else val_sql += ` AND parid LIKE '%${search}%' OR parlabel1 LIKE '%${search}%'`
+    
+    if (search) val_sql += ` AND parid LIKE '%${search}%' OR parlabel1 LIKE '%${search}%'`
+    if (select_search && search) {
+      val_sql
+      val_sql += ` AND ${select_search} ILIKE '%${search}%' `
+    } 
     if (document_name) val_sql += ` AND partype = '${document_name}' `
     if (project_name) val_sql += ` AND project_na = '${project_name}' ` 
     if (prov) val_sql += ` AND prov = '${prov}' `
