@@ -153,6 +153,10 @@ exports.getAllMasLayersShapeService = async (search) => {
   ,sh.color_layer
   ,sh.type
   ,sh.group_layer_id
+  ,sh.type_geo
+  ,sh.wms_name
+  ,sh.date
+  ,sh.type_server
   ,gr.group_name
   FROM master_lookup.mas_layers_shape AS sh
   INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id `
