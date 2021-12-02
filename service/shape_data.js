@@ -148,6 +148,12 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
     })
   }
 
+  if (typeGeo.length > 1) {
+    const err = new Error(`ประเภทไฟล์ข้อมูลมีหลายประเภท`);
+    err.statusCode = 400
+    throw err
+  }
+
   const typeGeometry = geojson.features.map(tp => tp.geometry.type);
   typeGeometry.forEach(e => {
     const index = typeGeo.findIndex(dex => dex.toLowerCase() == e.toLowerCase());

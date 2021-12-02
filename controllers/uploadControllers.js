@@ -82,13 +82,13 @@ exports.uploadPointDefault = (req, res, next) => {
     const { img } = req.body;
     const id = uuidv4.v4();
     fs.readFile(`./public/uploads/default/Symbol/${img}`, (err, data) => {
-      if (err) throw new Error(err);
+      if (err) console.log(err)
       else {
         fs.writeFile(
           `./public/uploads/symbol_point/${id}.png`,
           data,
           (err, data) => {
-            if (err) throw new Error(err);
+            if (err) console.log(err)
             let model = {
               location: `${config.SERVICE_HOST}/uploads/symbol_point/${id}.png`,
               path: `/uploads/symbol_point/${id}.png`,
