@@ -7,37 +7,36 @@ const { ldap } = require("../service/ldapService");
 const { updateSysmUsersService, filterUsernameSysmUsersService, getUserService } = require("../service/sysmUsersService");
 const { EncryptCryptoJS, DecryptCryptoJS, checkPassword, sequelizeString, encryptPassword } = require('../util');
 const ActiveDirectory = require('activedirectory');
-const models = require("../models/");
+
 
 const refreshTokens = []
 
 
 
-exports.updatePassWordUser = async(req , res , next) => {
-try {
-      const { newPassword , currentPassword } = req.body;
-       req.user.user_name
-       const finddata = await  filterUsernameSysmUsersService(req.user.user_name) 
-       const _res =  await checkPassword(currentPassword ,finddata.password)
-       
-       if(_res){
+exports.updatePassWordUser = async (req, res, next) => {
+    try {
+        const { newPassword, currentPassword } = req.body;
+        req.user.user_name
+        const finddata = await filterUsernameSysmUsersService(req.user.user_name)
+        const _res = await checkPassword(currentPassword, finddata.password)
+
+        if (_res) {
             const changpassword = await encryptPassword(newPassword)
-             await models.sysm_users.update({
-                password : changpassword
-            },{
-                where : { id : req.user.sysm_id }
+            await updateSysmUsersService({
+                password: changpassword,
+                id: req.user.sysm_id
             }
             )
-            return true
-         } else {
+
+        } else {
             const error = new Error("รหัสผ่านไม่ถูกต้อง !");
             error.statusCode = 400;
             throw error;
-         }
-  
-} catch (error) {
-    next(error)    
-}
+        }
+        result(res, true)
+    } catch (error) {
+        next(error)
+    }
 
 }
 
@@ -45,7 +44,7 @@ try {
 exports.loginControllers = async (req, res, next) => {
     try {
         let { username, password, token } = req.body;
-          
+
 
         if (token) {
             const _decrypt = DecryptCryptoJS(token)
