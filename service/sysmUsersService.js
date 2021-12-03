@@ -51,6 +51,7 @@ exports.createSysmUsersService = async (model, transaction) => {
     if (model.status_login) _model.status_login = model.status_login
     if (model.created_by) _model.created_by = model.created_by
     if (model.code_ldap) _model.code_ldap = model.code_ldap
+    if (model.is_ad) _model.is_ad = model.is_ad
 
     await models.sysm_users.create(_model, { transaction });
     return id
