@@ -10,10 +10,41 @@ const ActiveDirectory = require('activedirectory');
 
 const refreshTokens = []
 
+
+
+exports.updatePassWordUser = async(req , res , next) => {
+try {
+      const { password } = req.body;
+       req.user.user_name
+       const finddata = await  filterUsernameSysmUsersService(req.user.user_name) 
+       const _res =  await checkPassword(password ,finddata.password)
+       
+       if(_res){
+            const changpassword = await encryptPassword(password)
+             await models.sysm_users.update({
+                password : changpassword
+            },{
+                where : { id : req.user.sysm_id }
+            }
+            )
+            return true
+         } else {
+            const error = new Error("รหัสผ่านไม่ถูกต้อง !");
+            error.statusCode = 400;
+            throw error;
+         }
+  
+} catch (error) {
+    next(error)    
+}
+
+}
+
 /* เข้าสู่ระบบ */
 exports.loginControllers = async (req, res, next) => {
     try {
         let { username, password, token } = req.body;
+          
 
         if (token) {
             const _decrypt = DecryptCryptoJS(token)
@@ -170,7 +201,7 @@ const generateAccessToken = async (model) => {
 }
 
 
-//---------- ค้นหาผู้ใช้งาน -------------------------ลูกหมี// 
+//---------- ค้นหาผู้ใช้งาน -------------------------// 
 exports.getSearchUserController = async (req, res, next) => {
     try {
         const { search } = req.body;

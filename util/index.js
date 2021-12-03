@@ -24,6 +24,8 @@ exports.encryptPassword = async (password) => {
     return hashPassword;
 };
 
+
+
 /* ตรวจสอบ Password */
 exports.checkPassword = async (password, passwordDB) => {
     const isValid = await bcrypt.compare(password, passwordDB);
