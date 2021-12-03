@@ -32,9 +32,8 @@ const connect = {
 exports.createUserAD = async (req, res, next) => {
   const transaction = await sequelize.transaction();
   try {
-    const { username, password, token, roles_id } = req.body;
-    const _res = await connectPttAD_(username);
-    // console.log(_res);
+    const { username, password, token, roles_id, first_name, last_name, e_mail, is_ad } = req.body;
+    const id = uuidv4.v4();
 
     if (token) {
       const _decrypt = DecryptCryptoJS(token);
@@ -42,43 +41,53 @@ exports.createUserAD = async (req, res, next) => {
       password = _decrypt.password;
     }
 
-    if (!_res) {
-      const err = new Error("ไม่พบชื่อผู้ใช้ ad");
-      err.statsCode = 404;
-      throw err;
-    }
-
-    const __res = await filterUsernameSysmUsersService(username);
-    const id = uuidv4.v4();
-    if (!__res) {
-      await createSysmUsersService(
-        {
+    if (is_ad) {
+      const __res = await connectPttAD_(username);
+      if (__res) {
+        await createSysmUsersService({
           id,
           roles_id,
           user_name: username,
           password,
-          e_mail: _res.mail,
+          e_mail: __res.mail,
           created_by: id,
           is_ad: true
-        },
-        transaction
-      );
+        }, transaction);
 
-      await createDatProfileUsersService(
-        {
+        await createDatProfileUsersService({
           user_id: id,
           created_by: id,
-          first_name: _res.givenName,
-          last_name: _res.sn,
-          initials: _res.initials,
-          e_mail: _res.mail,
-        },
-        transaction
-      );
+          first_name: __res.givenName,
+          last_name: __res.sn,
+          initials: __res.initials,
+          e_mail: __res.mail,
+        }, transaction);
+      }
     } else {
-      const err = new Error(`มีผู้ใช้ ${username} ในฐานข้อมูล`);
-      err.statusCode = 400;
-      throw err;
+      const _res = await filterUsernameSysmUsersService(username);
+      if (!_res) {
+        await createSysmUsersService({
+          id,
+          roles_id,
+          user_name: username,
+          password: config.FRISTPASSWORD,
+          e_mail,
+          created_by: id,
+          is_ad: false
+        }, transaction);
+
+        await createDatProfileUsersService({
+          user_id: id,
+          created_by: id,
+          first_name,
+          last_name,
+          e_mail
+        }, transaction);
+      } else {
+        const err = new Error(`มีผู้ใช้ ${username} ในฐานข้อมูล`);
+        err.statusCode = 400;
+        throw err;
+      }
     }
 
     await transaction.commit();
@@ -92,7 +101,7 @@ exports.createUserAD = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
   const transaction = await sequelize.transaction();
   try {
-    const { username, token, roles_id, first_name, last_name, e_mail} = req.body;
+    const { username, token, roles_id, first_name, last_name, e_mail } = req.body;
     if (token) {
       const _decrypt = DecryptCryptoJS(token);
       username = _decrypt.username;
