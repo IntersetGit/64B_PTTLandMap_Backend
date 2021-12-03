@@ -7,6 +7,7 @@ const { ldap } = require("../service/ldapService");
 const { updateSysmUsersService, filterUsernameSysmUsersService, getUserService } = require("../service/sysmUsersService");
 const { EncryptCryptoJS, DecryptCryptoJS, checkPassword, sequelizeString, encryptPassword } = require('../util');
 const ActiveDirectory = require('activedirectory');
+const models = require("../models/");
 
 const refreshTokens = []
 
