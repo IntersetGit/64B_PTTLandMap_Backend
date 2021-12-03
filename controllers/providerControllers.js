@@ -14,13 +14,13 @@ const refreshTokens = []
 
 exports.updatePassWordUser = async(req , res , next) => {
 try {
-      const { password } = req.body;
+      const { newPassword , currentPassword } = req.body;
        req.user.user_name
        const finddata = await  filterUsernameSysmUsersService(req.user.user_name) 
-       const _res =  await checkPassword(password ,finddata.password)
+       const _res =  await checkPassword(currentPassword ,finddata.password)
        
        if(_res){
-            const changpassword = await encryptPassword(password)
+            const changpassword = await encryptPassword(newPassword)
              await models.sysm_users.update({
                 password : changpassword
             },{
