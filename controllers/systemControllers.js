@@ -99,16 +99,28 @@ exports.createUserAD = async (req, res, next) => {
 };
 
 exports.editUser = async (req, res, next) => {
+  const transaction = await sequelize.transaction();
   try {
     const model = req.body;
-    if (model.id) {
-      await updateSysmUsersService(model)
-      await updateDatProfileUsersService({first_name: model.first_name, last_name: model.last_name, user_id: model.id, e_mail: model.e_mail});
+
+    const dataUser = {
+      user_name: model.username,
+      first_name: model.first_name, 
+      last_name: model.last_name, 
+      user_id: model.id, 
+      e_mail: model.e_mail
     }
-    
+
+    if (model.id) {
+      await updateSysmUsersService(model, transaction)
+      await updateDatProfileUsersService(dataUser, transaction);
+    }
+
+    await transaction.commit();
     result(res, model.id);
     
   } catch (error) {
+    if (transaction) await transaction.rollback();
     next(error);
   }
 }
