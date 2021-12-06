@@ -14,9 +14,9 @@ router.get('/findUserAD', [authenticateToken], findUserAd);
 /* ลบผู้ใช้งาน */
 router.post('/delUserAD/:id', [authenticateToken], delUserAd);
 /* อัพข้อมูลการตั้งค่า ad */ 
-router.post('updateConfig', [authenticateToken], updateConfigAd)
+router.post('updateConfig', [authenticateToken], updateConfigAd);
 
 // เรียกข้อมูลสิทธ์ผู้ใช้งาน
-router.get('/getUser',[authenticateToken], getSysmRoleController)
+router.get('/getUser',[authenticateToken], getSysmRoleController);
 
 module.exports = router;
