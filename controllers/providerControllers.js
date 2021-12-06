@@ -5,15 +5,46 @@ const jwt = require('jsonwebtoken');
 const result = require('../middleware/result');
 const { ldap } = require("../service/ldapService");
 const { updateSysmUsersService, filterUsernameSysmUsersService, getUserService } = require("../service/sysmUsersService");
-const { EncryptCryptoJS, DecryptCryptoJS, checkPassword, sequelizeString } = require('../util');
+const { EncryptCryptoJS, DecryptCryptoJS, checkPassword, sequelizeString, encryptPassword } = require('../util');
 const ActiveDirectory = require('activedirectory');
 
+
 const refreshTokens = []
+
+
+
+exports.updatePassWordUser = async (req, res, next) => {
+    try {
+        const { newPassword, currentPassword } = req.body;
+        req.user.user_name
+        const finddata = await filterUsernameSysmUsersService(req.user.user_name)
+        const _res = await checkPassword(currentPassword, finddata.password)
+
+        if (_res) {
+            const changpassword = await encryptPassword(newPassword)
+            await updateSysmUsersService({
+                password: changpassword,
+                id: req.user.sysm_id
+            }
+            )
+
+        } else {
+            const error = new Error("รหัสผ่านไม่ถูกต้อง !");
+            error.statusCode = 400;
+            throw error;
+        }
+        result(res, true)
+    } catch (error) {
+        next(error)
+    }
+
+}
 
 /* เข้าสู่ระบบ */
 exports.loginControllers = async (req, res, next) => {
     try {
         let { username, password, token } = req.body;
+
 
         if (token) {
             const _decrypt = DecryptCryptoJS(token)
@@ -171,7 +202,7 @@ const generateAccessToken = async (model) => {
 }
 
 
-//---------- ค้นหาผู้ใช้งาน -------------------------ลูกหมี// 
+//---------- ค้นหาผู้ใช้งาน -------------------------// 
 exports.getSearchUserController = async (req, res, next) => {
     try {
         const { search } = req.body;
