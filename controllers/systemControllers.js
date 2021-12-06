@@ -70,7 +70,7 @@ exports.createUserAD = async (req, res, next) => {
           id,
           roles_id,
           user_name: username,
-          password: config.FRISTPASSWORD,
+          password: await encryptPassword(config.FRISTPASSWORD),
           e_mail,
           created_by: id,
           is_ad: false

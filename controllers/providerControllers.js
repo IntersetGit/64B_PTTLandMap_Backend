@@ -51,6 +51,7 @@ exports.loginControllers = async (req, res, next) => {
             first_name: _res.first_name,
             last_name: _res.last_name,
             initials: _res.initials,
+            is_ad: _res.is_ad
             // company: _res.company,
             // department: _res.department,
             // job_title: _res.job_title,
