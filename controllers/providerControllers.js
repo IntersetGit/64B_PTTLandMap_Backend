@@ -220,6 +220,7 @@ exports.getSearchUserController = async (req, res, next) => {
             or Puser.last_name ILIKE '%${search}%' 
             or roles.roles_name ILIKE '%${search}%'`
         }
+        sql += ` ORDER BY Suser.update_date DESC`
         res.send(await sequelizeString(sql))
     } catch (error) {
         next(error);
