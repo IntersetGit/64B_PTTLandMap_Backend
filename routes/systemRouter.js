@@ -1,4 +1,4 @@
-const { createUserAD,updateRoleUser, getSysmRoleController, findUserAd, delUserAd, updateConfigAd, createUser } = require('../controllers/systemControllers');
+const { createUserAD,updateRoleUser, getSysmRoleController, findUserAd, delUserAd, updateConfigAd, createUser, editUser } = require('../controllers/systemControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
@@ -18,5 +18,7 @@ router.post('updateConfig', [authenticateToken], updateConfigAd);
 
 // เรียกข้อมูลสิทธ์ผู้ใช้งาน
 router.get('/getUser',[authenticateToken], getSysmRoleController);
+/* */
+router.put('/editUser', [authenticateToken], editUser);
 
 module.exports = router;

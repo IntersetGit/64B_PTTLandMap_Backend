@@ -2,7 +2,7 @@ const ActiveDirectory = require("activedirectory");
 const config = require("../config");
 const { filterUsernameSysmUsersService, updateSysmUsersService, updateConfigAdService, createConfigAdService } = require("../service/sysmUsersService");
 const { createSysmUsersService } = require("../service/sysmUsersService");
-const { createDatProfileUsersService } = require("../service/datProfileUsersService");
+const { createDatProfileUsersService, updateDatProfileUsersService } = require("../service/datProfileUsersService");
 const sequelize = require("../config/dbConfig"); //connect db  query string
 const uuidv4 = require("uuid");
 const result = require("../middleware/result");
@@ -97,6 +97,21 @@ exports.createUserAD = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.editUser = async (req, res, next) => {
+  try {
+    const model = req.body;
+    if (model.id) {
+      await updateSysmUsersService(model)
+      await updateDatProfileUsersService({first_name: model.first_name, last_name: model.last_name, user_id: model.id, e_mail: model.e_mail});
+    }
+    
+    result(res, model.id);
+    
+  } catch (error) {
+    next(error);
+  }
+}
 
 exports.createUser = async (req, res, next) => {
   const transaction = await sequelize.transaction();

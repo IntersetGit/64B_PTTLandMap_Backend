@@ -208,7 +208,7 @@ exports.getSearchUserController = async (req, res, next) => {
         const { search } = req.body;
         let sql = `
         select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast , is_ad
-        ,Suser.roles_id as roles_id
+        ,Suser.roles_id as roles_id , Puser.first_name, Puser.last_name
         from system.sysm_users Suser
         inner join ptt_data.dat_profile_users Puser on Suser.id=Puser.user_id
         inner join system.sysm_roles roles on roles.id=Suser.roles_id AND Suser.isuse =1`
