@@ -134,7 +134,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                 })
             }
         }
-        await removeFilePubilc(filepath);
+        if(filepath) await removeFilePubilc(filepath);
         next(error);
     }
 }
