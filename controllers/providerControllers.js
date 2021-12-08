@@ -52,22 +52,22 @@ exports.loginControllers = async (req, res, next) => {
             password = _decrypt.password
         }
         let _res = await filterUsernameSysmUsersService(username)
-        if (_res.is_ad) {
-            _res = await ldap({ user_name: username, password })
-        }
-        if (!_res || !_res.password) {
-            const error = new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง !");
+        if (!_res) {
+            const error = new Error("ไม่พบชื่อผู้ใช้ในระบบหรือรหัสผ่านผิด");
             error.statusCode = 400;
             throw error;
         }
 
-        const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
-        // console.log(passwordecrypt);
-        if (!passwordecrypt) {
-            const error = new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง !");
-            error.statusCode = 400;
-            throw error;
-        }
+        if (_res.is_ad) _res = await ldap({ user_name: username, password })
+        if(!_res.password) _res.password = password
+            const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
+            // console.log(passwordecrypt);
+            if (!passwordecrypt) {
+                const error = new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง !");
+                error.statusCode = 400;
+                throw error;
+            }
+        
 
 
         const model = {
