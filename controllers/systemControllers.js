@@ -42,6 +42,12 @@ exports.createUserAD = async (req, res, next) => {
     }
 
     if (is_ad) {
+      const searchname = await filterUsernameSysmUsersService(username)
+      if (searchname) {
+        const err = new Error(`มีผู้ใช้ ${username} ในฐานข้อมูล`);
+        err.statusCode = 400;
+        throw err;
+      }
       const __res = await connectPttAD_(username);
       if (__res) {
         await createSysmUsersService({
@@ -104,9 +110,9 @@ exports.editUser = async (req, res, next) => {
 
     const dataUser = {
       user_name: model.username,
-      first_name: model.first_name, 
-      last_name: model.last_name, 
-      user_id: model.id, 
+      first_name: model.first_name,
+      last_name: model.last_name,
+      user_id: model.id,
       e_mail: model.e_mail
     }
 
@@ -117,7 +123,7 @@ exports.editUser = async (req, res, next) => {
 
     await transaction.commit();
     result(res, model.id);
-    
+
   } catch (error) {
     if (transaction) await transaction.rollback();
     next(error);
