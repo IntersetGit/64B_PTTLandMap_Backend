@@ -6,7 +6,7 @@ const { createDatProfileUsersService, updateDatProfileUsersService } = require("
 const sequelize = require("../config/dbConfig"); //connect db  query string
 const uuidv4 = require("uuid");
 const result = require("../middleware/result");
-const { DecryptCryptoJS } = require("../util");
+const { DecryptCryptoJS, encryptPassword } = require("../util");
 const models = require("../models/index");
 const { getSysmRoleService } = require("../service/masterDataService");
 
@@ -70,7 +70,7 @@ exports.createUserAD = async (req, res, next) => {
           id,
           roles_id,
           user_name: username,
-          password: await encryptPassword(config.FRISTPASSWORD),
+          password: await encryptPassword(password),
           e_mail,
           created_by: id,
           is_ad: false
@@ -128,10 +128,11 @@ exports.editUser = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
   const transaction = await sequelize.transaction();
   try {
-    const { username, token, roles_id, first_name, last_name, e_mail } = req.body;
+    const { username, token, roles_id, first_name, last_name, e_mail, password } = req.body;
     if (token) {
       const _decrypt = DecryptCryptoJS(token);
       username = _decrypt.username;
+      password = _decrypt.password;
     }
 
     const _res = await filterUsernameSysmUsersService(username);
@@ -155,7 +156,8 @@ exports.createUser = async (req, res, next) => {
           created_by: id,
           first_name,
           last_name,
-          e_mail
+          e_mail,
+          password,
         },
         transaction
       );
