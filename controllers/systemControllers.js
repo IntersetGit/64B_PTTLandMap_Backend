@@ -53,7 +53,6 @@ exports.createUserAD = async (req, res, next) => {
           created_by: id,
           is_ad: true
         }, transaction);
-
         await createDatProfileUsersService({
           user_id: id,
           created_by: id,
