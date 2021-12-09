@@ -17,6 +17,16 @@ exports.sequelizeStringFindOne = async (sql, bind) => {
     return res[0].length > 0 ? res[0][0] : null;
 }
 
+exports.sequelizeStringLike = async (sql, replacements) => {
+    // const res = await sequelize.query(sql, {replacements});
+    // return res
+    // const res = await sequelize.query('SELECT * FROM system.sysm_users WHERE user_name LIKE :search_name ', { replacements: { search_name: `%${replacements.search}%`  }})
+    // return res
+    const res = await sequelize.query('SELECT * FROM system.sysm_users WHERE user_name LIKE :search_name ', { replacements: { search_name: `%${replacements.search}%`  }})
+    return res[0].length > 0 ? res[0][0] : null;
+    
+}
+
 /* เข้ารหัส Password */
 exports.encryptPassword = async (password) => {
     const salt = await bcrypt.genSalt(5);

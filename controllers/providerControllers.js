@@ -4,7 +4,7 @@ const config = require('../config');
 const jwt = require('jsonwebtoken');
 const result = require('../middleware/result');
 const { ldap } = require("../service/ldapService");
-const { updateSysmUsersService, filterUsernameSysmUsersService, getUserService } = require("../service/sysmUsersService");
+const { updateSysmUsersService, filterUsernameSysmUsersService, getUserService, getSearchUserService } = require("../service/sysmUsersService");
 const { EncryptCryptoJS, DecryptCryptoJS, checkPassword, sequelizeString, encryptPassword } = require('../util');
 const ActiveDirectory = require('activedirectory');
 
@@ -206,22 +206,7 @@ const generateAccessToken = async (model) => {
 exports.getSearchUserController = async (req, res, next) => {
     try {
         const { search } = req.body;
-        let sql = `
-        select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast , is_ad
-        ,Suser.roles_id as roles_id , Puser.first_name, Puser.last_name
-        from system.sysm_users Suser
-        inner join ptt_data.dat_profile_users Puser on Suser.id=Puser.user_id
-        inner join system.sysm_roles roles on roles.id=Suser.roles_id AND Suser.isuse =1`
-
-        if (search) {
-            sql += ` WHERE Suser.user_name ILIKE '%${search}%'
-            or Suser.e_mail ILIKE '%${search}%' 
-            or Puser.first_name  ILIKE '%${search}%' 
-            or Puser.last_name ILIKE '%${search}%' 
-            or roles.roles_name ILIKE '%${search}%'`
-        }
-        sql += ` ORDER BY Suser.update_date DESC`
-        res.send(await sequelizeString(sql))
+        result(res, await getSearchUserService(search));
     } catch (error) {
         next(error);
     }

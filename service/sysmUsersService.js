@@ -1,6 +1,7 @@
 const models = require('../models/index')
-const { sequelizeStringFindOne } = require('../util')
+const { sequelizeStringFindOne, sequelizeString, sequelizeStringLike } = require('../util')
 const uuidv4 = require("uuid");
+const sequelize = require("../config/dbConfig"); //connect db  query string
 
 /* ค้นหา Username ตารางผู้ใช้งานระบบ ทั้งหมด */
 exports.filterUsernameSysmUsersService = async (user_name) => {
@@ -108,7 +109,24 @@ exports.updateConfigAdService = async (model) => {
     return model.id
 }
 
+exports.getSearchUserService = async (search) => {
+    let res, sql = `select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast , is_ad
+    ,Suser.roles_id as roles_id , Puser.first_name, Puser.last_name
+    from system.sysm_users Suser
+    inner join ptt_data.dat_profile_users Puser on Suser.id=Puser.user_id
+    inner join system.sysm_roles roles on roles.id=Suser.roles_id 
+    WHERE Suser.isuse = 1 `
 
+    if (search) {
+        res = await sequelize.query(`${sql}  
+        AND (Suser.user_name ILIKE :search_name
+        or Suser.e_mail ILIKE :search_name
+        or Puser.first_name ILIKE :search_name
+        or Puser.last_name ILIKE :search_name   
+        or roles.roles_name ILIKE :search_name ) `, { replacements: { search_name: `%${search}%` } })
+    } else {
+        res = await sequelize.query(`${sql}`)
+    }
+    return res[0].length > 0 ? res[0] : null;
 
-
-
+}
