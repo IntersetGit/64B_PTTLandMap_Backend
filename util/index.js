@@ -18,13 +18,10 @@ exports.sequelizeStringFindOne = async (sql, bind) => {
 }
 
 exports.sequelizeStringLike = async (sql, replacements) => {
-    // const res = await sequelize.query(sql, {replacements});
-    // return res
-    // const res = await sequelize.query('SELECT * FROM system.sysm_users WHERE user_name LIKE :search_name ', { replacements: { search_name: `%${replacements.search}%`  }})
-    // return res
-    const res = await sequelize.query('SELECT * FROM system.sysm_users WHERE user_name LIKE :search_name ', { replacements: { search_name: `%${replacements.search}%`  }})
-    return res[0].length > 0 ? res[0][0] : null;
-    
+    const res = await sequelize.query(sql, {
+        replacements: { search_name: `%${replacements.search}%` }
+    })
+    return res[0].length > 0 ? res[0] : null;
 }
 
 /* เข้ารหัส Password */
@@ -145,10 +142,10 @@ exports.DecryptCryptoJS = (code) => {
 }
 
 exports.stringToSnakeCase = (string) => {
-    return ( string && string
-      .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-      .map(x => x.toLowerCase())
-      .join('_')
+    return (string && string
+        .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+        .map(x => x.toLowerCase())
+        .join('_')
     )
-    
+
 }

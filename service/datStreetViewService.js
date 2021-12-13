@@ -1,14 +1,14 @@
 const uuid = require('uuid')
 const models = require('../models')
-const { sequelizeString, sequelizeStringFindOne } = require('../util/index')
+const { sequelizeString, sequelizeStringFindOne, sequelizeStringLike } = require('../util/index')
 
 //---------------- แสดง เพิ่ม ลบ แก้ไข dat street view ------------------//
 exports.getAllDatStreetViewService = async (search) => {
     let sql = ` SELECT * FROM ptt_data.dat_street_view `
 
-    if (search) sql += ` WHERE name ILIKE '%${search}%' `
+    if (search) sql += ` WHERE name ILIKE :search_name `
 
-    return await sequelizeString(sql)
+    return await sequelizeStringLike(sql, {search})
 }
 
 exports.createDatStreetViewService = async (data, users) => {

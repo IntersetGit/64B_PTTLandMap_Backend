@@ -110,7 +110,7 @@ exports.updateConfigAdService = async (model) => {
 }
 
 exports.getSearchUserService = async (search) => {
-    let res, sql = `select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast , is_ad
+    let sql = `select Suser.id,Suser.user_name,Suser.e_mail,roles.roles_name,Puser.first_name||' '||Puser.last_name firstLast , is_ad
     ,Suser.roles_id as roles_id , Puser.first_name, Puser.last_name
     from system.sysm_users Suser
     inner join ptt_data.dat_profile_users Puser on Suser.id=Puser.user_id
@@ -118,15 +118,13 @@ exports.getSearchUserService = async (search) => {
     WHERE Suser.isuse = 1 `
 
     if (search) {
-        res = await sequelize.query(`${sql}  
+        sql += `
         AND (Suser.user_name ILIKE :search_name
         or Suser.e_mail ILIKE :search_name
         or Puser.first_name ILIKE :search_name
         or Puser.last_name ILIKE :search_name   
-        or roles.roles_name ILIKE :search_name ) `, { replacements: { search_name: `%${search}%` } })
-    } else {
-        res = await sequelize.query(`${sql}`)
-    }
-    return res[0].length > 0 ? res[0] : null;
+        or roles.roles_name ILIKE :search_name ) `
+    } 
 
+    return await sequelizeStringLike(sql, {search});
 }

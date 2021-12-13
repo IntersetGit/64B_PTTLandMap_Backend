@@ -1,6 +1,6 @@
 const uuid = require("uuid")
 const models = require("../models/")
-const { sequelizeString, sequelizeStringFindOne } = require("../util/index")
+const { sequelizeString, sequelizeStringFindOne, sequelizeStringLike } = require("../util/index")
 
 
 exports.getAllTitleNameService = async () => {
@@ -10,10 +10,10 @@ exports.getAllTitleNameService = async () => {
 exports.getAllMasterLayers = async (search) => {
   let sql = ` select * from master_lookup.mas_layer_groups where isuse =1  `
 
-  if (search) sql += ` and group_name ILIKE '%${search}%' `
+  if (search) sql += ` and group_name ILIKE :search_name `
 
   sql += 'order by  order_by'
-  return sequelizeString(sql)
+  return sequelizeStringLike(sql, {search})
 }
 
 //----------- by id ------------------------//
@@ -21,9 +21,9 @@ exports.getAllMasterLayers = async (search) => {
 exports.getByIdMasLayersNameService = async (id) => {
   
     let sql = ` select * from master_lookup.mas_layer_groups where isuse =1  `
-    if (id) sql += ` and id  =  '${id}' `
+    if (id) sql += ` and id  =  $1 `
 
-  return sequelizeString(sql)
+  return sequelizeString(sql, [id])
 }
 
 
@@ -87,9 +87,9 @@ exports.getDatLayersService = async (search) => {
   let sql = `
   SELECT * FROM ptt_data.dat_layers  `
 
-  if (search) sql += `  where layer_name ILIKE '%${search}%'  or url ILIKE '%${search}%' or type_server ILIKE '%${search}%' or wms ILIKE '${search}'`
+  if (search) sql += ` where layer_name ILIKE :search_name  or url ILIKE :search_name or type_server ILIKE :search_name or wms ILIKE :search_name`
 
-  return await sequelizeString(sql)
+  return await sequelizeStringLike(sql, {search})
 
   // const getDatLayers = await models.dat_layers.findAll()
   // return getDatLayers
@@ -161,9 +161,9 @@ exports.getAllMasLayersShapeService = async (search) => {
   FROM master_lookup.mas_layers_shape AS sh
   INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id `
 
-  if(search) sql+= ` WHERE sh.name_layer ILIKE '%${search}%' OR gr.group_name ILIKE '%${search}%' `
+  if(search) sql+= ` WHERE sh.name_layer ILIKE :search_name OR gr.group_name ILIKE :search_name `
   
-  return await sequelizeString(sql)
+  return await sequelizeStringLike(sql, {search})
 }
 
 exports.getByIdMasLayersShapeService = async (id) => {
