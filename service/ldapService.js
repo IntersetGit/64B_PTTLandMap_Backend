@@ -54,13 +54,10 @@ const connect = {
 
 exports.ldap = async ({ user_name, password }) => {
     // const _res = await ConnectLdap({ username: user_name, password })
-    const _res = await connectPttAD({ username: user_name, password })
+    const _res = await connectPttAD({ username: user_name, password });
     const _user = await filterUsernameSysmUsersService(user_name);
     // console.log('_res :>> ', _res);
-    if (_res.message == "เชื่อมต่อผิดพลาด") {
-        return _user
-    }
-
+    if (_res.message == "เชื่อมต่อผิดพลาด") return _user
     if (_user) {
         await updateSysmUsersService({
             id: _user.id,

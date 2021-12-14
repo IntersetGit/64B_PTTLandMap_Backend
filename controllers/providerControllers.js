@@ -45,13 +45,12 @@ exports.loginControllers = async (req, res, next) => {
     try {
         let { username, password, token } = req.body;
 
-
         if (token) {
             const _decrypt = DecryptCryptoJS(token)
             username = _decrypt.username
             password = _decrypt.password
         }
-        let _res = await filterUsernameSysmUsersService(username)
+        let _res = await filterUsernameSysmUsersService(username);
         if (!_res) {
             const error = new Error("ไม่พบชื่อผู้ใช้ในระบบหรือรหัสผ่านผิด");
             error.statusCode = 400;
@@ -68,7 +67,6 @@ exports.loginControllers = async (req, res, next) => {
                 throw error;
             }
         
-
 
         const model = {
             sysm_id: _res.id,
@@ -115,46 +113,6 @@ exports.loginControllers = async (req, res, next) => {
         next(error);
     }
 };
-
-exports.loginAD = async (req, res, next) => {
-    try {
-        const { username, password } = req.body;
-
-        /* เพิ่ม user */
-        // const config_ad = {
-        //     url: `ldap://ptt.corp`,
-        //     baseDN: `DC=ptt,DC=corp`,
-        //     username: `580054@ptt.corp`,
-        //     password: "200192xA"
-        // }
-
-        const config_ad = {
-            url: `ldap://ptt.corp`,
-            baseDN: `DC=ptt,DC=corp`,
-            username: `${username}@ptt.corp`,
-            password
-        }
-
-        const ad = new ActiveDirectory(config_ad);
-
-        ad.findUser(username, (err, user) => {
-            if (err) {
-                console.log('ERROR: ' + JSON.stringify(err));
-                result(res, JSON.stringify(err), 400)
-                return;
-            }
-
-            if (!user) result(res, "error", 400)
-            else result(res, user)
-        });
-
-
-        // result(res, ad)
-
-    } catch (error) {
-        next(error);
-    }
-}
 
 exports.refreshTokenControllers = async (req, res, next) => {
     try {
