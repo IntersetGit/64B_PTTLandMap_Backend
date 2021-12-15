@@ -220,8 +220,4 @@ module.exports = {
         group: "master",
         description: "ค้นหา Wms",
     },
-
-
-
-
 };
