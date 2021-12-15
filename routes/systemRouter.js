@@ -1,12 +1,10 @@
-const { createUserAD,updateRoleUser, getSysmRoleController, findUserAd, delUserAd, updateConfigAd, createUser, editUser } = require('../controllers/systemControllers');
+const { createUserAD,updateRoleUser, getSysmRoleController, findUserAd, delUserAd, updateConfigAd, editUser } = require('../controllers/systemControllers');
 const { authenticateToken } = require('../middleware/authenticateToken');
 
 const router = require('express').Router();
 
 /* เพิ่มผู้ใช้งานใน ad */
 router.post('/addUserAD', [authenticateToken], createUserAD);
-/* เพิ่มผู้ใช้งานนอก ad*/
-router.post('/addUser', [authenticateToken], createUser);
 /* แก้ไขสิทธิ์ ผู้ใช้งาน */
 router.put('/updateRoleUser', [authenticateToken], updateRoleUser);
 /* ค้นหาผู้ใชช้ ad */

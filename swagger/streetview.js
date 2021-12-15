@@ -16,6 +16,14 @@ module.exports = {
 
         model: "streetview 1", // Name of the model
         group: "streetview",
-        description: "",
+        description: "เพิ่มข้อมูลและแก้ไขพิกัดพื้นที่",
     },
+    2: {
+        body: {
+            id: Joi.string()
+        },
+        model: "streetview 2",
+        group: "streetview",
+        description: "ลบข้อมูลพิกัดแผนที่",
+    }
 };
