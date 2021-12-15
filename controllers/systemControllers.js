@@ -130,52 +130,6 @@ exports.editUser = async (req, res, next) => {
   }
 }
 
-exports.createUser = async (req, res, next) => {
-  const transaction = await sequelize.transaction();
-  try {
-    const { username, token, roles_id, first_name, last_name, e_mail, password } = req.body;
-    if (token) {
-      const _decrypt = DecryptCryptoJS(token);
-      username = _decrypt.username;
-      password = _decrypt.password;
-    }
-
-    const _res = await filterUsernameSysmUsersService(username);
-    const id = uuidv4.v4();
-    if (!_res) {
-      await createSysmUsersService(
-        {
-          id,
-          roles_id,
-          user_name: username,
-          password: config.FRISTPASSWORD,
-          e_mail: _res.mail,
-          created_by: id,
-          is_ad: false
-        },
-        transaction
-      );
-      await createDatProfileUsersService(
-        {
-          user_id: id,
-          created_by: id,
-          first_name,
-          last_name,
-          e_mail,
-          password,
-        },
-        transaction
-      );
-    }
-
-    result(res, id);
-    await transaction.commit();
-  } catch (error) {
-    if (transaction) await transaction.rollback()
-    next(error);
-  }
-}
-
 //-------- update roles_id โดย id---------//
 exports.updateRoleUser = async (req, res, next) => {
   try {
