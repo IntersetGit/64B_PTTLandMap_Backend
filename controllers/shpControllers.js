@@ -271,7 +271,7 @@ exports.getAllDataLayer = async (req, res, next) => {
             } else[]
             e.symbol = await checkImgById(e.id, 'symbol_group')
         }
-
+        get_shp[0].children.sort((a, b) => (Number(a.order_by) - Number(b.order_by)));
         result(res, get_shp)
 
     } catch (error) {
