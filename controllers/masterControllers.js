@@ -273,3 +273,14 @@ exports.getByDateFromWms = async (req, res, next) => {
         next(error);
     }
 }
+
+/* เรียงลำดับ gis layer */
+exports.orderByGisLayers = async (req, res, next) => {
+  try {
+    const { id, sort } = req.query;
+    result(res, await editMasLayersShapeService({order_by: sort, id }));
+    
+  } catch (error) {
+    next(error);
+  }
+}
