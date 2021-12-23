@@ -21,8 +21,6 @@ const CsvParser = require("json2csv").Parser;
 const { errorUserNot } = require("../messages");
 const http = require('http');
 const xl = require('excel4node');
-const { sequelizeString } = require("../util");
-const { set } = require("lodash");
 
 
 
@@ -574,7 +572,7 @@ exports.checkUploadFile = async (req, res, next) => {
         const { file } = req.files
 
         const type = `${file.name.substring(file.name.lastIndexOf(".") + 1).toLowerCase().toLowerCase()}`;
-        const _check = ['zip', 'kml', 'kmz']
+        const _check = ['zip', 'kml', 'kmz'], setTypes = [], setNewTypes = []
         if (_check.find(e => e == type)) {
 
             switch (type) {
@@ -594,7 +592,14 @@ exports.checkUploadFile = async (req, res, next) => {
             if (_type === "shape file") {
                 const geojson = await shp(file.data)
                 geojson.features.forEach(e => {
-                    _type = e.geometry.type == "Polygon" ? "shape file" : e.geometry.type
+                    if(e.geometry) {
+                        setTypes.push(e.geometry.type == "Polygon" ? "shape file" : e.geometry.type)
+                    } else {
+                        const error = new Error('ไม่พบพิกัดข้อมูลในไฟล์');
+                        error.statusCode = 404
+                        _type = null
+                        throw error;
+                    }
                 })
             }
 
@@ -602,7 +607,14 @@ exports.checkUploadFile = async (req, res, next) => {
                 const _pathfile = await updataKmlKmz(file);
                 const geojson = await parseKML.toJson(_pathfile);
                 geojson.features.forEach(e => {
-                    _type = e.geometry.type == "Polygon" ? "shape file" : e.geometry.type
+                    if(e.geometry) {
+                        setTypes.push(e.geometry.type == "Polygon" ? "shape file" : e.geometry.type)
+                    } else {
+                        const error = new Error('ไม่พบพิกัดข้อมูลในไฟล์');
+                        error.statusCode = 404
+                        _type = null
+                        throw error;
+                    }
                 })
             }
 
@@ -610,12 +622,24 @@ exports.checkUploadFile = async (req, res, next) => {
                 const _pathfile = await updataKmlKmz(file)
                 const geojson = await KMZGeoJSON.toJson(_pathfile)
                 geojson.features.forEach(e => {
-                    _type = e.geometry.type == "Polygon" ? "shape file" : e.geometry.type
+                    if(e.geometry) {
+                        setTypes.push(e.geometry.type == "Polygon" ? "shape file" : e.geometry.type)
+                    } else {
+                        const error = new Error('ไม่พบพิกัดข้อมูลในไฟล์');
+                        error.statusCode = 404
+                        _type = null
+                        throw error;
+                    }
                 })
             }
 
+            setTypes.forEach(e => {
+                const index = setNewTypes.findIndex(n => n == e);
+                if (index === -1) setNewTypes.push(e)
+            })
+
             result(res, {
-                type: _type
+                type: setNewTypes.toString()
             }, 200);
 
         } else {
