@@ -17,7 +17,7 @@ const func_table_name = async () => {
     WHERE table_schema = 'shape_data' `);
 };
 
-exports.shapeDataService = async (table_name, id, type) => {
+exports.shapeDataService = async (table_name, id, type , group_layer_id) => {
 
   const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
   let str_type = ``
@@ -53,11 +53,12 @@ exports.shapeDataService = async (table_name, id, type) => {
     let result_sql = await sequelizeStringFindOne(sql);
     /* ค้นหาสีตาม status ใน shpae*/
     if (result_sql.shape.features != null) {
-      if (filter_table_name.config_color === true) {
+      if (filter_table_name.config_color) {
         result_sql.shape.features.forEach(e => {
           e.properties.gid = e.id
           e.properties.table_name = filter_table_name.table_name
           e.properties.from_model = filter_table_name.group_layer_id === 'f942a946-3bcb-4062-9207-d78ab437edf3' ? true : false
+          e.properties.group_layer_id = group_layer_id
         })
         return result_sql
       } 
@@ -71,7 +72,9 @@ exports.shapeDataService = async (table_name, id, type) => {
             e.properties.gid = e.id
             e.properties.table_name = filter_table_name.table_name
             e.properties.from_model = filter_table_name.group_layer_id === 'f942a946-3bcb-4062-9207-d78ab437edf3' ? true : false
-          }
+            e.properties.group_layer_id = group_layer_id
+           
+            }
 
         }
       }
