@@ -216,7 +216,8 @@ exports.editMasLayersShapeService = async (data, user) => {
     option_layer: data.option_layer,
     config_color: data.config_color,
     symbol_point: data.symbol_point,
-    type_geo: data.type_geo
+    type_geo: data.type_geo,
+    order_by: data.order_by
   }, {
     where: { id: data.id }
   })

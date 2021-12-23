@@ -162,7 +162,7 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
   })
 
   if (typeGeo.length > 1) {
-    const err = new Error(`ประเภทไฟล์ข้อมูลมีหลายประเภท`);
+    const err = new Error(`ประเภทไฟล์ข้อมูลมีหลายประเภท ${typeGeo}`);
     err.statusCode = 400
     throw err
   }

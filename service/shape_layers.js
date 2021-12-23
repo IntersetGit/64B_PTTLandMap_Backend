@@ -48,8 +48,10 @@ exports.getDataShapService = async () => {
 							,'type_geo', mls.type_geo
 							,'url', url
 							,'wms_name', wms_name
+                            ,'type', type
 							,'type_server', type_server
-							,'option_layer', option_layer))
+							,'option_layer', option_layer
+                            ,'order_by', mls.order_by))
   FROM master_lookup.mas_layers_shape mls 
   WHERE mls.group_layer_id = mlg.id) AS children
 	FROM master_lookup.mas_layer_groups mlg
