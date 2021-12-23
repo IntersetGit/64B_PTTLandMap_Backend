@@ -157,11 +157,14 @@ exports.getAllMasLayersShapeService = async (search) => {
   ,sh.wms_name
   ,sh.date
   ,sh.type_server
+  ,sh.order_by
   ,gr.group_name
   FROM master_lookup.mas_layers_shape AS sh
   INNER JOIN master_lookup.mas_layer_groups AS gr ON sh.group_layer_id = gr.id `
 
   if(search) sql+= ` WHERE sh.name_layer ILIKE :search_name OR gr.group_name ILIKE :search_name `
+
+  sql += ` ORDER BY sh.order_by`
   
   return await sequelizeStringLike(sql, {search})
 }

@@ -277,8 +277,28 @@ exports.getByDateFromWms = async (req, res, next) => {
 /* เรียงลำดับ gis layer */
 exports.orderByGisLayers = async (req, res, next) => {
   try {
-    const { id, sort } = req.query;
-    result(res, await editMasLayersShapeService({order_by: sort, id }));
+    const { drag, hover } = req.body;
+    //drag ลากมา
+    //hover เปลี่ยนลำดับ
+    const setNuberIdDrag = {
+      id: hover.id,
+      number: drag.number
+    }
+    const setNumberIdHover = {
+      id: drag.id,
+      number: hover.number
+    }
+
+    const setArrDrag = []
+    setArrDrag.push(setNumberIdHover, setNuberIdDrag);
+
+    for (let i = 0; i < setArrDrag.length; i++) {
+      const e = setArrDrag[i];
+      await editMasLayersShapeService({order_by: e.number, id: e.id })
+    }
+    
+
+    result(res, true, 201);
     
   } catch (error) {
     next(error);

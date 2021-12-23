@@ -46,6 +46,6 @@ router.delete('/masStatusProject', [authenticateToken], masterControllers.delete
 
 //-------------แสดงข้อมูลตามวันที่ time slider ----------------------------------//
 router.get('/getdateWms',[authenticateToken],masterControllers.getByDateFromWms);
-router.get('/orderByGisLayer', [authenticateToken], masterControllers.orderByGisLayers)
+router.post('/orderByGisLayer', [authenticateToken], masterControllers.orderByGisLayers)
 
 module.exports = router;
