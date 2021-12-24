@@ -650,7 +650,7 @@ exports.checkUploadFile = async (req, res, next) => {
 
     } catch (error) {
         if (_type === "shape file" || _type === "kml" || _type === "kmz") {
-            const msg = { message: "อัพโหลดไฟล์ไม่ถูกต้อง" }
+            const msg = { message: "อัพโหลดไฟล์ไม่ถูกต้อง หรือข้อมูลไฟล์ไม่ถูกต้องโปรดตรวจสอบ" }
             msg.statusCode = 400
             next(msg)
         }
