@@ -271,7 +271,8 @@ exports.getAllDataLayer = async (req, res, next) => {
         }
         // get_shp[0].children.sort((a, b) => (Number(a.order_by) - Number(b.order_by)));
         get_shp.forEach(e => {
-            e.children.sort((a, b) => (Number(a.order_by) - Number(b.order_by)));
+            (e.children) ? e.children.sort((a, b) => (Number(a.order_by) - Number(b.order_by))) : []
+            if(e.children === null || e.children == "") e.children = [] 
         })
         result(res, get_shp)
 

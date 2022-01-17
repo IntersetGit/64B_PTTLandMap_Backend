@@ -5,7 +5,7 @@ const {
   stringToSnakeCase,
 } = require("../util");
 const uuid = require("uuid");
-const { DataTypes } = require("sequelize"); //type Database
+const { DataTypes, json } = require("sequelize"); //type Database
 const { SequelizeAuto } = require("sequelize-auto");
 const sequelize = require("../config/dbConfig"); //connect database
 const lodash = require("lodash");
@@ -17,7 +17,7 @@ const func_table_name = async () => {
     WHERE table_schema = 'shape_data' `);
 };
 
-exports.shapeDataService = async (table_name, id, type , group_layer_id) => {
+exports.shapeDataService = async (table_name, id, type, group_layer_id) => {
 
   const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
   let str_type = ``
@@ -51,6 +51,19 @@ exports.shapeDataService = async (table_name, id, type , group_layer_id) => {
     else sql += ` FROM  (SELECT * FROM ${str_type}.${table_name}) row `
 
     let result_sql = await sequelizeStringFindOne(sql);
+
+    /* แปลงสี rgb เป็น hex */
+    function componentToHex(c) {
+      var hex = c.toString(16);
+      return hex.length == 1 ? "0" + hex : hex;
+    }
+    
+    function rgbToHex(r, g, b) {
+      return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
+    const {r, g, b} = JSON.parse(filter_table_name.color_layer);
+    // console.log(rgbToHex(r, g, b));
+
     /* ค้นหาสีตาม status ใน shpae*/
     if (result_sql.shape.features != null) {
       if (filter_table_name.config_color) {
@@ -59,9 +72,10 @@ exports.shapeDataService = async (table_name, id, type , group_layer_id) => {
           e.properties.table_name = filter_table_name.table_name
           e.properties.from_model = filter_table_name.group_layer_id === 'f942a946-3bcb-4062-9207-d78ab437edf3' ? true : false
           e.properties.group_layer_id = group_layer_id
+          e.properties.status_color = rgbToHex(r, g, b)
         })
         return result_sql
-      } 
+      }
       else {
         for (let i = 0; i < result_sql.shape.features.length; i++) {
           const e = result_sql.shape.features[i];
@@ -73,9 +87,7 @@ exports.shapeDataService = async (table_name, id, type , group_layer_id) => {
             e.properties.table_name = filter_table_name.table_name
             e.properties.from_model = filter_table_name.group_layer_id === 'f942a946-3bcb-4062-9207-d78ab437edf3' ? true : false
             e.properties.group_layer_id = group_layer_id
-           
-            }
-
+          }
         }
       }
 
@@ -407,8 +419,8 @@ exports.getNameProject = async (layer_group, layer_shape) => {
   var project_name = [], document_name = []
   if (layer_group) {
     const { table_name } = await models.mas_layers_shape.findByPk(layer_group);
-    const sql = await sequelizeString(`SELECT DISTINCT partype  FROM shape_data.${table_name}`);  
-    const sql_ = await sequelizeString(`SELECT DISTINCT project_na  FROM shape_data.${table_name}`);  
+    const sql = await sequelizeString(`SELECT DISTINCT partype  FROM shape_data.${table_name}`);
+    const sql_ = await sequelizeString(`SELECT DISTINCT project_na  FROM shape_data.${table_name}`);
     sql.forEach(({ partype }) => {
       document_name.push(partype);
     })
@@ -420,8 +432,8 @@ exports.getNameProject = async (layer_group, layer_shape) => {
     const allSchemaShape = await func_table_name()
     for (let i = 0; i < allSchemaShape.length; i++) {
       const e = allSchemaShape[i];
-      const sql =  await sequelizeString(`SELECT DISTINCT partype FROM shape_data.${e.table_name} `);
-      const sql_ =  await sequelizeString(`SELECT DISTINCT project_na FROM shape_data.${e.table_name} `);
+      const sql = await sequelizeString(`SELECT DISTINCT partype FROM shape_data.${e.table_name} `);
+      const sql_ = await sequelizeString(`SELECT DISTINCT project_na FROM shape_data.${e.table_name} `);
       sql.forEach(({ partype }) => {
         document_name.push(partype);
       })
@@ -431,7 +443,7 @@ exports.getNameProject = async (layer_group, layer_shape) => {
     }
   }
 
-  return { project_name , document_name }
+  return { project_name, document_name }
 
 };
 
@@ -448,17 +460,17 @@ exports.getAllShapeDataService = async (layer_group, project_name, document_name
     sql_count,
     val_sql = ``
 
-    
-    if (search) val_sql += ` AND parid LIKE '%${search}%' OR parlabel1 LIKE '%${search}%'`
-    if (select_search && search) {
-      val_sql
-      val_sql += ` AND ${select_search} ILIKE '%${search}%' `
-    } 
-    if (document_name) val_sql += ` AND partype = '${document_name}' `
-    if (project_name) val_sql += ` AND project_na = '${project_name}' ` 
-    if (prov) val_sql += ` AND prov = '${prov}' `
-    if (amp) val_sql += ` AND amp = '${amp}' `
-    if (tam) val_sql += ` AND tam = '${tam}' `
+
+  if (search) val_sql += ` AND parid LIKE '%${search}%' OR parlabel1 LIKE '%${search}%'`
+  if (select_search && search) {
+    val_sql
+    val_sql += ` AND ${select_search} ILIKE '%${search}%' `
+  }
+  if (document_name) val_sql += ` AND partype = '${document_name}' `
+  if (project_name) val_sql += ` AND project_na = '${project_name}' `
+  if (prov) val_sql += ` AND prov = '${prov}' `
+  if (amp) val_sql += ` AND amp = '${amp}' `
+  if (tam) val_sql += ` AND tam = '${tam}' `
 
   if (layer_group) {
 
@@ -471,7 +483,7 @@ exports.getAllShapeDataService = async (layer_group, project_name, document_name
       sql_count = await sequelizeStringFindOne(
         `SELECT COUNT(*) AS amount_data FROM shape_data.${_res.table_name} WHERE gid IS NOT NULL ${val_sql} `
       );
-  
+
       amount.push(sql_count.amount_data);
       sql.forEach((e) => {
         if (e.partype === "โฉนดที่ดิน" || e.partype === "น.ส.4") e.color = "#FF0000" //แดง
@@ -479,13 +491,13 @@ exports.getAllShapeDataService = async (layer_group, project_name, document_name
         else if (e.partype === "น.ส.3" || e.partype === "น.ส.3ข.") e.color = "#000000"; //ดำ
         else if (e.partype === "สปก.4-01") e.color = "#0115C3" //ฟ้า
         else e.color = "#626262"; //เทา
-  
+
         e.table_name = _res.table_name;
         arr_sql.push(e);
       });
-      
+
     } else return { arr_sql: [], amount: [] };
-    
+
   } else {
     for (let a = 0; a < table_name.length; a++) {
       const tables = table_name[a];
@@ -500,18 +512,11 @@ exports.getAllShapeDataService = async (layer_group, project_name, document_name
 
       amount.push(sql_count.amount_data);
       sql.forEach((e) => {
-        if (e.partype === "โฉนดที่ดิน" || e.partype === "น.ส.4")
-          e.color = "#FF0000";
-        //แดง
-        else if (e.partype === "น.ส.3ก.") e.color = "#049B06";
-        //เขียว
-        else if (e.partype === "น.ส.3" || e.partype === "น.ส.3ข.")
-          e.color = "#000000";
-        //ดำ
-        else if (e.partype === "สปก.4-01") e.color = "#0115C3";
-        //ฟ้า
+        if (e.partype === "โฉนดที่ดิน" || e.partype === "น.ส.4") e.color = "#FF0000"; //แดง
+        else if (e.partype === "น.ส.3ก.") e.color = "#049B06"; //เขียว
+        else if (e.partype === "น.ส.3" || e.partype === "น.ส.3ข.") e.color = "#000000"; //ดำ
+        else if (e.partype === "สปก.4-01") e.color = "#0115C3"; //ฟ้า
         else e.color = "#626262"; //เทา
-
         e.table_name = tables.table_name;
         arr_sql.push(e);
       });
@@ -833,7 +838,7 @@ exports.getReportDashboardService = async (search, project_name, prov, amp, tam,
     res_sql.forEach(e => {
       tempData.push(e)
     });
-    
+
     return tempData
   } else {
     for (let i = 0; i < table_name.length; i++) {
@@ -851,7 +856,7 @@ exports.getReportDashboardService = async (search, project_name, prov, amp, tam,
       FROM shape_data.${allTableShape.table_name}
       INNER JOIN master_lookup.mas_status_project sta ON sta.status_code = status 
       WHERE gid is not null ${val_sql} `);
-  
+
       res_sql.forEach(e => {
         tempData.push(e)
       });
@@ -872,7 +877,7 @@ exports.getFromReportDashbordService = async (search, project_name, prov, amp, t
   if (amp) val_sql += ` AND amp = '${amp}' `;
   if (tam) val_sql += ` AND tam = '${tam}' `;
 
-  
+
 
   const status_shape = await models.mas_status_project.findAll({ order: [["sort", "ASC"]] });
   if (layer_group) {
