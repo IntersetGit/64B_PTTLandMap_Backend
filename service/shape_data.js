@@ -17,6 +17,16 @@ const func_table_name = async () => {
     WHERE table_schema = 'shape_data' `);
 };
 
+ /* แปลงสี rgb เป็น hex */
+const componentToHex = (c) => {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+const rgbToHex = () => {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+ /* ------------------- */
 exports.shapeDataService = async (table_name, id, type, group_layer_id) => {
 
   const filter_table_name = await models.mas_layers_shape.findOne({ where: { table_name } })
@@ -51,17 +61,7 @@ exports.shapeDataService = async (table_name, id, type, group_layer_id) => {
     else sql += ` FROM  (SELECT * FROM ${str_type}.${table_name}) row `
 
     let result_sql = await sequelizeStringFindOne(sql);
-
-    /* แปลงสี rgb เป็น hex */
-    function componentToHex(c) {
-      var hex = c.toString(16);
-      return hex.length == 1 ? "0" + hex : hex;
-    }
-    
-    function rgbToHex(r, g, b) {
-      return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
-    const {r, g, b} = JSON.parse(filter_table_name.color_layer);
+    const {r, g, b} = (filter_table_name.color_layer) ? JSON.parse(filter_table_name.color_layer) : {} ;
     // console.log(rgbToHex(r, g, b));
 
     /* ค้นหาสีตาม status ใน shpae*/
