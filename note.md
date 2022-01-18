@@ -20,3 +20,9 @@
  ROW_NGAN = เนื้อที่เขตระบบ_งาน
  ROW_WA = เนื้อที่เขตระบบ_วา 
  hiperlink = 
+
+
+ รหัสเช็ค ad Interset
+ 1.
+ user: k.karun
+ pass: Interset@1234

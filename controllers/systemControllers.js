@@ -219,12 +219,12 @@ exports.updateConfigAd = async (req, res, next) => {
 const connectPttAD_ = async (username) => {
   const { info_form } = await models.sysm_config.findByPk(1)
   const myPromise = new Promise((resolve, reject) => {
-    const { url, search } = connect[config.NODE_ENV];
+    const { host, url, search } = connect[config.NODE_ENV];
 
     const config_ad = {
       url,
       baseDN: `${search}`,
-      username: `${info_form.username}@ptt.corp`,
+      username: `${info_form.username}@${host}`,
       password: info_form.password,
     };
 
