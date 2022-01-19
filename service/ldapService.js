@@ -1,7 +1,7 @@
 const config = require("../config");
 const ldap = require('ldapjs');
 const { filterUsernameSysmUsersService, createSysmUsersService, updateSysmUsersService, findCodeLdapSysmUsersService } = require('./sysmUsersService');
-const { encryptPassword } = require("../util");
+const { encryptPassword, EncryptCryptoJS } = require("../util");
 const { createDatProfileUsersService, updateDatProfileUsersService } = require("./datProfileUsersService");
 const uuidv4 = require("uuid");
 const ActiveDirectory = require('activedirectory');
@@ -57,12 +57,34 @@ exports.ldap = async ({ user_name, password }) => {
     const _res = await connectPttAD({ username: user_name, password });
     const _user = await filterUsernameSysmUsersService(user_name);
     // console.log('_res :>> ', _res);
-    if (_res.message == "เชื่อมต่อผิดพลาด") return _user
-    if (_user) {
+    if (!_user && _res.message != "เชื่อมต่อผิดพลาด") {
+        const id = uuidv4.v4()
+        await createSysmUsersService({
+            id,
+            roles_id: "0678bba5-a371-417f-9734-aec46b9579ad",
+            user_name,
+            password: await EncryptCryptoJS(password),
+            is_ad: true
+        })
+
+        await createDatProfileUsersService({
+            user_id: id,
+            first_name: _res.givenName,
+            last_name: _res.sn,
+            initials: _res.initials,
+            e_mail: _res.mail,
+        })
+    } else if (_res.message == "เชื่อมต่อผิดพลาด" && _user) { //ข้อมูลที่มีอยู่แล้วจะ return ออกใน database
+        return _user
+    } else if (_res.message == "เชื่อมต่อผิดพลาด" && !_user) { //กรณีกรอก
+        const err = new Error('ไม่พบชื่อผู้ใช้ในระบบหรือรหัสผ่านผิด');
+        err.statusCode = 400
+        throw err
+    } else {
         await updateSysmUsersService({
             id: _user.id,
             user_name,
-            password: await encryptPassword(password),
+            password: await EncryptCryptoJS(password),
             e_mail: _res.mail,
             update_by: _user.id,
         })
@@ -75,12 +97,9 @@ exports.ldap = async ({ user_name, password }) => {
             e_mail: _res.mail,
             update_by: _user.id,
         })
-        
-    } else {
-        const err = new Error(`ไม่มีผู้ใช้ ${user_name} ในฐานข้อมูล`)
-        err.statusCode = 404
-        throw err;
     }
+    return _user
+
     /**------------- pond ------------------------ */
     //fd1afdfd-04fd-48fd-fdfd-fd27065dfdfd = k.karun
     //63216afd-fd56-47fd-fd1f-fdfd544ffdfd = pondkarun2
@@ -146,7 +165,7 @@ exports.ldap = async ({ user_name, password }) => {
     //     }, transaction)
     // }
     // await transaction.commit();
-    return _user
+    
 }
 
 const ConnectLdap = async ({ username, password }) => {
@@ -223,14 +242,14 @@ const connectPttAD = async ({ username, password }) => {
         const config_ad = {
             url,
             baseDN: `${search}`,
-            username: `${username}@ptt.corp`,
+            username: `${username}@${host}`,
             password
         }
 
         const ad = new ActiveDirectory(config_ad);
         ad.findUser(username, (err, user) => {
             if (err) {
-                const _err = { message: 'เชื่อมต่อผิดพลาด'}
+                const _err = { message: 'เชื่อมต่อผิดพลาด' }
                 resolve(_err);
             }
             if (!user) {

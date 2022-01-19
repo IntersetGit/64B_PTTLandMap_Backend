@@ -126,5 +126,7 @@ exports.getSearchUserService = async (search) => {
         or roles.roles_name ILIKE :search_name ) `
     } 
 
+    sql += ` order by Suser.created_date asc `
+
     return await sequelizeStringLike(sql, {search});
 }

@@ -50,46 +50,69 @@ exports.loginControllers = async (req, res, next) => {
             username = _decrypt.username
             password = _decrypt.password
         }
-        let _res = await filterUsernameSysmUsersService(username);
-        if (!_res) {
-            const error = new Error("ไม่พบชื่อผู้ใช้ในระบบหรือรหัสผ่านผิด");
-            error.statusCode = 400;
-            throw error;
-        }
-
-        if (_res.is_ad) _res = await ldap({ user_name: username, password })
-        if(!_res.password) _res.password = password
-            const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
-            // console.log(passwordecrypt);
-            if (!passwordecrypt) {
-                const error = new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง !");
+        let model = {}
+        let _res = await ldap({ user_name: username, password })
+        if (_res.is_ad) {
+            model = {
+                sysm_id: _res.id,
+                roles_id: _res.roles_id,
+                code_ldap: _res.code_ldap,
+                roles_name: _res.roles_name,
+                note: _res.note,
+                user_name: _res.user_name,
+                e_mail: _res.email,
+                note: _res.note,
+                first_name: _res.first_name,
+                last_name: _res.last_name,
+                initials: _res.initials,
+                is_ad: _res.is_ad
+                // company: _res.company,
+                // department: _res.department,
+                // job_title: _res.job_title,
+                // office: _res.office,
+                // web_page: _res.web_page,
+                // phone: _res.phone,
+                // address: _res.address,
+                // description: _res.description
+            }
+        } else {
+            _res = await filterUsernameSysmUsersService(username);
+            if (!_res) {
+                const error = new Error("ไม่พบชื่อผู้ใช้ในระบบหรือรหัสผ่านผิด");
                 error.statusCode = 400;
                 throw error;
             }
-        
-
-        const model = {
-            sysm_id: _res.id,
-            roles_id: _res.roles_id,
-            code_ldap: _res.code_ldap,
-            roles_name: _res.roles_name,
-            note: _res.note,
-            user_name: _res.user_name,
-            e_mail: _res.email,
-            note: _res.note,
-            first_name: _res.first_name,
-            last_name: _res.last_name,
-            initials: _res.initials,
-            is_ad: _res.is_ad
-            // company: _res.company,
-            // department: _res.department,
-            // job_title: _res.job_title,
-            // office: _res.office,
-            // web_page: _res.web_page,
-            // phone: _res.phone,
-            // address: _res.address,
-            // description: _res.description
+            model = {
+                sysm_id: _res.id,
+                roles_id: _res.roles_id,
+                code_ldap: _res.code_ldap,
+                roles_name: _res.roles_name,
+                note: _res.note,
+                user_name: _res.user_name,
+                e_mail: _res.email,
+                note: _res.note,
+                first_name: _res.first_name,
+                last_name: _res.last_name,
+                initials: _res.initials,
+                is_ad: _res.is_ad
+                // company: _res.company,
+                // department: _res.department,
+                // job_title: _res.job_title,
+                // office: _res.office,
+                // web_page: _res.web_page,
+                // phone: _res.phone,
+                // address: _res.address,
+                // description: _res.description
+            }
         }
+
+        // const passwordecrypt = await checkPassword(password, _res.password); //เช็ค password ตรงไหม
+        // // console.log(passwordecrypt);
+        // if (!passwordecrypt) {
+        //     const error = new Error("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง !");
+        //     error.statusCode = 400;
+        //     throw error;
+        // }
 
         //สร้าง token
         const _token = await generateAccessToken(model)
