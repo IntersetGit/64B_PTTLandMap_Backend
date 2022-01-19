@@ -9,6 +9,7 @@ const result = require("../middleware/result");
 const { DecryptCryptoJS, encryptPassword } = require("../util");
 const models = require("../models/index");
 const { getSysmRoleService } = require("../service/masterDataService");
+const { connectPttAD } = require("../service/ldapService");
 
 const connect = {
   development: {
@@ -163,20 +164,31 @@ exports.getSysmRoleController = async (req, res, next) => {
 exports.findUserAd = async (req, res, next) => {
   try {
     const { username } = req.query
+    const setUser = await filterUsernameSysmUsersService(req.user['user_name']);
 
     if (!username) {
-      const err = new Error('กรอกข้อมูล username')
+      const err = new Error('กรอกข้อมูล username');
+      err.statusCode = 400
+      throw err
+    } else if (setUser['is_ad']) {
+      const _res = await connectPttAD({
+        username, 
+        password: await DecryptCryptoJS(setUser['password']),
+        usernameDB: setUser['user_name'],
+        isDB: true
+      })
+      const _model = {
+        employeeID: _res.employeeID,
+        displayName: _res.displayName,
+        isUsers: true
+      }
+      result(res, _model);
+    } else {
+      const err = new Error('ผู้ใช้งานนี้ไม่ใช่ ผู้ใช้ ldap');
       err.statusCode = 400
       throw err
     }
-    const _res = await connectPttAD_(username)
-    const _model = {
-      employeeID: _res.employeeID,
-      displayName: _res.displayName,
-      isUsers: true
-    }
 
-    result(res, _model)
 
   } catch (error) {
     next(error);
@@ -214,34 +226,3 @@ exports.updateConfigAd = async (req, res, next) => {
     next(error);
   }
 }
-
-/* funcion connect ADPTT */
-const connectPttAD_ = async (username) => {
-  const { info_form } = await models.sysm_config.findByPk(1)
-  const myPromise = new Promise((resolve, reject) => {
-    const { host, url, search } = connect[config.NODE_ENV];
-
-    const config_ad = {
-      url,
-      baseDN: `${search}`,
-      username: `${info_form.username}@${host}`,
-      password: info_form.password,
-    };
-
-    const ad = new ActiveDirectory(config_ad);
-    ad.findUser(username, (err, user) => {
-      if (err) {
-        const _err = { message: "การเชื่อมต่อผิดพลาดตรวจสอบเครือข่าย" };
-        reject(_err);
-      }
-      if (!user) {
-        console.log(user);
-        const _err = new Error('ไม่พบชื่อผู้ใช้')
-        _err.statusCode = 404
-        reject(_err);
-      }
-      resolve(user);
-    });
-  });
-  return await myPromise;
-};

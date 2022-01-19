@@ -54,19 +54,18 @@ const connect = {
 
 exports.ldap = async ({ user_name, password }) => {
     // const _res = await ConnectLdap({ username: user_name, password })
-    const _res = await connectPttAD({ username: user_name, password });
+    const _res = await this.connectPttAD({ username: user_name, password });
     const _user = await filterUsernameSysmUsersService(user_name);
     // console.log('_res :>> ', _res);
     if (!_user && _res.message != "เชื่อมต่อผิดพลาด") {
         const id = uuidv4.v4()
         await createSysmUsersService({
             id,
-            roles_id: "0678bba5-a371-417f-9734-aec46b9579ad",
+            roles_id: "f4ad6a90-9019-41d3-9916-1ea814aeb5a1",
             user_name,
             password: await EncryptCryptoJS(password),
             is_ad: true
         })
-
         await createDatProfileUsersService({
             user_id: id,
             first_name: _res.givenName,
@@ -165,7 +164,7 @@ exports.ldap = async ({ user_name, password }) => {
     //     }, transaction)
     // }
     // await transaction.commit();
-    
+
 }
 
 const ConnectLdap = async ({ username, password }) => {
@@ -234,21 +233,36 @@ const ConnectLdap = async ({ username, password }) => {
     return await myPromise
 }
 
-const connectPttAD = async ({ username, password }) => {
+exports.connectPttAD = async ({ username, password, usernameDB, isDB }) => {
     const myPromise = new Promise((resolve, reject) => {
 
         const { host, url, search } = connect[config.NODE_ENV]
-
+        const _username = isDB ? usernameDB : username
         const config_ad = {
             url,
             baseDN: `${search}`,
-            username: `${username}@${host}`,
+            username: `${_username}@${host}`,
             password
         }
 
         const ad = new ActiveDirectory(config_ad);
+        // ad.authenticate('580054@ptt.corp', password, function (err, auth) {
+        //     if (err) {
+        //         console.log('ERROR: ' + JSON.stringify(err));
+        //         return;
+        //     }
+
+        //     if (auth) {
+        //         console.log(auth);
+        //         console.log('Authenticated!');
+        //     }
+        //     else {
+        //         console.log('Authentication failed!');
+        //     }
+        // });
         ad.findUser(username, (err, user) => {
             if (err) {
+                console.log("err", err);
                 const _err = { message: 'เชื่อมต่อผิดพลาด' }
                 resolve(_err);
             }
