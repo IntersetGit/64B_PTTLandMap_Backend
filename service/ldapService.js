@@ -57,29 +57,11 @@ exports.ldap = async ({ user_name, password }) => {
     const _res = await this.connectPttAD({ username: user_name, password });
     const _user = await filterUsernameSysmUsersService(user_name);
     // console.log('_res :>> ', _res);
-    if (!_user && _res.message != "เชื่อมต่อผิดพลาด") {
-        const id = uuidv4.v4()
-        await createSysmUsersService({
-            id,
-            roles_id: "f4ad6a90-9019-41d3-9916-1ea814aeb5a1",
-            user_name,
-            password: await EncryptCryptoJS(password),
-            is_ad: true
-        })
-        await createDatProfileUsersService({
-            user_id: id,
-            first_name: _res.givenName,
-            last_name: _res.sn,
-            initials: _res.initials,
-            e_mail: _res.mail,
-        })
-    } else if (_res.message == "เชื่อมต่อผิดพลาด" && _user) { //ข้อมูลที่มีอยู่แล้วจะ return ออกใน database
+    if (_res.message == "เชื่อมต่อผิดพลาด") {
         return _user
-    } else if (_res.message == "เชื่อมต่อผิดพลาด" && !_user) { //กรณีกรอก
-        const err = new Error('ไม่พบชื่อผู้ใช้ในระบบหรือรหัสผ่านผิด');
-        err.statusCode = 400
-        throw err
-    } else {
+    }
+
+    if (_user) {
         await updateSysmUsersService({
             id: _user.id,
             user_name,
@@ -96,6 +78,11 @@ exports.ldap = async ({ user_name, password }) => {
             e_mail: _res.mail,
             update_by: _user.id,
         })
+        
+    } else {
+        const err = new Error(`ไม่มีผู้ใช้ ${user_name} ในฐานข้อมูล`)
+        err.statusCode = 404
+        throw err;
     }
     return _user
 

@@ -23,7 +23,7 @@ const componentToHex = (c) => {
   return hex.length == 1 ? "0" + hex : hex;
 }
 
-const rgbToHex = () => {
+const rgbToHex = (r, g, b) => {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
  /* ------------------- */
@@ -81,8 +81,8 @@ exports.shapeDataService = async (table_name, id, type, group_layer_id) => {
           const e = result_sql.shape.features[i];
           if (e.properties.status) {
             const _status_shape = String(e.properties.status)
-            const { status_color } = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
-            e.properties.status_color = status_color ?? undefined
+            const _status_color = await models.mas_status_project.findOne({ where: { status_code: _status_shape } })
+            e.properties.status_color = _status_color ? _status_color.status_color : null
             e.properties.gid = e.id
             e.properties.table_name = filter_table_name.table_name
             e.properties.from_model = filter_table_name.group_layer_id === 'f942a946-3bcb-4062-9207-d78ab437edf3' ? true : false

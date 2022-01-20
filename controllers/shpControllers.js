@@ -286,7 +286,7 @@ exports.getShapeData = async (req, res, next) => {
     try {
         const { id } = req.query
         const _res = await findIdLayersShape(id);
-        result(res, await shapeDataService(_res.table_name, null, _res.type, _res.group_layer_id))
+        result(res, await shapeDataService(_res.table_name, null, _res.type, _res.group_layer_id), 200)
 
     } catch (error) {
         next(error);

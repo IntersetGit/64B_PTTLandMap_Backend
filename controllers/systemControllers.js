@@ -6,7 +6,7 @@ const { createDatProfileUsersService, updateDatProfileUsersService } = require("
 const sequelize = require("../config/dbConfig"); //connect db  query string
 const uuidv4 = require("uuid");
 const result = require("../middleware/result");
-const { DecryptCryptoJS, encryptPassword } = require("../util");
+const { DecryptCryptoJS, encryptPassword, EncryptCryptoJS } = require("../util");
 const models = require("../models/index");
 const { getSysmRoleService } = require("../service/masterDataService");
 const { connectPttAD } = require("../service/ldapService");
@@ -33,7 +33,8 @@ const connect = {
 exports.createUserAD = async (req, res, next) => {
   const transaction = await sequelize.transaction();
   try {
-    const { username, password, token, roles_id, first_name, last_name, e_mail, is_ad } = req.body;
+    let { username, password, token, roles_id, first_name, last_name, e_mail, is_ad } = req.body;
+    const { user_name } = req.user
     const id = uuidv4.v4();
 
     if (token) {
@@ -43,19 +44,20 @@ exports.createUserAD = async (req, res, next) => {
     }
 
     if (is_ad) {
-      const searchname = await filterUsernameSysmUsersService(username)
-      if (searchname) {
+      const searchname = await filterUsernameSysmUsersService(user_name);
+      const setUser = await filterUsernameSysmUsersService(username);
+      if (setUser) {
         const err = new Error(`มีผู้ใช้ ${username} ในฐานข้อมูล`);
         err.statusCode = 400;
         throw err;
       }
-      const __res = await connectPttAD_(username);
+      const __res = await connectPttAD({username , password: await DecryptCryptoJS(searchname.password), usernameDB: user_name, isDB: true });
       if (__res) {
         await createSysmUsersService({
           id,
           roles_id,
           user_name: username,
-          password,
+          password: await EncryptCryptoJS(password),
           e_mail: __res.mail,
           created_by: id,
           is_ad: true
@@ -76,7 +78,7 @@ exports.createUserAD = async (req, res, next) => {
           id,
           roles_id,
           user_name: username,
-          password: await encryptPassword(password),
+          password: await EncryptCryptoJS(password),
           e_mail,
           created_by: id,
           is_ad: false
@@ -170,25 +172,20 @@ exports.findUserAd = async (req, res, next) => {
       const err = new Error('กรอกข้อมูล username');
       err.statusCode = 400
       throw err
-    } else if (setUser['is_ad']) {
-      const _res = await connectPttAD({
-        username, 
-        password: await DecryptCryptoJS(setUser['password']),
-        usernameDB: setUser['user_name'],
-        isDB: true
-      })
-      const _model = {
-        employeeID: _res.employeeID,
-        displayName: _res.displayName,
-        isUsers: true
-      }
-      result(res, _model);
-    } else {
-      const err = new Error('ผู้ใช้งานนี้ไม่ใช่ ผู้ใช้ ldap');
-      err.statusCode = 400
-      throw err
     }
-
+    
+    const _res = await connectPttAD({
+      username: setUser['user_name'] == 'superadmin' || setUser['user_name'] == 'editor' ? config.USER_NAME_AD : username,
+      password: setUser['user_name'] == 'superadmin' || setUser['user_name'] == 'editor' ? config.PASSWORD_AD : await DecryptCryptoJS(setUser['password']) ,
+      usernameDB: setUser['user_name'] == 'superadmin' || setUser['user_name'] == 'editor' ? config.USER_NAME_AD : setUser['user_name'],
+      isDB: true
+    })
+    const _model = {
+      employeeID: _res.employeeID,
+      displayName: _res.displayName,
+      isUsers: true
+    }
+    result(res, _model);
 
   } catch (error) {
     next(error);
