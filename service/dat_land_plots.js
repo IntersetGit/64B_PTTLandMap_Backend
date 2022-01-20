@@ -37,13 +37,23 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
         if (schema === 'shape_data') {
             if (data.geometry.type === 'Polygon' || data.geometry.type === 'MultiPolygon') {
                 if (data.geometry.coordinates.length > 1) {
-                    const setCoordinatesMoreThanTwo = []
+                    const setCoordinatesMoreThanTwo = [], setCoordinatesMoreThanOne = []
                     data.geometry.coordinates.forEach(shapemulti => {
-                        const setGeo = []
-                        shapemulti.forEach(e => {
-                            setGeo.push(`[${e}]`)
-                        })
-                        setCoordinatesMoreThanTwo.push(`[${setGeo}]`);
+                        if (shapemulti.length === 1) {
+                            const setGeo_ = []
+                            shapemulti.forEach(x => {
+                                x.forEach(g => {
+                                    setGeo_.push(`[${g}]`)
+                                })
+                                setCoordinatesMoreThanTwo.push(`[${setGeo_}]`)
+                            })
+                        } else {
+                            const setGeo = []
+                            shapemulti.forEach(e => {
+                                setGeo.push(`[${e}]`)
+                            })
+                            setCoordinatesMoreThanTwo.push(`[${setGeo}]`);
+                        }
                     })
                     arrSql.push(`(ST_GeomFromGeoJSON('{
                         "type":"MultiPolygon",
