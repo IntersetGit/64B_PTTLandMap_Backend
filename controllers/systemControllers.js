@@ -34,7 +34,7 @@ exports.createUserAD = async (req, res, next) => {
   const transaction = await sequelize.transaction();
   try {
     let { username, password, token, roles_id, first_name, last_name, e_mail, is_ad } = req.body;
-    const { user_name } = req.user
+    const { user_name } = req.user //มาจาก login
     const id = uuidv4.v4();
 
     if (token) {
@@ -51,13 +51,18 @@ exports.createUserAD = async (req, res, next) => {
         err.statusCode = 400;
         throw err;
       }
-      const __res = await connectPttAD({username , password: await DecryptCryptoJS(searchname.password), usernameDB: user_name, isDB: true });
+      const __res = await connectPttAD({
+        username, 
+        password: user_name == 'superadmin' ? config.PASSWORD_AD : await DecryptCryptoJS(searchname.password), 
+        usernameDB: user_name == 'superadmin' ? config.USER_NAME_AD : user_name, 
+        isDB: true 
+      });
       if (__res) {
         await createSysmUsersService({
           id,
           roles_id,
           user_name: username,
-          password: await EncryptCryptoJS(password),
+          password: null,
           e_mail: __res.mail,
           created_by: id,
           is_ad: true
@@ -175,11 +180,17 @@ exports.findUserAd = async (req, res, next) => {
     }
     
     const _res = await connectPttAD({
-      username: setUser['user_name'] == 'superadmin' || setUser['user_name'] == 'editor' ? config.USER_NAME_AD : username,
-      password: setUser['user_name'] == 'superadmin' || setUser['user_name'] == 'editor' ? config.PASSWORD_AD : await DecryptCryptoJS(setUser['password']) ,
-      usernameDB: setUser['user_name'] == 'superadmin' || setUser['user_name'] == 'editor' ? config.USER_NAME_AD : setUser['user_name'],
+      username,
+      password: setUser['user_name'] == 'superadmin' ? config.PASSWORD_AD : await DecryptCryptoJS(setUser['password']) ,
+      usernameDB: setUser['user_name'] == 'superadmin' ? config.USER_NAME_AD : setUser['user_name'],
       isDB: true
     })
+
+    if (_res.message) {
+      const err = new Error(_res.message);
+      err.statusCode = 400
+      throw err
+    }
     const _model = {
       employeeID: _res.employeeID,
       displayName: _res.displayName,

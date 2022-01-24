@@ -78,13 +78,13 @@ exports.ldap = async ({ user_name, password }) => {
             e_mail: _res.mail,
             update_by: _user.id,
         })
-        
+
     } else {
         const err = new Error(`ไม่มีผู้ใช้ ${user_name} ในฐานข้อมูล`)
         err.statusCode = 404
         throw err;
     }
-    return _user
+    return await filterUsernameSysmUsersService(user_name)
 
     /**------------- pond ------------------------ */
     //fd1afdfd-04fd-48fd-fdfd-fd27065dfdfd = k.karun
@@ -229,10 +229,42 @@ exports.connectPttAD = async ({ username, password, usernameDB, isDB }) => {
             url,
             baseDN: `${search}`,
             username: `${_username}@${host}`,
-            password
+            password,
+            logging: {
+                name: 'ActiveDirectory',
+                streams: [
+                    {
+                        level: 'error',
+                        stream: process.stdout
+                    }
+                ]
+            }
         }
 
         const ad = new ActiveDirectory(config_ad);
+        // passport.use(new ActiveDirectoryStrategy({
+        //     integrated: false,
+        //     ldap: ad
+        // }, function (profile, ad, done) {
+        //     console.log(profile);
+        // }))
+
+        ad.findUser(username, (err, user) => {
+            if (err) {
+                console.log("err", err);
+                const _err = { message: 'เชื่อมต่อผิดพลาด' }
+                resolve(_err);
+            }
+            if (!user) {
+                console.log(user);
+                const _err = { message: "ไม่พบชื่อผู้ใช้ AD" }
+                _err.statusCode = 404
+                reject(_err);
+            }
+            resolve(user);
+        });
+        
+
         // ad.authenticate('580054@ptt.corp', password, function (err, auth) {
         //     if (err) {
         //         console.log('ERROR: ' + JSON.stringify(err));
@@ -247,20 +279,6 @@ exports.connectPttAD = async ({ username, password, usernameDB, isDB }) => {
         //         console.log('Authentication failed!');
         //     }
         // });
-        ad.findUser(username, (err, user) => {
-            if (err) {
-                console.log("err", err);
-                const _err = { message: 'เชื่อมต่อผิดพลาด' }
-                resolve(_err);
-            }
-            if (!user) {
-                console.log(user);
-                const _err = { message: "ชื่อผู้ใช้และรหัสผ่านไม่ถูกต้อง" }
-                _err.statusCode = 404
-                reject(_err)
-            }
-            resolve(user);
-        });
     })
 
     return await myPromise
