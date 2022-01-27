@@ -23,7 +23,7 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
     arrNameTable.forEach(tableName => {
         indexPropertie.forEach(newObject => {
             sql = `INSERT INTO ${schema}.${tableName}(geom,${newObject}) VALUES `
-            sql_hyperlink = `UPDATE ${schema}.${tableName} SET hyperlink = '-' `
+            
         })
     })
 
@@ -332,10 +332,8 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
 
     sql += arrSql.toString()
     // console.log(sql);
+    
     await sequelizeString(sql);
-    await sequelizeString(sql_hyperlink);
-  
-  
 
   
 }

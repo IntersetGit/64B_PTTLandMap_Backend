@@ -669,17 +669,12 @@ exports.editshapeDataService = async (model) => {
     newKey = [];
 
   for (const key in model) {
-    if (key !== "table_name" && key !== "id" && key !== "hyperlink") {
+    if (key !== "table_name" && key !== "id" ) {
       newKey.push(` ${key} = '${model[key]}' `);
     }
   }
   str_sql += newKey.toString();
   str_sql += ` WHERE gid = ${model.gid}`;
-
-  if (model.hyperlink) {
-  var str_sql2 =  `UPDATE shape_data.${filter_shapedata.table_name} SET hyperlink = '${model.hyperlink}' `;
-  await sequelizeString(str_sql2)
-}
   return await sequelizeString(str_sql);
 };
 
