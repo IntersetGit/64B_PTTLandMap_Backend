@@ -265,7 +265,7 @@ exports.createTableShapeService = async (geojson, queryInterface, mimetype) => {
           type: DataTypes.STRING,
           allowNull: true,
         }
-        obj1.hyperlink = {
+        obj1.link = {
           type: DataTypes.STRING,
           allowNull: true,
         }
