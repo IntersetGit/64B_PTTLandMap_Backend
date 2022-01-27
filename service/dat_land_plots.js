@@ -19,10 +19,11 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
     /* format insert
     INSERT INTO shape_data.ptt_shape_number3(gid,geom) VALUES (1, ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[[[[99.557856126,14.277867442],[99.637387048,14.297762334],[99.633280354,14.232705561],[99.555778959,14.230984626],[99.557856126,14.277867442]]]]}')) 
     */
-    var sql, typeGeo = []
+    var sql, sql_hyperlink , typeGeo  = []
     arrNameTable.forEach(tableName => {
         indexPropertie.forEach(newObject => {
             sql = `INSERT INTO ${schema}.${tableName}(geom,${newObject}) VALUES `
+            sql_hyperlink = `UPDATE ${schema}.${tableName} SET hyperlink = '-' `
         })
     })
 
@@ -332,7 +333,11 @@ exports.addShapeService = async (geojson, schema, arrNameTable, indexPropertie) 
     sql += arrSql.toString()
     // console.log(sql);
     await sequelizeString(sql);
+    await sequelizeString(sql_hyperlink);
+  
+  
 
+  
 }
 
 
