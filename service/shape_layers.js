@@ -35,7 +35,7 @@ exports.addShapeLayersService = async (model, transaction) => {
 exports.getDataShapService = async () => {
     let sql = `
     SELECT mlg.id
-  ,mlg.group_name
+  ,mlg.group_name 
   ,mlg.order_by
   ,mlg.isuse
   ,(SELECT json_agg(json_build_object('id',mls.id
