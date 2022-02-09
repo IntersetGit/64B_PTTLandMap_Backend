@@ -71,6 +71,10 @@ module.exports = function(sequelize, DataTypes) {
     table_name_arr: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    config_typoint: {
+      type: DataTypes.JSON,
+      allowNull: true
     }
   }, {
     sequelize,
