@@ -2,11 +2,16 @@ const models = require('../models');
 const { sequelizeString } = require('../util');
 const uuid = require('uuid');
 
+const countMasLayers = async () => {
+    return await models.mas_layers_shape.count()
+}
+
 exports.addShapeLayersService = async (model, transaction) => {
     const id = model.id ?? uuid.v4()
     let _model = {
         id,
-        name_layer: model.name_layer ?? "test"
+        name_layer: model.name_layer ?? "test",
+        order_by: await countMasLayers()
     }
 
     if (model.type === "Point") _model.type = model.type = "shape file"
@@ -24,6 +29,7 @@ exports.addShapeLayersService = async (model, transaction) => {
     if (model.option_layer) _model.option_layer = model.option_layer
     if (model.symbol_point) _model.symbol_point = model.symbol_point
     if (model.table_name_arr)  _model.table_name_arr = model.table_name_arr
+    if (model.config_typoint) _model.config_typoint = model.config_typoint 
 
     await models.mas_layers_shape.create(_model, { transaction })
     return id

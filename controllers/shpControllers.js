@@ -38,6 +38,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
         } else {
             const { file } = req.files
             const option_layer = req.body.option_layer ? JSON.parse(req.body.option_layer) : {}
+            const config_typoint = req.body.config_typoint ? JSON.parse(req.body.config_typoint) : {}
             const { color, group_layer_id, name_layer, type } = req.query
             const { sysm_id } = req.user
             const id = uuid.v4();
@@ -60,6 +61,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     group_layer_id,
                     color_layer: color,
                     option_layer: option_layer,
+                    config_typoint,
                     type_geo: type
                 }, transaction)
 
@@ -85,6 +87,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     group_layer_id,
                     color_layer: color,
                     option_layer: option_layer,
+                    config_typoint,
                     type_geo: type
                 }, transaction)
 
@@ -111,6 +114,7 @@ exports.shapeKmlKmzAdd = async (req, res, next) => {
                     group_layer_id,
                     color_layer: color,
                     option_layer: option_layer,
+                    config_typoint,
                     type_geo: type
                 }, transaction)
 
