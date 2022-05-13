@@ -85,9 +85,9 @@ exports.deleteMasLayersService = async (data) => {
 exports.getDatLayersService = async (search) => {
 
   let sql = `
-  SELECT * FROM ptt_data.dat_layers  `
+  SELECT * FROM ptt_data.dat_layers where isuse = 1  `
 
-  if (search) sql += ` where layer_name ILIKE :search_name  or url ILIKE :search_name or type_server ILIKE :search_name or wms ILIKE :search_name`
+  if (search) sql += ` and layer_name ILIKE :search_name  or url ILIKE :search_name or type_server ILIKE :search_name or wms ILIKE :search_name `
 
   return await sequelizeStringLike(sql, {search})
 
@@ -115,7 +115,7 @@ exports.createDatLayersService = async (data, users) => {
 exports.updateDatLayersService = async (data, users) => {
   const _data = {
     isuse: 1,
-    update_by: users.user_id,
+    update_by: users.sysm_id,
     update_date: new Date(),
     layer_name: data.layer_name
   }
