@@ -120,7 +120,8 @@ exports.updateDatLayersService = async (data, users) => {
     layer_name: data.layer_name
   }
 
-  // if (data.layer_name) _data.layer_name = data.layer_name
+  if (data.layer_name) _data.layer_name = data.layer_name
+  if (data.image_type) _data.image_type = data.image_type
   if (data.wms) _data.wms = data.wms
   if (data.url) _data.url = data.url
   if (data.type_server) _data.type_server = data.type_server

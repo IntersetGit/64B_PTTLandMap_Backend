@@ -61,11 +61,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     image_type: {
-      type: DataTypes.STRING,
-      allowNull: true
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      comment: "ประเภทข้อมูลของภาพ"
     },
     wms: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: true
     }
   }, {

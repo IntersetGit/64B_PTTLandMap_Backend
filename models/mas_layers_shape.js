@@ -63,18 +63,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: true
     },
+    table_name_arr: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true
+    },
     order_by: {
       type: DataTypes.SMALLINT,
       allowNull: true,
       comment: "ตัวจัดการลำดับข้อมูล"
-    },
-    table_name_arr: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    config_typoint: {
-      type: DataTypes.JSON,
-      allowNull: true
     }
   }, {
     sequelize,
