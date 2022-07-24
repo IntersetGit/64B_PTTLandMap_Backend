@@ -57,7 +57,7 @@ exports.shapeDataService = async (table_name, id, type, group_layer_id) => {
                     'geometry',   ST_AsGeoJSON(ST_Transform(ST_SetSRID(geom,4326), 4326))::json,
                     'properties', to_jsonb(row) - 'gid' - 'geom'))) AS shape `
 
-    if (id) sql += ` FROM  (SELECT * FROM ${str_type}.${table_name} WHERE gid = ${id}) row`
+    if (id) sql += ` FROM  (SELECT * FROM ${str_type}.${table_name} WHERE gid = '${id}') row`
     else sql += ` FROM  (SELECT * FROM ${str_type}.${table_name}) row `
 
     let result_sql = await sequelizeStringFindOne(sql);
